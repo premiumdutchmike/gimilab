@@ -52,7 +52,10 @@ export function BookFilters({ courses, initialCourseId }: BookFiltersProps) {
     [searchParams, router],
   )
 
-  const clearFilters = () => router.push('?')
+  const clearFilters = () =>
+    initialCourseId
+      ? router.push(`?courseId=${initialCourseId}`)
+      : router.push('?')
 
   const hasActiveFilters =
     courseId !== '' || date !== '' || timeOfDay !== 'any' || players !== '1'
@@ -128,6 +131,7 @@ export function BookFilters({ courses, initialCourseId }: BookFiltersProps) {
           <Select
             value={timeOfDay}
             onValueChange={(value) =>
+              // 'any' is the default — omit the param rather than writing ?timeOfDay=any
               updateParams({ timeOfDay: value == null || value === 'any' ? '' : value })
             }
           >
