@@ -5,3 +5,13 @@ export interface SlotSummary {
   availableSpots: number
   courseName: string
 }
+
+export type BookingStatus = 'BOOKED' | 'CANCELLED' | 'COMPLETED'
+
+export interface BookingSummary {
+  id: string
+  courseName: string
+  teeTime: string
+  creditCost: number
+  status: BookingStatus
+}

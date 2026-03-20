@@ -5,15 +5,10 @@ import { Calendar, Clock, Coins } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CancelDialog } from './cancel-dialog'
+import { BookingStatus, BookingSummary } from '@/lib/types/slot'
 
 interface RoundCardProps {
-  booking: {
-    id: string
-    courseName: string
-    teeTime: string
-    creditCost: number
-    status: 'BOOKED' | 'CANCELLED' | 'COMPLETED'
-  }
+  booking: BookingSummary
 }
 
 function formatDate(iso: string): string {
@@ -98,20 +93,18 @@ export function RoundCard({ booking }: RoundCardProps) {
         )}
       </div>
 
-      {isCancellable && (
-        <CancelDialog
-          bookingId={booking.id}
-          teeTime={booking.teeTime}
-          courseName={booking.courseName}
-          open={cancelOpen}
-          onOpenChange={setCancelOpen}
-        />
-      )}
+      <CancelDialog
+        bookingId={booking.id}
+        teeTime={booking.teeTime}
+        courseName={booking.courseName}
+        open={cancelOpen}
+        onOpenChange={setCancelOpen}
+      />
     </>
   )
 }
 
-function StatusBadge({ status }: { status: RoundCardProps['booking']['status'] }) {
+function StatusBadge({ status }: { status: BookingStatus }) {
   if (status === 'BOOKED') {
     return (
       <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20 shrink-0">
