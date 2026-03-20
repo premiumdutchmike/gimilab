@@ -92,4 +92,11 @@ describe('POST /api/ai/search', () => {
     const res = await POST(makeRequest({ query: 'morning round' }))
     expect(res.status).toBe(429)
   })
+
+  it('returns 500 when AI call throws', async () => {
+    mockRedis.get.mockResolvedValue(null)
+    vi.mocked(generateText).mockRejectedValue(new Error('upstream error'))
+    const res = await POST(makeRequest({ query: 'saturday morning' }))
+    expect(res.status).toBe(500)
+  })
 })

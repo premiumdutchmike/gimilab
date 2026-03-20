@@ -18,6 +18,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // Parse + validate body
+  let body: unknown
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+  }
+
+  const parsed = aiSearchInputSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
+  }
+
   // Rate limit per user (created per-request so test mocks work correctly)
   const ratelimit = new Ratelimit({
     redis,
@@ -30,19 +43,6 @@ export async function POST(request: NextRequest) {
       { error: 'Too many searches — try again in a minute.' },
       { status: 429 }
     )
-  }
-
-  // Parse + validate body
-  let body: unknown
-  try {
-    body = await request.json()
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
-  }
-
-  const parsed = aiSearchInputSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
   }
 
   const { query } = parsed.data
