@@ -70,7 +70,6 @@ function makeBlockFormData(
 function makeSelectMock(rows: unknown[]) {
   return {
     from: vi.fn().mockReturnThis(),
-    innerJoin: vi.fn().mockReturnThis(),
     where: vi.fn().mockReturnThis(),
     limit: vi.fn().mockReturnThis(),
     then: vi.fn().mockImplementation((cb: any) => Promise.resolve(cb(rows))),
@@ -117,6 +116,13 @@ describe('createBlock', () => {
   it('returns error on validation failure (end before start)', async () => {
     const result = await createBlock(makeBlockFormData({ startTime: '11:00', endTime: '07:00' }))
     expect(result).toHaveProperty('error')
+  })
+
+  it('succeeds when creditOverride is blank (uses course base cost)', async () => {
+    const insertMock = { values: vi.fn().mockResolvedValue([]) }
+    vi.mocked(db.insert).mockReturnValue(insertMock as any)
+    const fd = makeBlockFormData({ creditOverride: '' }) // blank → undefined
+    await expect(createBlock(fd)).rejects.toThrow('REDIRECT:/partner/inventory')
   })
 
   it('redirects to /partner/inventory on success', async () => {
@@ -188,6 +194,12 @@ describe('toggleBlock', () => {
     expect(result).toEqual({ error: 'Not authorized.' })
   })
 
+  it('returns error when block not found', async () => {
+    vi.mocked(db.select).mockReturnValue(makeSelectMock([]) as any) // no block
+    const result = await toggleBlock('block-111')
+    expect(result).toEqual({ error: 'Block not found.' })
+  })
+
   it('toggles isActive and returns {} on success', async () => {
     vi.mocked(db.select).mockReturnValue(makeSelectMock([mockBlock]) as any)
     const updateMock = { set: vi.fn().mockReturnThis(), where: vi.fn().mockResolvedValue([]) }
@@ -217,6 +229,12 @@ describe('deleteBlock', () => {
       .mockReturnValueOnce(makeSelectMock([{ ...mockBlock, courseId: 'other-course' }]) as any)
     const result = await deleteBlock('block-111')
     expect(result).toEqual({ error: 'Not authorized.' })
+  })
+
+  it('returns error when block not found', async () => {
+    vi.mocked(db.select).mockReturnValueOnce(makeSelectMock([]) as any) // no block
+    const result = await deleteBlock('block-111')
+    expect(result).toEqual({ error: 'Block not found.' })
   })
 
   it('returns error when block has upcoming bookings', async () => {
