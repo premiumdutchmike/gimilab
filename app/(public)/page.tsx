@@ -12,9 +12,9 @@ export const metadata = {
 }
 
 // Flip to true once /public/hero-golf.jpg is placed
-const HERO_IMAGE_READY = false
+const HERO_IMAGE_READY = true
 // Flip to true once /public/editorial-1.jpg, editorial-2.jpg, editorial-3.jpg are placed
-const EDITORIAL_IMAGES_READY = false
+const EDITORIAL_IMAGES_READY = false // editorial-3.jpg failed to download
 
 const EDITORIAL_CARDS = [
   { src: '/editorial-1.jpg', label: 'Choose a plan', rotate: '-3deg', width: 230, height: 300, top: 0, left: 20 },
