@@ -10,9 +10,10 @@ interface PartnerNavProps {
 const activeTabs = [
   { label: 'Dashboard', href: '/partner/dashboard' },
   { label: 'Course', href: '/partner/course' },
+  { label: 'Inventory', href: '/partner/inventory' },
 ] as const
 
-const lockedTabs = ['Inventory', 'Bookings', 'Payouts'] as const
+const lockedTabs = ['Bookings', 'Payouts'] as const
 
 export default function PartnerNav({ businessName }: PartnerNavProps) {
   const pathname = usePathname()
