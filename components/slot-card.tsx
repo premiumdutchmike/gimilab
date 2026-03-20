@@ -2,15 +2,10 @@
 
 import { useState } from 'react'
 import { BookingDialog } from './booking-dialog'
+import { SlotSummary } from '@/lib/types/slot'
 
 interface SlotCardProps {
-  slot: {
-    id: string
-    teeTime: string
-    creditCost: number
-    availableSpots: number
-    courseName: string
-  }
+  slot: SlotSummary
   userCredits: number
 }
 
@@ -57,7 +52,7 @@ export function SlotCard({ slot, userCredits }: SlotCardProps) {
           {/* Right: credits + spots */}
           <div className="flex flex-col items-end gap-1 shrink-0">
             <span className="text-sm font-semibold text-[#4ade80] flex items-center gap-1">
-              🟢 {slot.creditCost} cr
+              <span aria-hidden="true">🟢</span> {slot.creditCost} cr
             </span>
             <span
               className={[

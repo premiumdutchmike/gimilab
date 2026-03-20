@@ -12,14 +12,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
-
-interface SlotSummary {
-  id: string
-  teeTime: string
-  creditCost: number
-  availableSpots: number
-  courseName: string
-}
+import { SlotSummary } from '@/lib/types/slot'
 
 interface BookingDialogProps {
   slot: SlotSummary
@@ -105,7 +98,7 @@ export function BookingDialog({
             <div className="flex justify-between items-center">
               <span className="text-white/60">Cost</span>
               <span className="font-semibold text-[#4ade80]">
-                🟢 {slot.creditCost} credit{slot.creditCost !== 1 ? 's' : ''}
+                <span aria-hidden="true">🟢</span> {slot.creditCost} credit{slot.creditCost !== 1 ? 's' : ''}
               </span>
             </div>
             <div className="flex justify-between items-center">
