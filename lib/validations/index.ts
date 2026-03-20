@@ -33,6 +33,21 @@ export const createTeeTimeBlockSchema = z.object({
   validUntil: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 })
 
+// ─── Partner / Inventory Block ────────────────────────────────────────────────
+export const createBlockSchema = z.object({
+  dayOfWeek:        z.array(z.coerce.number().int().min(0).max(6)).min(1, 'Select at least one day'),
+  startTime:        z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Invalid time'),
+  endTime:          z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Invalid time'),
+  slotsPerInterval: z.coerce.number().int().min(1).max(4).default(1),
+  creditOverride:   z.coerce.number().int().min(10).max(500).optional(),
+  validFrom:        z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date'),
+  validUntil:       z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  isActive:         z.coerce.boolean().default(true),
+}).refine(
+  (d) => d.startTime.slice(0, 5) < d.endTime.slice(0, 5),
+  { message: 'End time must be after start time', path: ['endTime'] }
+)
+
 // ─── AI Booking Search ────────────────────────────────────────────────────────
 export const aiSearchInputSchema = z.object({
   query: z.string().min(1).max(500),
