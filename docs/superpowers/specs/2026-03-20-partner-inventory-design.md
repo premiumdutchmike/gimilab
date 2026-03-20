@@ -20,7 +20,8 @@ Build the partner inventory management UI: create, edit, toggle, and delete avai
 - `app/(partner)/inventory/new/page.tsx` — create block page
 - `app/(partner)/inventory/[blockId]/page.tsx` — edit block page
 - `components/partner-nav.tsx` — unlock Inventory tab (`<span>` → `<Link>`)
-- `proxy.ts` — add `/partner/inventory` to `isPartnerRoute`
+
+> `proxy.ts` already guards `/partner/inventory` — no change needed.
 
 **Out of scope:** Manual slot overrides, per-slot cancellation, visual calendar grid, analytics.
 
@@ -34,7 +35,7 @@ Build the partner inventory management UI: create, edit, toggle, and delete avai
 /partner/inventory/[blockId]    → edit block form
 ```
 
-`proxy.ts` must guard all three — add `pathname.startsWith('/partner/inventory')` to `isPartnerRoute`, same pattern as `/partner/course`.
+`proxy.ts` already includes `pathname.startsWith('/partner/inventory')` in `isPartnerRoute` — no change needed.
 
 ---
 
@@ -80,6 +81,8 @@ export const getUpcomingSlots = cache(async function getUpcomingSlots(courseId: 
 })
 ```
 
+> Note: Date range uses `new Date()` with the Node.js server clock. Vercel functions run UTC, which is correct for this use case. Local development in non-UTC timezones is acceptable since this is a read-only preview, not a booking-critical path.
+
 ---
 
 ## 4. Validation — `lib/validations/index.ts`
@@ -96,7 +99,10 @@ export const createBlockSchema = z.object({
   validFrom:        z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date'),
   validUntil:       z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   isActive:         z.coerce.boolean().default(true),
-})
+}).refine(
+  (d) => d.startTime < d.endTime,
+  { message: 'End time must be after start time', path: ['endTime'] }
+)
 ```
 
 Export `createBlockSchema` from `lib/validations/index.ts`.
@@ -122,23 +128,33 @@ import { createBlockSchema } from '@/lib/validations'
 1. Auth check → `if (!user) return { error: 'Not authenticated.' }`
 2. `getPartnerByUserId(user.id)` → `if (!partner) return { error: 'Partner account not found.' }`
 3. `getPartnerCourse(partner.id)` → `if (!course) return { error: 'No course found.' }`
-4. Extract `dayOfWeek`: `formData.getAll('dayOfWeek') as string[]`
-5. Extract `creditOverride`: blank string → `undefined`
-6. Parse with `createBlockSchema.safeParse({ ...Object.fromEntries(formData), dayOfWeek })` → return `{ error }` on failure
+4. Extract `dayOfWeek`: `const dayOfWeek = formData.getAll('dayOfWeek') as string[]`
+5. Extract `creditOverride` safely — blank `<input type="number">` submits `""`, which `z.coerce.number()` would coerce to `0`:
+   ```ts
+   const creditOverride = formData.get('creditOverride') === '' ? undefined : formData.get('creditOverride')
+   ```
+6. Parse: `createBlockSchema.safeParse({ ...Object.fromEntries(formData), dayOfWeek, creditOverride })` → return `{ error: issues[0].message }` on failure
 7. `db.insert(teeTimeBlocks).values({ ...parsed.data, courseId: course.id })`
 8. `revalidatePath('/partner/inventory')`
 9. `redirect('/partner/inventory')`
 
-### `updateBlock(blockId: string, formData: FormData): Promise<{ error: string } | never>`
+### `updateBlock(blockId: string, formData: FormData): Promise<{ error: string } | Record<string, never>>`
 
 1. Auth check
 2. `getPartnerByUserId(user.id)` → partner
-3. Fetch block: `.select().from(teeTimeBlocks).where(eq(teeTimeBlocks.id, blockId)).limit(1).then(r => r[0] ?? null)`
-4. Fetch course for ownership: `if (!block) return { error: 'Block not found.' }` → fetch course → `if (course?.partnerId !== partner.id) return { error: 'Not authorized.' }`
-5. Extract `dayOfWeek` + parse same as create
-6. `db.update(teeTimeBlocks).set({ ...parsed.data, updatedAt: new Date() }).where(eq(teeTimeBlocks.id, blockId))`
-7. `revalidatePath('/partner/inventory')`
-8. `redirect('/partner/inventory')`
+3. Fetch block:
+   ```ts
+   const block = await db.select().from(teeTimeBlocks).where(eq(teeTimeBlocks.id, blockId)).limit(1).then(r => r[0] ?? null)
+   ```
+4. `if (!block) return { error: 'Block not found.' }`
+5. Fetch course → `if (course?.partnerId !== partner.id) return { error: 'Not authorized.' }`
+6. Extract `dayOfWeek` + `creditOverride` same as `createBlock` (steps 4–5)
+7. Parse with `createBlockSchema.safeParse(...)` → return `{ error }` on failure
+8. `db.update(teeTimeBlocks).set({ ...parsed.data, updatedAt: new Date() }).where(eq(teeTimeBlocks.id, blockId))`
+9. `revalidatePath('/partner/inventory')`
+10. `return {}`
+
+> Note: `updateBlock` returns `{}` on success (not redirect) — consistent with `updateCourse`. The client form handles returning to the list (either via `router.push` or the revalidation refresh).
 
 ### `toggleBlock(blockId: string): Promise<{ error: string } | Record<string, never>>`
 
@@ -195,12 +211,14 @@ interface BlockInitialValues {
 }
 ```
 
-**Form schema** — extends `createBlockSchema` (same strategy as `CourseForm`):
+**Form schema** — extends `createBlockSchema` with plain `z.number()` / `z.array(z.number())` overrides so RHF infers correct TypeScript types (no `z.coerce` on the client side — RHF uses `valueAsNumber` on number inputs and the day-of-week array holds native numbers from `watch`/`setValue`):
 ```ts
 const formSchema = createBlockSchema.extend({
+  dayOfWeek:        z.array(z.number().int().min(0).max(6)).min(1, 'Select at least one day'),
   slotsPerInterval: z.number().int().min(1).max(4),
-  creditOverride: z.number().int().min(10).max(500).optional(),
+  creditOverride:   z.number().int().min(10).max(500).optional(),
 })
+type FormValues = z.infer<typeof formSchema>
 ```
 
 **Fields:**
@@ -251,6 +269,7 @@ const formSchema = createBlockSchema.extend({
     - Time range: "07:00 – 11:00"
     - "N slot/interval" or "N slots/interval"
     - Credit cost: "{creditOverride} credits (override)" or "{course.baseCreditCost} credits (base)"
+      Note: `course` is fetched in step 3 of the page logic and is available in the same Server Component scope — pass it alongside the blocks array when rendering the list.
     - Status badge: "ACTIVE" (white) or "INACTIVE" (rgba(255,255,255,0.2))
     - <Link href="/partner/inventory/{block.id}">EDIT →</Link>
     - Toggle form: <form action={toggleBlock.bind(null, block.id)}><button>ACTIVATE / DEACTIVATE</button></form>
@@ -297,7 +316,11 @@ Page title: `Set up availability`
 **Type:** Async Server Component
 
 1. Auth + partner + course check
-2. `await params` → fetch block by `blockId` — verify `block.courseId === course.id` → `if (!block) redirect('/partner/inventory')`
+2. `const { blockId } = await params` → fetch block:
+   ```ts
+   const block = await db.select().from(teeTimeBlocks).where(eq(teeTimeBlocks.id, blockId)).limit(1).then(r => r[0] ?? null)
+   ```
+   Ownership check: `if (!block || block.courseId !== course.id) redirect('/partner/inventory')`
 3. Coerce `initialValues`:
    - `startTime`: trim to `"HH:MM"` (`block.startTime.slice(0, 5)`)
    - `endTime`: same
@@ -375,7 +398,7 @@ Unit tests in `actions/inventory.test.ts` (Vitest, same mock pattern as `actions
 
 **`createBlock`:** unauthenticated, no partner, no course, validation failure (no days selected, end before start), success (redirects to `/partner/inventory`)
 
-**`updateBlock`:** unauthenticated, block not found, unauthorized (wrong partner), validation failure, success (redirects)
+**`updateBlock`:** unauthenticated, block not found, unauthorized (wrong partner), validation failure, success (returns `{}`)
 
 **`toggleBlock`:** unauthenticated, unauthorized, success (returns `{}`)
 
@@ -395,4 +418,3 @@ No component tests needed — visual verification sufficient.
 6. `app/(partner)/inventory/new/page.tsx` — create page
 7. `app/(partner)/inventory/[blockId]/page.tsx` — edit page
 8. `components/partner-nav.tsx` — unlock Inventory tab
-9. `proxy.ts` — add `/partner/inventory` route guard
