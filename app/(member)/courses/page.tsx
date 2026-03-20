@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, asc } from 'drizzle-orm'
 import { CourseCard } from '@/components/course-card'
 
 export const metadata = { title: 'Golf Courses — OneGolf' }
@@ -17,9 +17,10 @@ export default async function CoursesPage() {
     .select()
     .from(courses)
     .where(eq(courses.status, 'active'))
+    .orderBy(asc(courses.name))
 
   return (
-    <main className="min-h-screen px-4 py-12" style={{ background: '#090f1a' }}>
+    <main className="min-h-screen px-4 py-12 bg-[#090f1a]">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-bold text-white mb-8">Golf Courses</h1>
 

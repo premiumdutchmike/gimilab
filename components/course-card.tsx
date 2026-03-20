@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import type { Course } from '@/lib/db/schema'
 
 interface CourseCardProps {
@@ -10,17 +11,16 @@ export function CourseCard({ course }: CourseCardProps) {
 
   return (
     <div
-      className="rounded-xl border border-white/10 overflow-hidden flex flex-col"
-      style={{ background: '#0f1923' }}
+      className="rounded-xl border border-white/10 overflow-hidden flex flex-col bg-[#0f1923]"
     >
       {/* Image */}
       <div className="relative h-44 w-full bg-white/5 flex items-center justify-center overflow-hidden">
         {firstPhoto ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={firstPhoto}
             alt={course.name}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         ) : (
           <span className="text-white/20 text-4xl select-none">⛳</span>
@@ -65,7 +65,7 @@ export function CourseCard({ course }: CourseCardProps) {
           <span className="text-green-400 font-semibold">
             {course.baseCreditCost} credits
           </span>
-          {course.avgRating && (
+          {course.avgRating != null && (
             <>
               <span className="text-white/20">·</span>
               <span className="text-amber-400 font-semibold">
@@ -86,8 +86,7 @@ export function CourseCard({ course }: CourseCardProps) {
         <div className="mt-auto pt-2">
           <Link
             href={`/book?courseId=${course.id}`}
-            className="block w-full rounded-lg py-2.5 text-center text-sm font-semibold text-black transition-opacity hover:opacity-90 active:opacity-75"
-            style={{ background: '#4ade80' }}
+            className="block w-full rounded-lg py-2.5 text-center text-sm font-semibold transition-opacity hover:opacity-90 active:opacity-75 bg-[#4ade80] text-[#090f1a]"
           >
             Book a Tee Time
           </Link>
