@@ -13,7 +13,11 @@ export const metadata = { title: 'My Rounds — OneGolf' }
 function toDisplayStatus(dbStatus: string): BookingStatus {
   if (dbStatus === 'CONFIRMED') return 'BOOKED'
   if (dbStatus === 'COMPLETED') return 'COMPLETED'
-  // CANCELLED and NO_SHOW both render as CANCELLED
+  if (dbStatus === 'CANCELLED' || dbStatus === 'NO_SHOW') return 'CANCELLED'
+  // Unknown status — surface loudly in dev, degrade gracefully in prod
+  if (process.env.NODE_ENV !== 'production') {
+    throw new Error(`Unhandled booking status: ${dbStatus}`)
+  }
   return 'CANCELLED'
 }
 
@@ -54,9 +58,9 @@ export default async function RoundsPage() {
   // 4. Split into upcoming vs past
   const now = new Date()
 
-  const upcoming = allBookings.filter(
-    (b) => b.status === 'BOOKED' && new Date(b.teeTime) > now,
-  )
+  const upcoming = allBookings
+    .filter(b => b.status === 'BOOKED' && new Date(b.teeTime) > now)
+    .sort((a, b) => new Date(a.teeTime).getTime() - new Date(b.teeTime).getTime())
 
   const past = allBookings.filter(
     (b) => b.status !== 'BOOKED' || new Date(b.teeTime) <= now,
