@@ -139,6 +139,7 @@ export default function CourseForm(props: CourseFormProps) {
             <option value="18">18 holes</option>
             <option value="9">9 holes</option>
           </select>
+          {errors.holes && <p className="text-red-400 text-xs">{errors.holes.message}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="baseCreditCost" className="text-white">Base credit cost</Label>
