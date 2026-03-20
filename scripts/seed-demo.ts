@@ -27,7 +27,7 @@ function releaseAt(dateStr: string, timeStr: string): Date {
   // releaseAt = tee time datetime - 48 hours
   const [year, month, day] = dateStr.split('-').map(Number)
   const [hour, minute] = timeStr.split(':').map(Number)
-  const teeDateTime = new Date(year, month - 1, day, hour, minute)
+  const teeDateTime = new Date(Date.UTC(year, month - 1, day, hour, minute))
   teeDateTime.setHours(teeDateTime.getHours() - 48)
   return teeDateTime
 }
@@ -88,10 +88,10 @@ async function seed() {
     })
     .onConflictDoNothing()
 
-  // ── 4. Tee time slots — 10 slots over the next 5 days ─────────────────────
-  // 2 slots per day: 7:00 AM and 1:00 PM on days +1 through +5
+  // ── 4. Tee time slots — 14 slots over the next 7 days ────────────────────
+  // 2 slots per day: 7:00 AM and 1:00 PM on days +1 through +7
   // Additional variety: 8:30 AM, 10:00 AM, 3:00 PM spread across days
-  console.log('  → Inserting 10 demo tee time slots…')
+  console.log('  → Inserting 14 demo tee time slots…')
 
   const slotSchedule: Array<{ dayOffset: number; time: string }> = [
     { dayOffset: 1, time: '07:00' },
@@ -104,6 +104,10 @@ async function seed() {
     { dayOffset: 4, time: '13:00' },
     { dayOffset: 5, time: '07:00' },
     { dayOffset: 5, time: '15:00' },
+    { dayOffset: 6, time: '08:30' },
+    { dayOffset: 6, time: '13:00' },
+    { dayOffset: 7, time: '07:00' },
+    { dayOffset: 7, time: '15:00' },
   ]
 
   for (const { dayOffset, time } of slotSchedule) {
@@ -130,7 +134,7 @@ async function seed() {
 
   console.log('Demo data seeded successfully.')
   console.log(`  Course: Pebble Creek Golf Club (ID: ${DEMO_COURSE_ID})`)
-  console.log(`  Slots:  10 available tee times over the next 5 days`)
+  console.log(`  Slots:  14 available tee times over the next 7 days`)
   process.exit(0)
 }
 

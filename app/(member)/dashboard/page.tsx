@@ -15,22 +15,25 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login')
 
-  const [dbUser] = await db.select().from(users).where(eq(users.id, user.id))
-  const balance = await getCreditBalance(user.id)
-
   // Count upcoming confirmed bookings (slot date in the future)
   const today = new Date().toISOString().split('T')[0] // 'YYYY-MM-DD'
-  const [upcomingResult] = await db
-    .select({ count: count() })
-    .from(bookings)
-    .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
-    .where(
-      and(
-        eq(bookings.userId, user.id),
-        eq(bookings.status, 'CONFIRMED'),
-        gt(teeTimeSlots.date, today)
+
+  const [dbUser, balance, upcomingResult] = await Promise.all([
+    db.select().from(users).where(eq(users.id, user.id)).then(rows => rows[0]),
+    getCreditBalance(user.id),
+    db
+      .select({ count: count() })
+      .from(bookings)
+      .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
+      .where(
+        and(
+          eq(bookings.userId, user.id),
+          sql`${bookings.status} IN ('CONFIRMED', 'BOOKED')`,
+          gt(teeTimeSlots.date, today)
+        )
       )
-    )
+      .then(rows => rows[0]),
+  ])
   const upcomingCount = upcomingResult?.count ?? 0
 
   return (
