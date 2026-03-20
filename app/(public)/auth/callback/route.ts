@@ -12,9 +12,10 @@ import type { SubscriptionTierKey } from '@/lib/db/schema'
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? origin
 
   if (!code) {
-    return NextResponse.redirect(`${origin}/login?error=missing_code`)
+    return NextResponse.redirect(`${appUrl}/login?error=missing_code`)
   }
 
   // Exchange code for session using the anon server client
@@ -22,17 +23,19 @@ export async function GET(request: NextRequest) {
   const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
   if (error || !data.user) {
-    return NextResponse.redirect(`${origin}/login?error=oauth_failed`)
+    return NextResponse.redirect(`${appUrl}/login?error=oauth_failed`)
   }
 
   const { user } = data
   const cookieStore = await cookies()
 
-  // Set member role via service role client
+  // Set member role via service role client — only if user doesn't already have a role
   const adminSupabase = await createServiceClient()
-  await adminSupabase.auth.admin.updateUserById(user.id, {
-    user_metadata: { ...user.user_metadata, role: 'member' },
-  })
+  if (!user.user_metadata?.role) {
+    await adminSupabase.auth.admin.updateUserById(user.id, {
+      user_metadata: { ...user.user_metadata, role: 'member' },
+    })
+  }
 
   // Upsert user row — fullName is nullable so we gracefully fall back to null
   await db
