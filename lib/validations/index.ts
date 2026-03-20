@@ -34,7 +34,8 @@ export const createTeeTimeBlockSchema = z.object({
 })
 
 // ─── Partner / Inventory Block ────────────────────────────────────────────────
-export const createBlockSchema = z.object({
+// Base schema (ZodObject) — exported so form components can call .extend() on it
+export const createBlockBaseSchema = z.object({
   dayOfWeek:        z.array(z.coerce.number().int().min(0).max(6)).min(1, 'Select at least one day'),
   startTime:        z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Invalid time'),
   endTime:          z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Invalid time'),
@@ -43,7 +44,10 @@ export const createBlockSchema = z.object({
   validFrom:        z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date'),
   validUntil:       z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   isActive:         z.coerce.boolean().default(true),
-}).refine(
+})
+
+// Full schema with cross-field validation — used in Server Actions
+export const createBlockSchema = createBlockBaseSchema.refine(
   (d) => d.startTime.slice(0, 5) < d.endTime.slice(0, 5),
   { message: 'End time must be after start time', path: ['endTime'] }
 )

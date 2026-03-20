@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useRouter } from 'next/navigation'
 import { createBlock, updateBlock } from '@/actions/inventory'
-import { createBlockSchema } from '@/lib/validations'
+import { createBlockBaseSchema } from '@/lib/validations'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -15,14 +15,10 @@ const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 // Client-side schema: override coerce fields with plain types for RHF compatibility
-const formSchema = z.object({
+const formSchema = createBlockBaseSchema.extend({
   dayOfWeek:        z.array(z.number().int().min(0).max(6)).min(1, 'Select at least one day'),
-  startTime:        z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Invalid time'),
-  endTime:          z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Invalid time'),
   slotsPerInterval: z.number().int().min(1).max(4),
   creditOverride:   z.number().int().min(10).max(500).optional(),
-  validFrom:        z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date'),
-  validUntil:       z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   isActive:         z.boolean(),
 }).refine(
   (d) => d.startTime.slice(0, 5) < d.endTime.slice(0, 5),
@@ -248,7 +244,6 @@ export default function BlockForm(props: BlockFormProps) {
           type="checkbox"
           {...register('isActive')}
           className="accent-[#38bdf8]"
-          defaultChecked
         />
         <Label htmlFor="isActive" className="text-white/70 text-sm font-normal cursor-pointer">
           Active (block will generate tee time slots)
