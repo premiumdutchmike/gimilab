@@ -37,7 +37,7 @@ export const getUpcomingSlots = cache(async function getUpcomingSlots(courseId: 
   const until = new Date(today)
   until.setDate(until.getDate() + days)
 
-  return db
+  return await db
     .select({
       id: teeTimeSlots.id,
       date: teeTimeSlots.date,
