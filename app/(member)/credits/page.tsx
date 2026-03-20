@@ -12,6 +12,11 @@ export default async function CreditsPage() {
 
   if (!user) redirect('/login')
 
+  // Note: getCreditBalance excludes expired credits (expires_at < NOW()).
+  // The balance and ledger history will reconcile correctly only when
+  // the expire-credits cron (/api/cron/expire-credits) inserts CREDIT_EXPIRY
+  // debit rows. Without those rows, expired grants would show in history but
+  // not reduce the balance.
   const [balance, ledgerEntries] = await Promise.all([
     getCreditBalance(user.id),
     getLedgerHistory(user.id, 50),

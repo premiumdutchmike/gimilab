@@ -59,8 +59,7 @@ export function LedgerTable({ entries }: LedgerTableProps) {
                 </TableCell>
                 <TableCell className="text-right">
                   <span
-                    className="font-mono font-semibold text-sm"
-                    style={{ color: entry.amount >= 0 ? '#4ade80' : '#f87171' }}
+                    className={`font-mono font-semibold text-sm ${entry.amount >= 0 ? 'text-[#4ade80]' : 'text-[#f87171]'}`}
                   >
                     {entry.amount >= 0 ? '+' : ''}{entry.amount}
                   </span>
@@ -82,16 +81,14 @@ export function LedgerTable({ entries }: LedgerTableProps) {
         {entries.map((entry) => (
           <div
             key={entry.id}
-            className="rounded-xl border border-white/10 p-4"
-            style={{ background: '#0f1923' }}
+            className="rounded-xl border border-white/10 p-4 bg-[#0f1923]"
           >
             <div className="flex items-start justify-between mb-1">
               <span className="text-white text-sm font-medium">
                 {TYPE_LABELS[entry.type] ?? entry.type}
               </span>
               <span
-                className="font-mono font-semibold text-sm"
-                style={{ color: entry.amount >= 0 ? '#4ade80' : '#f87171' }}
+                className={`font-mono font-semibold text-sm ${entry.amount >= 0 ? 'text-[#4ade80]' : 'text-[#f87171]'}`}
               >
                 {entry.amount >= 0 ? '+' : ''}{entry.amount}
               </span>
