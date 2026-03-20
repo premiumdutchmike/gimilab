@@ -1,4 +1,14 @@
+import type React from 'react'
 import Link from 'next/link'
+
+const navLinkStyle: React.CSSProperties = {
+  fontSize: 11,
+  fontWeight: 600,
+  letterSpacing: '1px',
+  textTransform: 'uppercase',
+  color: '#6b7280',
+  textDecoration: 'none',
+}
 
 export default function PublicNav() {
   return (
@@ -33,16 +43,16 @@ export default function PublicNav() {
       </Link>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-        <Link href="#how-it-works" className="hidden md:block" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#6b7280', textDecoration: 'none' }}>
+        <Link href="#how-it-works" className="hidden md:block" style={navLinkStyle}>
           How It Works
         </Link>
-        <Link href="#courses" className="hidden md:block" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#6b7280', textDecoration: 'none' }}>
+        <Link href="#courses" className="hidden md:block" style={navLinkStyle}>
           Courses
         </Link>
-        <Link href="/pricing" className="hidden md:block" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#6b7280', textDecoration: 'none' }}>
+        <Link href="/pricing" className="hidden md:block" style={navLinkStyle}>
           Pricing
         </Link>
-        <Link href="/login" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#6b7280', textDecoration: 'none' }}>
+        <Link href="/login" style={navLinkStyle}>
           Log In
         </Link>
         <Link
