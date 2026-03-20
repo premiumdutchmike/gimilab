@@ -84,11 +84,15 @@ export function CourseScroll({ courses }: CourseScrollProps) {
             const el = e.currentTarget
             el.style.transform = 'translateY(-6px)'
             el.style.boxShadow = '0 16px 48px rgba(0,0,0,0.12)'
+            const img = el.querySelector('img')
+            if (img) img.style.transform = 'scale(1.06)'
           }}
           onMouseLeave={e => {
             const el = e.currentTarget
             el.style.transform = ''
             el.style.boxShadow = '0 2px 16px rgba(0,0,0,0.06)'
+            const img = el.querySelector('img')
+            if (img) img.style.transform = ''
           }}
         >
           <div style={{ position: 'relative', height: 190, overflow: 'hidden' }}>
