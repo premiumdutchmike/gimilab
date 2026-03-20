@@ -147,7 +147,8 @@ export default async function InventoryPage() {
                 >
                   EDIT →
                 </Link>
-                <form action={() => { void toggleBlock(block.id) }}>
+                {/* @ts-expect-error -- bound Server Action */}
+                <form action={toggleBlock.bind(null, block.id)}>
                   <button
                     type="submit"
                     style={{
@@ -164,7 +165,8 @@ export default async function InventoryPage() {
                     {block.isActive ? 'DEACTIVATE' : 'ACTIVATE'}
                   </button>
                 </form>
-                <form action={() => { void deleteBlock(block.id) }}>
+                {/* @ts-expect-error -- bound Server Action */}
+                <form action={deleteBlock.bind(null, block.id)}>
                   <button
                     type="submit"
                     style={{
