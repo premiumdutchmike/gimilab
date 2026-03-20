@@ -27,7 +27,6 @@ export async function createCourse(formData: FormData): Promise<{ error: string 
     .filter(Boolean)
 
   const raw = Object.fromEntries(formData)
-  if (raw.baseCreditCost !== undefined) raw.baseCreditCost = Number(raw.baseCreditCost) as any
 
   const parsed = createCourseSchema.safeParse(raw)
   if (!parsed.success) return { error: parsed.error.issues[0].message }
@@ -37,8 +36,9 @@ export async function createCourse(formData: FormData): Promise<{ error: string 
     '-' +
     Date.now().toString(36)
 
+  const { lat: _lat, lng: _lng, ...courseData } = parsed.data
   await db.insert(courses).values({
-    ...parsed.data,
+    ...courseData,
     photos,
     partnerId: partner.id,
     slug,
@@ -77,14 +77,14 @@ export async function updateCourse(
     .filter(Boolean)
 
   const rawUpdate = Object.fromEntries(formData)
-  if (rawUpdate.baseCreditCost !== undefined) rawUpdate.baseCreditCost = Number(rawUpdate.baseCreditCost) as any
 
   const parsed = createCourseSchema.safeParse(rawUpdate)
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
+  const { lat: _lat, lng: _lng, ...courseData } = parsed.data
   await db
     .update(courses)
-    .set({ ...parsed.data, photos, updatedAt: new Date() })
+    .set({ ...courseData, photos, updatedAt: new Date() })
     .where(eq(courses.id, courseId))
 
   revalidatePath('/partner/course')

@@ -18,7 +18,7 @@ export const createCourseSchema = z.object({
   lat: z.number().min(-90).max(90).optional(),
   lng: z.number().min(-180).max(180).optional(),
   holes: z.enum(['9', '18']).transform(Number),
-  baseCreditCost: z.number().int().min(10).max(500),
+  baseCreditCost: z.coerce.number().int().min(10).max(500),
   amenities: z.array(z.string()).optional(),
 })
 

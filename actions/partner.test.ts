@@ -55,7 +55,7 @@ beforeEach(() => {
     auth: { getUser: vi.fn().mockResolvedValue({ data: { user: mockUser } }) },
   } as any)
   mockGetPartnerByUserId.mockResolvedValue(mockPartner as any)
-  mockGetPartnerCourse.mockResolvedValue(null) // no course by default
+  mockGetPartnerCourse.mockResolvedValue(null as any) // no course by default
 })
 
 // ─── createCourse ──────────────────────────────────────────────────────────
@@ -70,7 +70,7 @@ describe('createCourse', () => {
   })
 
   it('returns error when partner record not found', async () => {
-    mockGetPartnerByUserId.mockResolvedValue(null)
+    mockGetPartnerByUserId.mockResolvedValue(null as any)
     const result = await createCourse(makeFormData(validFields))
     expect(result).toEqual({ error: 'Partner account not found.' })
   })
@@ -107,7 +107,7 @@ describe('updateCourse', () => {
   })
 
   it('returns error when partner record not found', async () => {
-    mockGetPartnerByUserId.mockResolvedValue(null)
+    mockGetPartnerByUserId.mockResolvedValue(null as any)
     const result = await updateCourse('course-xyz', makeFormData(validFields))
     expect(result).toEqual({ error: 'Partner account not found.' })
   })
