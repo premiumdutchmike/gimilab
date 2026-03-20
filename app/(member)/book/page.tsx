@@ -32,13 +32,7 @@ export default async function BookPage({
   // 2. Await searchParams (Next.js 16)
   const params = await searchParams
 
-  // 3. Fetch credits, courses, and slots in parallel
-  const [userCredits, activeCourses] = await Promise.all([
-    getCreditBalance(user.id),
-    db.select().from(courses).where(eq(courses.status, 'active')).orderBy(asc(courses.name)),
-  ])
-
-  // Build slot query conditions
+  // 3. Build slot query conditions synchronously (no awaits needed — params is already resolved)
   const conditions = [eq(teeTimeSlots.status, 'AVAILABLE')]
 
   if (params.courseId) {
@@ -60,20 +54,24 @@ export default async function BookPage({
     }
   }
 
-  // Fetch slots with course name joined
-  const rawSlots = await db
-    .select({
-      id: teeTimeSlots.id,
-      date: teeTimeSlots.date,
-      startTime: teeTimeSlots.startTime,
-      creditCost: teeTimeSlots.creditCost,
-      courseName: courses.name,
-    })
-    .from(teeTimeSlots)
-    .innerJoin(courses, eq(teeTimeSlots.courseId, courses.id))
-    .where(and(...conditions))
-    .orderBy(asc(teeTimeSlots.date), asc(teeTimeSlots.startTime))
-    .limit(50)
+  // 4. Fetch credits, courses, and slots all in parallel
+  const [userCredits, activeCourses, rawSlots] = await Promise.all([
+    getCreditBalance(user.id),
+    db.select().from(courses).where(eq(courses.status, 'active')).orderBy(asc(courses.name)),
+    db
+      .select({
+        id: teeTimeSlots.id,
+        date: teeTimeSlots.date,
+        startTime: teeTimeSlots.startTime,
+        creditCost: teeTimeSlots.creditCost,
+        courseName: courses.name,
+      })
+      .from(teeTimeSlots)
+      .innerJoin(courses, eq(teeTimeSlots.courseId, courses.id))
+      .where(and(...conditions))
+      .orderBy(asc(teeTimeSlots.date), asc(teeTimeSlots.startTime))
+      .limit(50),
+  ])
 
   // Map to SlotSummary — combine date + startTime into ISO-like string
   const slots: SlotSummary[] = rawSlots.map((row) => ({
@@ -81,7 +79,7 @@ export default async function BookPage({
     // Combine date (YYYY-MM-DD) + startTime (HH:MM:SS) into a single string
     teeTime: `${row.date}T${row.startTime}`,
     creditCost: row.creditCost,
-    availableSpots: 1, // one slot per row in tee_time_slots
+    availableSpots: 1, // TODO: teeTimeSlots has no capacity column yet; each row = 1 bookable slot
     courseName: row.courseName,
   }))
 
