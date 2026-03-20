@@ -26,9 +26,12 @@ export async function createCourse(formData: FormData): Promise<{ error: string 
     .map((s) => s.trim())
     .filter(Boolean)
 
+  // Extract amenities before Zod (multi-value field)
+  const amenities = formData.getAll('amenities') as string[]
+
   const raw = Object.fromEntries(formData)
 
-  const parsed = createCourseSchema.safeParse(raw)
+  const parsed = createCourseSchema.safeParse({ ...raw, amenities })
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
   const slug =
@@ -52,7 +55,7 @@ export async function createCourse(formData: FormData): Promise<{ error: string 
 export async function updateCourse(
   courseId: string,
   formData: FormData
-): Promise<{ error: string } | {}> {
+): Promise<{ error: string } | Record<string, never>> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated.' }
@@ -74,9 +77,12 @@ export async function updateCourse(
     .map((s) => s.trim())
     .filter(Boolean)
 
+  // Extract amenities before Zod (multi-value field)
+  const amenities = formData.getAll('amenities') as string[]
+
   const rawUpdate = Object.fromEntries(formData)
 
-  const parsed = createCourseSchema.safeParse(rawUpdate)
+  const parsed = createCourseSchema.safeParse({ ...rawUpdate, amenities })
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
   const { lat: _lat, lng: _lng, ...courseData } = parsed.data
