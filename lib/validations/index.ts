@@ -38,7 +38,7 @@ export const createBlockSchema = z.object({
   dayOfWeek:        z.array(z.coerce.number().int().min(0).max(6)).min(1, 'Select at least one day'),
   startTime:        z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Invalid time'),
   endTime:          z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Invalid time'),
-  slotsPerInterval: z.coerce.number().int().min(1).max(4).default(1),
+  slotsPerInterval: z.coerce.number().int().min(1).max(4).default(1), // partner cap; booking engine allows up to 10
   creditOverride:   z.coerce.number().int().min(10).max(500).optional(),
   validFrom:        z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date'),
   validUntil:       z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
