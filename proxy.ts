@@ -69,7 +69,8 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/partner/payouts') ||
     pathname.startsWith('/partner/analytics') ||
     pathname.startsWith('/partner/profile') ||
-    pathname.startsWith('/partner/settings')
+    pathname.startsWith('/partner/settings') ||
+    pathname.startsWith('/partner/course')
 
   // ── Admin routes (/admin/*)
   const isAdminRoute = pathname.startsWith('/admin')

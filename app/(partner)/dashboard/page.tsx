@@ -32,7 +32,7 @@ export default async function PartnerDashboardPage() {
 
       <div className="mb-8">
         <h1 className="text-2xl font-black text-white tracking-tight">{course.name}</h1>
-        <p className="text-white/40 text-sm mt-1 uppercase tracking-widest text-xs">Partner Dashboard</p>
+        <p className="text-white/40 text-xs mt-1 uppercase tracking-widest">Partner Dashboard</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#1a1a1a]">

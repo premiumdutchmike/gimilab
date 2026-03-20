@@ -5,23 +5,18 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { createCourse, updateCourse } from '@/actions/partner'
+import { createCourseSchema } from '@/lib/validations'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 
-// Standalone form schema — mirrors createCourseSchema fields but:
-// - holes kept as string enum (no transform) so the select element works
-// - baseCreditCost typed as number (not coerced) so RHF resolver types align
-const formSchema = z.object({
-  name: z.string().min(2).max(100),
-  description: z.string().max(2000).optional(),
-  address: z.string().min(5),
-  lat: z.number().min(-90).max(90).optional(),
-  lng: z.number().min(-180).max(180).optional(),
+// Schema for the form — extends canonical schema with two overrides:
+// - holes: string enum (no .transform(Number)) so the select element works with RHF
+// - baseCreditCost: plain z.number() instead of z.coerce.number() so RHF infers `number` not `unknown`
+const formSchema = createCourseSchema.extend({
   holes: z.enum(['9', '18']),
   baseCreditCost: z.number().int().min(10).max(500),
-  amenities: z.array(z.string()).optional(),
 })
 type FormValues = z.infer<typeof formSchema>
 

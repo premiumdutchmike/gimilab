@@ -92,5 +92,6 @@ export async function updateCourse(
     .where(eq(courses.id, courseId))
 
   revalidatePath('/partner/course')
+  revalidatePath('/partner/dashboard')
   return {}
 }
