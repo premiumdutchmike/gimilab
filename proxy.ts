@@ -4,7 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 // proxy.ts replaces middleware.ts in Next.js 16
 // Runs on Node.js runtime — can use node:* modules
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
 
   // ── Public routes — no auth needed ──────────────────────────────────────
   const publicPaths = ['/', '/pricing', '/about', '/partner', '/partner/apply', '/signup', '/login', '/welcome']
-  const isPublicPath = publicPaths.some(p => pathname === p || pathname.startsWith('/auth') || pathname.startsWith('/welcome'))
+  const isPublicPath = publicPaths.some(p => pathname === p || pathname.startsWith('/auth') || pathname.startsWith('/welcome') || pathname.startsWith('/api/'))
 
   // ── Unauthenticated: redirect to login ──────────────────────────────────
   if (!user && !isPublicPath) {
