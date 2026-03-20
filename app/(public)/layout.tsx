@@ -1,7 +1,14 @@
+import PublicNav from '@/components/public-nav'
+
 export default function PublicLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return <>{children}</>
+  return (
+    <>
+      <PublicNav />
+      {children}
+    </>
+  )
 }
