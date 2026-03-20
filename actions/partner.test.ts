@@ -117,7 +117,7 @@ describe('updateCourse', () => {
       from: vi.fn().mockReturnThis(),
       where: vi.fn().mockReturnThis(),
       limit: vi.fn().mockReturnThis(),
-      then: vi.fn().mockResolvedValue([]), // no course found
+      then: vi.fn().mockImplementation((cb: any) => Promise.resolve(cb([]))), // no course found
     }
     vi.mocked(db.select).mockReturnValue(selectMock as any)
     const result = await updateCourse('course-xyz', makeFormData(validFields))
@@ -129,7 +129,7 @@ describe('updateCourse', () => {
       from: vi.fn().mockReturnThis(),
       where: vi.fn().mockReturnThis(),
       limit: vi.fn().mockReturnThis(),
-      then: vi.fn().mockResolvedValue([mockCourse]),
+      then: vi.fn().mockImplementation((cb: any) => Promise.resolve(cb([mockCourse]))),
     }
     vi.mocked(db.select).mockReturnValue(selectMock as any)
     const result = await updateCourse('course-xyz', makeFormData({ ...validFields, baseCreditCost: '5' })) // below min
@@ -141,7 +141,7 @@ describe('updateCourse', () => {
       from: vi.fn().mockReturnThis(),
       where: vi.fn().mockReturnThis(),
       limit: vi.fn().mockReturnThis(),
-      then: vi.fn().mockResolvedValue([mockCourse]),
+      then: vi.fn().mockImplementation((cb: any) => Promise.resolve(cb([mockCourse]))),
     }
     vi.mocked(db.select).mockReturnValue(selectMock as any)
     const updateMock = {

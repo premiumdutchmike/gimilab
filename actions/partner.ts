@@ -60,14 +60,12 @@ export async function updateCourse(
   const partner = await getPartnerByUserId(user.id)
   if (!partner) return { error: 'Partner account not found.' }
 
-  // Use .then() so the mock in tests resolves correctly; handle both array and mapped results
-  const courseResult: any = await db
+  const course = await db
     .select()
     .from(courses)
     .where(eq(courses.id, courseId))
     .limit(1)
-    .then((r: any) => r)
-  const course = Array.isArray(courseResult) ? (courseResult[0] ?? null) : (courseResult ?? null)
+    .then((r) => r[0] ?? null)
 
   if (!course || course.partnerId !== partner.id) return { error: 'Not authorized.' }
 
