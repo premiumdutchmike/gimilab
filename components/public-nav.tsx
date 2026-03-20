@@ -5,89 +5,55 @@ export default function PublicNav() {
     <nav
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 50,
-        padding: '24px 32px',
+        top: 0, left: 0, right: 0,
+        zIndex: 100,
+        height: 64,
         display: 'flex',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
+        padding: '0 40px',
+        background: 'rgba(255,255,255,0.85)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(0,0,0,0.06)',
       }}
     >
-      {/* Utility text — hidden on mobile */}
-      <div
-        className="hidden md:block"
+      <Link
+        href="/"
         style={{
-          fontSize: 10,
-          fontWeight: 600,
-          letterSpacing: '2px',
+          fontSize: 13,
+          fontWeight: 900,
+          letterSpacing: '3px',
+          color: '#0d0d0d',
+          textDecoration: 'none',
           textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.4)',
-          lineHeight: 1.6,
         }}
       >
-        One membership.<br />Every course. ■
-      </div>
+        ONEGOLF
+      </Link>
 
-      {/* Nav links */}
-      <div style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
-        <Link
-          href="#how-it-works"
-          className="hidden md:block"
-          style={{
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '2px',
-            textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.6)',
-            textDecoration: 'none',
-          }}
-        >
-          How it works
+      <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+        <Link href="#how-it-works" className="hidden md:block" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#6b7280', textDecoration: 'none' }}>
+          How It Works
         </Link>
-        <Link
-          href="/pricing"
-          className="hidden md:block"
-          style={{
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '2px',
-            textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.6)',
-            textDecoration: 'none',
-          }}
-        >
+        <Link href="#courses" className="hidden md:block" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#6b7280', textDecoration: 'none' }}>
+          Courses
+        </Link>
+        <Link href="/pricing" className="hidden md:block" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#6b7280', textDecoration: 'none' }}>
           Pricing
         </Link>
-        <Link
-          href="/login"
-          style={{
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '2px',
-            textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.6)',
-            textDecoration: 'none',
-          }}
-        >
-          Log in
+        <Link href="/login" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#6b7280', textDecoration: 'none' }}>
+          Log In
         </Link>
         <Link
           href="/signup"
           style={{
-            fontSize: 10,
-            fontWeight: 800,
-            letterSpacing: '2px',
-            textTransform: 'uppercase',
-            background: '#fff',
-            color: '#000',
-            padding: '8px 20px',
-            textDecoration: 'none',
-            borderRadius: 0,
+            fontSize: 11, fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase',
+            background: '#1a5c38', color: '#fff',
+            padding: '10px 22px', textDecoration: 'none', borderRadius: 6,
           }}
         >
-          Join
+          JOIN NOW
         </Link>
       </div>
     </nav>
