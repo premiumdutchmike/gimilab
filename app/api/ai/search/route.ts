@@ -8,39 +8,7 @@ import { anthropic } from '@ai-sdk/anthropic'
 import { aiSearchInputSchema, aiSearchIntentSchema } from '@/lib/validations'
 import type { AiSearchIntent } from '@/lib/validations'
 
-// Memoize Redis.fromEnv so both the route and any test helper calling
-// Redis.fromEnv() share the exact same instance.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const _origFromEnv = Redis.fromEnv.bind(Redis) as () => any
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let _redisInstance: any = null
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(Redis as any).fromEnv = () => {
-  if (!_redisInstance) _redisInstance = _origFromEnv()
-  return _redisInstance
-}
-
-function getRedis() {
-  return Redis.fromEnv()
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function createRatelimit(): { limit: (id: string) => Promise<{ success: boolean }> } {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const RatelimitCtor = Ratelimit as any
-  const redis = getRedis()
-  try {
-    return new RatelimitCtor({
-      redis,
-      limiter: RatelimitCtor.slidingWindow(10, '1 m'),
-    })
-  } catch {
-    return RatelimitCtor({
-      redis,
-      limiter: undefined,
-    })
-  }
-}
+const redis = Redis.fromEnv()
 
 export async function POST(request: NextRequest) {
   // Auth check
@@ -50,9 +18,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const ratelimit = createRatelimit()
+  // Rate limit per user (created per-request so test mocks work correctly)
+  const ratelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, '1 m'),
+  })
 
-  // Rate limit per user
   const { success } = await ratelimit.limit(user.id)
   if (!success) {
     return NextResponse.json(
@@ -78,12 +49,10 @@ export async function POST(request: NextRequest) {
   const normalised = query.toLowerCase().trim()
   const cacheKey = `ai:search:${createHash('sha256').update(normalised).digest('hex').slice(0, 24)}`
 
-  const redis = getRedis()
-
   // Cache hit
-  const cached = await redis.get(cacheKey)
+  const cached = await redis.get<AiSearchIntent>(cacheKey)
   if (cached) {
-    return NextResponse.json(cached as AiSearchIntent)
+    return NextResponse.json(cached)
   }
 
   // AI call
