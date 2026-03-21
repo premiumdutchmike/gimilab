@@ -8,7 +8,10 @@ import { anthropic } from '@ai-sdk/anthropic'
 import { aiSearchInputSchema, aiSearchIntentSchema } from '@/lib/validations'
 import type { AiSearchIntent } from '@/lib/validations'
 
-const redis = Redis.fromEnv()
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL ?? 'https://placeholder.upstash.io',
+  token: process.env.UPSTASH_REDIS_REST_TOKEN ?? 'placeholder',
+})
 
 export async function POST(request: NextRequest) {
   // Auth check
@@ -60,7 +63,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const { output } = await generateText({
-      model: anthropic('claude-sonnet-4-6'),
+      model: anthropic('claude-sonnet-4.6'),
       prompt: `Today is ${today}. Extract booking intent from this golf tee time search query: "${query}". Return structured data with optional fields only when clearly stated.`,
       output: Output.object({ schema: aiSearchIntentSchema }),
     })
