@@ -1,71 +1,129 @@
-import type React from 'react'
-import Link from 'next/link'
+'use client'
 
-const navLinkStyle: React.CSSProperties = {
-  fontSize: 11,
-  fontWeight: 600,
-  letterSpacing: '1px',
-  textTransform: 'uppercase',
-  color: '#6b7280',
-  textDecoration: 'none',
-}
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export default function PublicNav() {
-  return (
-    <nav
-      style={{
-        position: 'fixed',
-        top: 0, left: 0, right: 0,
-        zIndex: 100,
-        height: 64,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 40px',
-        background: 'rgba(255,255,255,0.85)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(0,0,0,0.06)',
-      }}
-    >
-      <Link
-        href="/"
-        style={{
-          fontSize: 13,
-          fontWeight: 900,
-          letterSpacing: '3px',
-          color: '#0d0d0d',
-          textDecoration: 'none',
-          textTransform: 'uppercase',
-        }}
-      >
-        ONEGOLF
-      </Link>
+  const pathname = usePathname()
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-        <Link href="#how-it-works" className="hidden md:block" style={navLinkStyle}>
-          How It Works
-        </Link>
-        <Link href="#courses" className="hidden md:block" style={navLinkStyle}>
-          Courses
-        </Link>
-        <Link href="/pricing" className="hidden md:block" style={navLinkStyle}>
-          Pricing
-        </Link>
-        <Link href="/login" style={navLinkStyle}>
-          Log In
-        </Link>
-        <Link
-          href="/signup"
-          style={{
-            fontSize: 11, fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase',
-            background: '#1a5c38', color: '#fff',
-            padding: '10px 22px', textDecoration: 'none', borderRadius: 6,
-          }}
-        >
-          JOIN NOW
-        </Link>
+  // Auth pages render their own nav — suppress the shared nav
+  if (pathname === '/login' || pathname === '/signup') return null
+
+  const isLight = pathname.startsWith('/courses') || pathname.startsWith('/pricing')
+  const showTicker = pathname === '/' || pathname === '/courses'
+  const isMinimal = pathname.startsWith('/pricing')
+
+  if (isLight) {
+    return (
+      <>
+        {showTicker && (
+          <div style={{ background: '#0C0C0B', overflow: 'hidden', height: 32, display: 'flex', alignItems: 'center' }}>
+            <div className="ticker-track">
+              {['Monthly credits', '+ Any course', 'Zero booking fees', '+ Cancel anytime', 'From $99/mo', '+ 03 tiers',
+                'Monthly credits', '+ Any course', 'Zero booking fees', '+ Cancel anytime', 'From $99/mo', '+ 03 tiers',
+                'Monthly credits', '+ Any course', 'Zero booking fees', '+ Cancel anytime', 'From $99/mo', '+ 03 tiers',
+                'Monthly credits', '+ Any course', 'Zero booking fees', '+ Cancel anytime', 'From $99/mo', '+ 03 tiers',
+              ].map((item, i) => (
+                <span key={i} className={item.startsWith('+') ? 'ticker-item accent' : 'ticker-item'}>{item}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <nav className="light-nav">
+          {isMinimal ? (
+            <div className="light-nav-inner">
+              <Link href="/" className="light-wm">gimilab</Link>
+              <Link href="/login" className="light-nav-login">Already a member? Log in →</Link>
+            </div>
+          ) : (
+            <div className="light-nav-inner">
+              <Link href="/" className="light-wm">gimilab</Link>
+              <ul className="light-nav-links">
+                <li><Link href="/#how-it-works">How It Works</Link></li>
+                <li><Link href="/courses" className={pathname.startsWith('/courses') ? 'active' : ''}>Courses</Link></li>
+                <li><Link href="/pricing" className={pathname === '/pricing' ? 'active' : ''}>Pricing</Link></li>
+              </ul>
+              <div className="light-nav-right">
+                <Link href="/login" className="light-nav-login">Log In</Link>
+                <Link href="/signup" className="light-nav-join">Join Now →</Link>
+              </div>
+            </div>
+          )}
+        </nav>
+
+        <style>{`
+          .ticker-track { display: flex; white-space: nowrap; animation: ticker 28s linear infinite; }
+          .ticker-item { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(244,238,227,0.5); padding: 0 28px; flex-shrink: 0; font-family: 'Inter', sans-serif; }
+          .ticker-item.accent { color: #BF7B2E; }
+          @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+          .light-nav { background: #FDFAF6; border-bottom: 1px solid rgba(12,12,11,0.09); position: sticky; top: 0; z-index: 100; }
+          .light-nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+          .light-wm { font-family: var(--font-nunito), 'Nunito', sans-serif; font-weight: 900; font-size: 24px; letter-spacing: -0.02em; color: #0C0C0B; text-decoration: none; line-height: 1; flex-shrink: 0; }
+          .light-nav-links { display: flex; align-items: center; gap: 32px; list-style: none; margin: 0; padding: 0; }
+          .light-nav-links a { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #847C72; text-decoration: none; text-transform: uppercase; transition: color 0.15s; font-family: 'Inter', sans-serif; }
+          .light-nav-links a:hover, .light-nav-links a.active { color: #0C0C0B; }
+          .light-nav-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+          .light-nav-login { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #847C72; text-decoration: none; text-transform: uppercase; transition: color 0.15s; font-family: 'Inter', sans-serif; }
+          .light-nav-login:hover { color: #0C0C0B; }
+          .light-nav-join { background: #0C0C0B; color: #F4EEE3; border-radius: 2px; padding: 10px 20px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; transition: background 0.15s; }
+          .light-nav-join:hover { background: #1E1D1B; }
+          @media (max-width: 768px) { .light-nav-inner { padding: 0 20px; } .light-nav-links { display: none; } }
+        `}</style>
+      </>
+    )
+  }
+
+  // Dark nav (homepage, login, signup, etc.)
+  return (
+    <>
+      <div style={{ background: '#0C0C0B', overflow: 'hidden', height: 32, display: 'flex', alignItems: 'center' }}>
+        <div className="ticker-track">
+          {['Monthly credits', '+ Any course', 'Zero booking fees', '+ Cancel anytime', 'From $99/mo', '+ 03 tiers',
+            'Monthly credits', '+ Any course', 'Zero booking fees', '+ Cancel anytime', 'From $99/mo', '+ 03 tiers',
+            'Monthly credits', '+ Any course', 'Zero booking fees', '+ Cancel anytime', 'From $99/mo', '+ 03 tiers',
+            'Monthly credits', '+ Any course', 'Zero booking fees', '+ Cancel anytime', 'From $99/mo', '+ 03 tiers',
+          ].map((item, i) => (
+            <span key={i} className={item.startsWith('+') ? 'ticker-item accent' : 'ticker-item'}>{item}</span>
+          ))}
+        </div>
       </div>
-    </nav>
+
+      <nav className="public-nav">
+        <Link href="/" className="wm nav-wordmark">gimilab</Link>
+        <ul className="nav-links">
+          <li><Link href="/#how-it-works">How it works</Link></li>
+          <li><Link href="/courses">Courses</Link></li>
+          <li><Link href="/pricing">Pricing</Link></li>
+        </ul>
+        <div className="nav-right">
+          <Link href="/login" className="nav-login">Log in</Link>
+          <Link href="/dashboard" className="nav-login">My account</Link>
+          <Link href="/signup" className="nav-cta">Join now →</Link>
+        </div>
+      </nav>
+
+      <style>{`
+        .ticker-track { display: flex; white-space: nowrap; animation: ticker 28s linear infinite; }
+        .ticker-item { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(244,238,227,0.5); padding: 0 28px; flex-shrink: 0; font-family: 'Inter', sans-serif; }
+        .ticker-item.accent { color: #BF7B2E; }
+        @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        .public-nav { position: sticky; top: 0; z-index: 100; height: 58px; background: #0C0C0B; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .wm { font-family: var(--font-nunito), 'Nunito', sans-serif; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+        .nav-wordmark { font-size: 20px; color: #F4EEE3; text-decoration: none; }
+        .nav-links { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; }
+        .nav-links a { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #847C72; text-decoration: none; transition: color 0.15s; font-family: 'Inter', sans-serif; }
+        .nav-links a:hover { color: #F4EEE3; }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-login { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #847C72; text-decoration: none; transition: color 0.15s; font-family: 'Inter', sans-serif; }
+        .nav-login:hover { color: #F4EEE3; }
+        .nav-cta { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #BF7B2E; text-decoration: none; transition: opacity 0.15s; font-family: 'Inter', sans-serif; }
+        .nav-cta:hover { opacity: 0.75; }
+        @media (max-width: 1024px) { .public-nav { padding: 0 28px; } }
+        @media (max-width: 640px) { .public-nav { padding: 0 20px; } .nav-links { display: none; } }
+      `}</style>
+    </>
   )
 }

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gimilab — Partner Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+:root {
+  --midnight:    #0C0C0B;
+  --graphite:    #1E1D1B;
+  --amber:       #BF7B2E;
+  --amber-hover: #d48c37;
+  --amber-dim:   rgba(191,123,46,0.10);
+  --amber-mid:   rgba(191,123,46,0.20);
+  --linen:       #F4EEE3;
+  --stone:       #847C72;
+  --smoke:       #E5DDD3;
+  --offwhite:    #FDFAF6;
+  --white:       #FFFFFF;
+  --border:      rgba(12,12,11,0.09);
+  --border-dark: rgba(12,12,11,0.15);
+  --sidebar-w:   228px;
+}
+body { font-family: 'Inter', sans-serif; background: var(--offwhite); color: var(--midnight); display: flex; min-height: 100vh; }
+
+/* ── Sidebar ── */
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; }
+.sidebar-top { padding: 26px 24px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.wordmark { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 26px; letter-spacing: -0.02em; color: var(--midnight); text-decoration: none; line-height: 1; }
+.partner-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); background: var(--amber-dim); border: 1px solid rgba(191,123,46,0.22); border-radius: 2px; padding: 3px 7px; }
+.sidebar-nav { flex: 1; padding: 18px 0; overflow-y: auto; }
+.nav-label { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; color: var(--stone); text-transform: uppercase; padding: 0 24px; margin-bottom: 6px; opacity: 0.7; }
+.nav-label + .nav-label { margin-top: 18px; }
+.nav-link { display: flex; align-items: center; gap: 11px; padding: 10px 24px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: var(--stone); text-decoration: none; text-transform: uppercase; transition: color 0.15s, background 0.15s; position: relative; }
+.nav-link:hover { color: var(--midnight); background: var(--offwhite); }
+.nav-link.active { color: var(--midnight); }
+.nav-link.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 2px; height: 18px; background: var(--amber); border-radius: 0 1px 1px 0; }
+.nav-icon { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.5; }
+.nav-link.active .nav-icon { opacity: 1; }
+.nav-badge { font-size: 9px; font-weight: 700; background: var(--amber-dim); color: var(--amber); border-radius: 2px; padding: 2px 6px; margin-left: auto; }
+.sidebar-bottom { padding: 18px 24px; border-top: 1px solid var(--border); }
+.venue-name { font-size: 13px; font-weight: 700; color: var(--midnight); margin-bottom: 1px; }
+.venue-email { font-size: 11px; color: var(--stone); margin-bottom: 12px; }
+.signout-link { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--stone); text-decoration: none; text-transform: uppercase; transition: color 0.15s; display: flex; align-items: center; gap: 5px; }
+.signout-link:hover { color: var(--midnight); }
+
+/* ── Main ── */
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── Topbar ── */
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 36px; border-bottom: 1px solid var(--border); background: var(--white); position: sticky; top: 0; z-index: 50; gap: 20px; }
+.topbar-title { font-size: 17px; font-weight: 700; color: var(--midnight); letter-spacing: -0.02em; }
+.topbar-sub { font-size: 12px; color: var(--stone); margin-top: 1px; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.btn-primary { background: var(--amber); color: var(--midnight); border: none; border-radius: 2px; padding: 10px 18px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; transition: background 0.15s; }
+.btn-primary:hover { background: var(--amber-hover); }
+.btn-secondary { background: var(--white); color: var(--midnight); border: 1px solid var(--border-dark); border-radius: 2px; padding: 10px 18px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.btn-secondary:hover { background: var(--offwhite); }
+
+/* ── Content ── */
+.content { flex: 1; padding: 28px 36px 48px; }
+
+/* ── Stats ── */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+.stat-card { background: var(--white); border: 1px solid var(--border); padding: 20px 22px; }
+.stat-card.accent { border-left: 2px solid var(--amber); }
+.stat-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--stone); margin-bottom: 8px; }
+.stat-value { font-size: 30px; font-weight: 700; color: var(--midnight); letter-spacing: -0.04em; line-height: 1; margin-bottom: 4px; }
+.stat-card.accent .stat-value { color: var(--amber); }
+.stat-sub { font-size: 11px; color: var(--stone); }
+.stat-up { color: var(--amber); font-weight: 700; }
+
+/* ── Section layout ── */
+.two-col { display: grid; grid-template-columns: 1fr 320px; gap: 20px; margin-bottom: 28px; align-items: start; }
+.section-hd { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+.section-title { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone); }
+.section-link { font-size: 11px; font-weight: 600; color: var(--stone); text-decoration: none; transition: color 0.15s; }
+.section-link:hover { color: var(--amber); }
+
+/* ── Tee sheet ── */
+.tee-sheet { background: var(--white); border: 1px solid var(--border); }
+.tee-sheet-head { display: grid; grid-template-columns: 80px 1fr 100px 90px 80px; gap: 0; padding: 10px 18px; border-bottom: 1px solid var(--border); background: var(--offwhite); }
+.th { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone); }
+.tee-row { display: grid; grid-template-columns: 80px 1fr 100px 90px 80px; gap: 0; padding: 13px 18px; border-bottom: 1px solid var(--border); align-items: center; transition: background 0.1s; }
+.tee-row:last-child { border-bottom: none; }
+.tee-row:hover { background: var(--offwhite); }
+.tee-time { font-size: 13px; font-weight: 700; color: var(--midnight); letter-spacing: -0.01em; }
+.tee-golfers { display: flex; gap: -4px; }
+.golfer-pill { font-size: 11px; color: var(--midnight); font-weight: 500; }
+.slot-count { font-size: 11px; color: var(--stone); }
+.tee-spots { display: flex; gap: 3px; }
+.spot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--border-dark); background: var(--offwhite); }
+.spot.filled { background: var(--midnight); border-color: var(--midnight); }
+.spot.pending { background: var(--amber); border-color: var(--amber); }
+.tee-credits { font-size: 12px; font-weight: 700; color: var(--midnight); }
+.tee-status { display: inline-flex; align-items: center; justify-content: center; }
+.status-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; border-radius: 2px; padding: 3px 7px; }
+.status-badge.confirmed { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(191,123,46,0.2); }
+.status-badge.open { background: var(--offwhite); color: var(--stone); border: 1px solid var(--border); }
+.status-badge.full { background: rgba(12,12,11,0.06); color: var(--midnight); border: 1px solid var(--border); }
+
+/* ── Pending requests panel ── */
+.requests-panel { background: var(--white); border: 1px solid var(--border); }
+.request-item { padding: 14px 18px; border-bottom: 1px solid var(--border); }
+.request-item:last-child { border-bottom: none; }
+.req-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.req-name { font-size: 13px; font-weight: 700; color: var(--midnight); }
+.req-time { font-size: 11px; color: var(--stone); }
+.req-detail { font-size: 11px; color: var(--stone); margin-bottom: 10px; }
+.req-detail strong { color: var(--midnight); font-weight: 600; }
+.req-actions { display: flex; gap: 6px; }
+.req-accept { background: var(--amber); color: var(--midnight); border: none; border-radius: 2px; padding: 6px 14px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: background 0.15s; }
+.req-accept:hover { background: var(--amber-hover); }
+.req-decline { background: var(--white); color: var(--stone); border: 1px solid var(--border-dark); border-radius: 2px; padding: 6px 14px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: background 0.15s; }
+.req-decline:hover { background: var(--offwhite); color: var(--midnight); }
+
+/* ── Revenue chart placeholder ── */
+.chart-card { background: var(--white); border: 1px solid var(--border); padding: 22px 24px; margin-bottom: 20px; }
+.chart-area { height: 120px; display: flex; align-items: flex-end; gap: 6px; padding-top: 12px; }
+.chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.chart-bar { width: 100%; background: var(--border); position: relative; border-radius: 0; }
+.chart-bar .fill { position: absolute; bottom: 0; left: 0; right: 0; background: var(--amber); opacity: 0.7; }
+.chart-bar.today .fill { opacity: 1; background: var(--amber); }
+.chart-day { font-size: 9px; font-weight: 600; color: var(--stone); letter-spacing: 0.06em; text-transform: uppercase; }
+.chart-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.chart-total { font-size: 24px; font-weight: 700; color: var(--midnight); letter-spacing: -0.03em; }
+.chart-period { font-size: 11px; color: var(--stone); margin-top: 2px; }
+.chart-growth { font-size: 12px; font-weight: 700; color: var(--amber); }
+
+/* ── Alerts ── */
+.alert-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 28px; }
+.alert-item { background: var(--white); border: 1px solid var(--border); border-left: 2px solid var(--amber); padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
+.alert-icon { color: var(--amber); flex-shrink: 0; }
+.alert-text { font-size: 12px; color: var(--midnight); flex: 1; }
+.alert-text strong { font-weight: 700; }
+.alert-dismiss { font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--stone); background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; }
+.alert-dismiss:hover { color: var(--midnight); }
+
+/* ── Slot editor header ── */
+.date-nav { display: flex; align-items: center; gap: 12px; }
+.date-btn { background: var(--white); border: 1px solid var(--border-dark); border-radius: 2px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--stone); transition: background 0.1s; }
+.date-btn:hover { background: var(--offwhite); color: var(--midnight); }
+.date-label { font-size: 13px; font-weight: 700; color: var(--midnight); letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <a href="#" class="wordmark">gimilab</a>
+    <span class="partner-badge">Partner</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Overview</div>
+    <a href="#" class="nav-link active">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="6" height="6"/><rect x="11" y="3" width="6" height="6"/><rect x="3" y="11" width="6" height="6"/><rect x="11" y="11" width="6" height="6"/></svg>
+      Dashboard
+    </a>
+    <a href="#" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="14" height="14" rx="1"/><line x1="7" y1="2" x2="7" y2="6"/><line x1="13" y1="2" x2="13" y2="6"/><line x1="3" y1="9" x2="17" y2="9"/></svg>
+      Tee Sheet
+    </a>
+    <a href="#" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="8" r="4"/><path d="M3 18c0-3.314 3.134-6 7-6s7 2.686 7 6"/></svg>
+      Bookings
+      <span class="nav-badge">3</span>
+    </a>
+    <div class="nav-label">Manage</div>
+    <a href="#" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 2C7.24 2 5 4.24 5 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5Z"/><circle cx="10" cy="7" r="1.8"/></svg>
+      Course Listing
+    </a>
+    <a href="#" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><line x1="4" y1="10" x2="16" y2="10"/><line x1="4" y1="6" x2="16" y2="6"/><line x1="4" y1="14" x2="10" y2="14"/></svg>
+      Pricing Rules
+    </a>
+    <a href="#" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="5" width="16" height="11" rx="1"/><path d="M2 9h16"/><path d="M6 13h2"/><path d="M11 13h3"/></svg>
+      Payouts
+    </a>
+    <div class="nav-label">Account</div>
+    <a href="#" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="3"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42"/></svg>
+      Settings
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="venue-name">Meadowlark Golf Club</div>
+    <div class="venue-email">ops@meadowlarkgc.com</div>
+    <a href="#" class="signout-link">
+      <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M13 3h4v14h-4M8 14l-4-4 4-4M4 10h9"/></svg>
+      Sign out
+    </a>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Partner Dashboard</div>
+      <div class="topbar-sub">Meadowlark Golf Club &mdash; today, Friday 20 March 2026</div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-secondary">
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" style="display:inline;margin-right:5px;"><path d="M4 15l12-10M4 5l12 10"/></svg>
+        Export
+      </button>
+      <button class="btn-primary">
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+        Add Tee Times
+      </button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Alerts -->
+    <div class="alert-list">
+      <div class="alert-item">
+        <svg class="alert-icon" width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="8"/><line x1="10" y1="7" x2="10" y2="11"/><circle cx="10" cy="14" r="0.5" fill="currentColor"/></svg>
+        <div class="alert-text"><strong>3 booking requests</strong> are waiting for your approval. Review and confirm to hold credits.</div>
+        <button class="alert-dismiss">Review</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card accent">
+        <div class="stat-label">Credits earned today</div>
+        <div class="stat-value">148</div>
+        <div class="stat-sub"><span class="stat-up">+12</span> vs yesterday</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Bookings today</div>
+        <div class="stat-value">11</div>
+        <div class="stat-sub">4 tee times filled</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Open slots today</div>
+        <div class="stat-value">22</div>
+        <div class="stat-sub">across 6 tee times</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">This month payout</div>
+        <div class="stat-value">$2,340</div>
+        <div class="stat-sub">Paid on Apr 1</div>
+      </div>
+    </div>
+
+    <!-- Revenue + Requests -->
+    <div class="two-col">
+
+      <!-- Left: Tee sheet -->
+      <div>
+        <div class="section-hd">
+          <span class="section-title">Today's tee sheet</span>
+          <div class="date-nav">
+            <button class="date-btn">
+              <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="13 4 7 10 13 16"/></svg>
+            </button>
+            <span class="date-label">Fri Mar 20</span>
+            <button class="date-btn">
+              <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="7 4 13 10 7 16"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="tee-sheet">
+          <div class="tee-sheet-head">
+            <div class="th">Time</div>
+            <div class="th">Golfers</div>
+            <div class="th">Spots</div>
+            <div class="th">Credits</div>
+            <div class="th">Status</div>
+          </div>
+          <div class="tee-row">
+            <div class="tee-time">7:00am</div>
+            <div class="golfer-pill">Marcus T., Jamie L.</div>
+            <div class="tee-spots">
+              <div class="spot filled"></div><div class="spot filled"></div><div class="spot"></div><div class="spot"></div>
+            </div>
+            <div class="tee-credits">2 cr / slot</div>
+            <div class="tee-status"><span class="status-badge confirmed">Confirmed</span></div>
+          </div>
+          <div class="tee-row">
+            <div class="tee-time">7:20am</div>
+            <div class="golfer-pill">Open</div>
+            <div class="tee-spots">
+              <div class="spot"></div><div class="spot"></div><div class="spot"></div><div class="spot"></div>
+            </div>
+            <div class="tee-credits">2 cr / slot</div>
+            <div class="tee-status"><span class="status-badge open">Open</span></div>
+          </div>
+          <div class="tee-row">
+            <div class="tee-time">7:40am</div>
+            <div class="golfer-pill">Priya K., 2 others</div>
+            <div class="tee-spots">
+              <div class="spot filled"></div><div class="spot filled"></div><div class="spot filled"></div><div class="spot pending"></div>
+            </div>
+            <div class="tee-credits">2 cr / slot</div>
+            <div class="tee-status"><span class="status-badge confirmed">Confirmed</span></div>
+          </div>
+          <div class="tee-row">
+            <div class="tee-time">8:00am</div>
+            <div class="golfer-pill">Derek S., Sam R., 2 others</div>
+            <div class="tee-spots">
+              <div class="spot filled"></div><div class="spot filled"></div><div class="spot filled"></div><div class="spot filled"></div>
+            </div>
+            <div class="tee-credits">2 cr / slot</div>
+            <div class="tee-status"><span class="status-badge full">Full</span></div>
+          </div>
+          <div class="tee-row">
+            <div class="tee-time">8:20am</div>
+            <div class="golfer-pill">Open</div>
+            <div class="tee-spots">
+              <div class="spot"></div><div class="spot"></div><div class="spot"></div><div class="spot"></div>
+            </div>
+            <div class="tee-credits">2 cr / slot</div>
+            <div class="tee-status"><span class="status-badge open">Open</span></div>
+          </div>
+          <div class="tee-row">
+            <div class="tee-time">8:40am</div>
+            <div class="golfer-pill">Chris M.</div>
+            <div class="tee-spots">
+              <div class="spot filled"></div><div class="spot pending"></div><div class="spot"></div><div class="spot"></div>
+            </div>
+            <div class="tee-credits">2 cr / slot</div>
+            <div class="tee-status"><span class="status-badge confirmed">Confirmed</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Requests + Chart -->
+      <div>
+        <div class="chart-card">
+          <div class="chart-meta">
+            <div>
+              <div class="chart-total">$2,340</div>
+              <div class="chart-period">Credits redeemed — March</div>
+            </div>
+            <div class="chart-growth">+18%</div>
+          </div>
+          <div class="chart-area">
+            <div class="chart-bar-wrap"><div class="chart-bar" style="height:70px"><div class="fill" style="height:52px"></div></div><div class="chart-day">M</div></div>
+            <div class="chart-bar-wrap"><div class="chart-bar" style="height:70px"><div class="fill" style="height:60px"></div></div><div class="chart-day">T</div></div>
+            <div class="chart-bar-wrap"><div class="chart-bar" style="height:70px"><div class="fill" style="height:40px"></div></div><div class="chart-day">W</div></div>
+            <div class="chart-bar-wrap"><div class="chart-bar" style="height:70px"><div class="fill" style="height:65px"></div></div><div class="chart-day">T</div></div>
+            <div class="chart-bar-wrap today"><div class="chart-bar" style="height:70px"><div class="fill" style="height:35px"></div></div><div class="chart-day" style="color:var(--amber);font-weight:700;">F</div></div>
+            <div class="chart-bar-wrap"><div class="chart-bar" style="height:70px"></div><div class="chart-day">S</div></div>
+            <div class="chart-bar-wrap"><div class="chart-bar" style="height:70px"></div><div class="chart-day">S</div></div>
+          </div>
+        </div>
+
+        <div class="section-hd">
+          <span class="section-title">Pending requests</span>
+          <a href="#" class="section-link">View all</a>
+        </div>
+        <div class="requests-panel">
+          <div class="request-item">
+            <div class="req-top">
+              <div class="req-name">Marcus Thorn</div>
+              <div class="req-time">Requested 42m ago</div>
+            </div>
+            <div class="req-detail"><strong>Sat Mar 21</strong> at <strong>9:00am</strong> &mdash; 2 players &mdash; 4 credits</div>
+            <div class="req-actions">
+              <button class="req-accept">Accept</button>
+              <button class="req-decline">Decline</button>
+            </div>
+          </div>
+          <div class="request-item">
+            <div class="req-top">
+              <div class="req-name">Elena Vasquez</div>
+              <div class="req-time">Requested 1h ago</div>
+            </div>
+            <div class="req-detail"><strong>Sat Mar 21</strong> at <strong>10:20am</strong> &mdash; 4 players &mdash; 8 credits</div>
+            <div class="req-actions">
+              <button class="req-accept">Accept</button>
+              <button class="req-decline">Decline</button>
+            </div>
+          </div>
+          <div class="request-item">
+            <div class="req-top">
+              <div class="req-name">James Osei</div>
+              <div class="req-time">Requested 2h ago</div>
+            </div>
+            <div class="req-detail"><strong>Sun Mar 22</strong> at <strong>7:40am</strong> &mdash; 1 player &mdash; 2 credits</div>
+            <div class="req-actions">
+              <button class="req-accept">Accept</button>
+              <button class="req-decline">Decline</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

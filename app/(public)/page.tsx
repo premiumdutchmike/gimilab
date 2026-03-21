@@ -3,24 +3,11 @@ import Image from 'next/image'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
-import { ReviewCarousel } from '@/components/homepage/review-carousel'
-import { CourseScroll } from '@/components/homepage/course-scroll'
 
 export const metadata = {
-  title: 'OneGolf — One Membership. Every Course.',
-  description: 'Monthly credit subscription for golf. Book tee times at top courses, no booking fees.',
+  title: 'gimilab — One membership. Every course.',
+  description: 'Book tee times at any partner course using monthly credits. No booking fees, no phone calls.',
 }
-
-// Flip to true once /public/hero-golf.jpg is placed
-const HERO_IMAGE_READY = true
-// Flip to true once /public/editorial-1.jpg, editorial-2.jpg, editorial-3.jpg are placed
-const EDITORIAL_IMAGES_READY = true
-
-const EDITORIAL_CARDS = [
-  { src: '/editorial-1.jpg', label: 'Choose a plan', rotate: '-3deg', width: 230, height: 300, top: 0, left: 20 },
-  { src: '/editorial-2.jpg', label: 'Browse courses', rotate: '2.5deg', width: 200, height: 270, top: 80, left: 220 },
-  { src: '/editorial-3.jpg', label: 'Book & play', rotate: '-1.5deg', width: 180, height: 240, top: 10, left: 395 },
-]
 
 export default async function HomePage() {
   const topCourses = await db
@@ -34,348 +21,811 @@ export default async function HomePage() {
     })
     .from(courses)
     .where(eq(courses.status, 'active'))
-    .limit(5)
+    .limit(3)
+
+  // Fallback imagery for course cards when no DB courses exist
+  const fallbackCourses = [
+    { id: '1', name: 'Pebble Creek Municipal', meta: '18 holes · Par 72 · 85 credits', tag: 'Open today', img: '/imagery/a7c0df0d48e8a2a2dc99cb9becff023e.jpg' },
+    { id: '2', name: 'Ridgeline Public Golf', meta: '18 holes · Par 70 · 95 credits', tag: 'Featured', img: '/imagery/21d4fdcfc2f31a89f9581a849acd240b.jpg' },
+    { id: '3', name: 'Sundown Valley Links', meta: '9/18 holes · Par 35 · 45 credits', tag: '9-hole option', img: '/imagery/6c701e5e1e8aafdf9333a11faeec14b9.jpg' },
+  ]
+
+  const displayCourses = topCourses.length > 0
+    ? topCourses.map((c, i) => ({
+        id: c.id,
+        name: c.name,
+        meta: `${c.holes} holes · ${c.baseCreditCost} credits`,
+        tag: i === 1 ? 'Featured' : 'Open today',
+        img: (c.photos as string[])?.[0] ?? fallbackCourses[i]?.img ?? fallbackCourses[0].img,
+      }))
+    : fallbackCourses
 
   return (
-    <main style={{ background: '#faf9f6', color: '#0d0d0d' }}>
-
+    <>
       {/* ── HERO ── */}
-      <section style={{ position: 'relative', width: '100%', height: '100vh', minHeight: 640, overflow: 'hidden' }}>
-        {/* Background */}
-        {HERO_IMAGE_READY ? (
-          <Image
-            src="/hero-golf.jpg"
-            alt=""
-            fill
-            priority
-            style={{ objectFit: 'cover', objectPosition: 'center 35%', filter: 'brightness(0.55)' }}
-            className="hero-bg-img"
-          />
-        ) : (
-          <div style={{ position: 'absolute', inset: 0, background: '#111' }} />
-        )}
-        {/* Gradient overlay */}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,.2), rgba(0,0,0,.1) 50%, rgba(0,0,0,.65))' }} />
-
-        {/* Headline */}
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -54%)', textAlign: 'center', width: '100%', zIndex: 5 }}>
-          {/* Live pill */}
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255,255,255,0.2)', borderRadius: 100,
-            padding: '8px 18px', marginBottom: 24,
-            fontSize: 10, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)',
-          }}>
-            <span className="live-dot" />
-            Now live in your area
+      <section className="hero">
+        <Image
+          src="/imagery/ec840ae06489fb0b720fce0607e3ffcd.jpg"
+          alt="Golf course at golden hour"
+          fill
+          priority
+          className="hero-img"
+          sizes="100vw"
+        />
+        <div className="hero-overlay" />
+        <div className="hero-content">
+          <div className="label hero-eyebrow">One membership</div>
+          <h1 className="hl hero-headline">Golf,<br />on your<br />terms.</h1>
+          <p className="hero-sub">Book tee times at any partner course using monthly credits. No fees, no phone calls. Pick a time, show up, play.</p>
+          <div className="hero-actions">
+            <Link href="/signup" className="btn-primary">
+              Get started <span className="btn-arrow">→</span>
+            </Link>
+            <Link href="/pricing" className="btn-secondary">See plans</Link>
+            <Link href="#how-it-works" className="btn-text-link">How it works ↓</Link>
           </div>
-          {['ONE', 'GOLF'].map(word => (
-            <span key={word} style={{
-              display: 'block',
-              fontSize: 'clamp(90px, 16vw, 220px)',
-              fontWeight: 900, letterSpacing: '-5px', lineHeight: 0.88,
-              color: '#fff', textTransform: 'uppercase',
-            }}>
-              {word}
-            </span>
+        </div>
+        <div className="hero-course-tag">
+          <span>Pebble Creek · Sat 8:30am</span>
+          <strong>85 credits</strong>
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS ── */}
+      <section className="how-section" id="how-it-works">
+        <div className="section-bar">
+          <span className="label" style={{ color: 'rgba(132,124,114,0.45)' }}>How it works</span>
+          <span className="label" style={{ color: 'rgba(132,124,114,0.45)' }}>03 steps</span>
+        </div>
+        <div className="how-grid">
+          <div className="how-item">
+            <div className="how-num">01</div>
+            <h3 className="hl how-title">Choose your membership.</h3>
+            <p className="how-body">Casual, Core, or Heavy. Credits refresh every month. Pick the plan that fits how often you play.</p>
+          </div>
+          <div className="how-item">
+            <div className="how-num">02</div>
+            <h3 className="hl how-title">Browse partner courses.</h3>
+            <p className="how-body">Find courses near you. View live availability. Filter by date, time, and players. No phone calls. No waiting on hold.</p>
+          </div>
+          <div className="how-item">
+            <div className="how-num">03</div>
+            <h3 className="hl how-title">Book with credits, show QR.</h3>
+            <p className="how-body">Confirm in seconds. Show your QR code at the course. Zero surprise fees. Every time.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── COURSES ── */}
+      <section className="courses-section" id="courses">
+        <div className="courses-header">
+          <div>
+            <div className="label" style={{ color: 'var(--amber)', marginBottom: 8 }}>Courses near you</div>
+            <h2 className="hl">Book your next round.</h2>
+          </div>
+          <Link href="/courses" className="link-amber">See all courses →</Link>
+        </div>
+        <div className="courses-grid">
+          {displayCourses.map((course) => (
+            <div key={course.id} className="course-card">
+              <img src={course.img} alt={course.name} />
+              <div className="course-card-grad" />
+              <div className="course-card-tag">{course.tag}</div>
+              <div className="course-card-body">
+                <h3 className="hl course-card-title">{course.name}</h3>
+                <div className="course-card-meta">{course.meta}</div>
+                <Link href="/courses" className="course-card-cta">Book tee time →</Link>
+              </div>
+            </div>
           ))}
         </div>
+      </section>
 
-        {/* Bottom strip */}
-        <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10,
-          display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
-          padding: '32px 40px', gap: 24,
-          background: 'linear-gradient(to top, rgba(0,0,0,.5), transparent)',
-        }}>
-          <p style={{ fontSize: 11, fontWeight: 500, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', lineHeight: 2, margin: 0 }}>
-            Monthly credits · Any partner course<br />No booking fees · Cancel anytime
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-            <Link href="/signup" style={{ background: '#fff', color: '#000', fontSize: 11, fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', padding: '13px 32px', textDecoration: 'none', borderRadius: 6 }}>
-              GET STARTED
-            </Link>
-            <Link href="/pricing" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', textDecoration: 'none' }}>
-              SEE PRICING →
-            </Link>
+      {/* ── COMPARISON ── */}
+      <section className="comparison-section">
+        <div className="comparison-headline">
+          <span className="label">The math</span>
+          <h2 className="hl">Play more. <span>Spend less.</span></h2>
+        </div>
+        <div className="comparison-table">
+          <div className="comp-col">
+            <div className="comp-tag">Without Gimilab / year</div>
+            <div className="comp-line"><span>36 rounds × $85</span><span className="comp-line-value">$3,060</span></div>
+            <div className="comp-line"><span>Booking fees</span><span className="comp-line-value">$180</span></div>
+            <div className="comp-line"><span>Phone calls to pro shop</span><span className="comp-line-value" style={{ color: 'var(--stone)' }}>Endless</span></div>
+            <div className="comp-total">
+              <span className="comp-total-label">Per year</span>
+              <span className="comp-total-value">$3,240</span>
+            </div>
           </div>
+          <div className="comp-col-dark">
+            <div className="comp-tag-dark">With Gimilab Core / year</div>
+            <div className="comp-line-dark"><span>$149/mo × 12</span><span className="comp-line-value-dark">$1,788</span></div>
+            <div className="comp-line-dark"><span>Booking fees</span><span className="comp-line-value-dark" style={{ color: 'var(--amber)' }}>$0</span></div>
+            <div className="comp-line-dark"><span>Phone calls</span><span className="comp-line-value-dark" style={{ color: 'var(--amber)' }}>Zero</span></div>
+            <div className="comp-total-dark">
+              <span className="comp-total-label">Per year</span>
+              <span className="comp-total-value-dark">$1,788</span>
+            </div>
+          </div>
+        </div>
+        <div className="comparison-savings">
+          <div className="savings-left">
+            <span className="label">You save</span>
+            <div className="savings-amount">$1,452 / year</div>
+            <div className="savings-note">That&apos;s a new driver. New irons. Both.</div>
+          </div>
+          <Link href="/signup" className="btn-savings">Start saving today →</Link>
         </div>
       </section>
 
-      {/* ── MARQUEE ── */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #e5e7eb', overflow: 'hidden', padding: '14px 0' }}>
-        <div className="marquee-track">
-          {[
-            'MONTHLY CREDITS', '✦ ANY COURSE', 'ZERO BOOKING FEES',
-            '✦ CANCEL ANYTIME', 'FROM $99 / MO', '✦ 03 TIERS',
-            'MONTHLY CREDITS', '✦ ANY COURSE', 'ZERO BOOKING FEES',
-            '✦ CANCEL ANYTIME', 'FROM $99 / MO', '✦ 03 TIERS',
-          ].map((item, i) => (
-            <span key={i} className={item.startsWith('✦') ? 'marquee-item accent' : 'marquee-item'}>
-              {item}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* ── EDITORIAL ── */}
-      <section id="how-it-works" style={{ background: '#faf9f6', padding: '100px 0 80px', position: 'relative', overflow: 'hidden' }}>
-        {/* Ghost text */}
-        <div style={{ position: 'absolute', top: 20, left: -10, fontSize: 'clamp(130px, 22vw, 280px)', fontWeight: 900, letterSpacing: '-8px', color: 'rgba(0,0,0,0.04)', textTransform: 'uppercase', userSelect: 'none', pointerEvents: 'none', lineHeight: 1 }}>
-          PLAY
-        </div>
-        <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', padding: '0 60px', gap: 60 }}>
-          {/* Copy */}
+      {/* ── PRICING ── */}
+      <section className="pricing-section" id="pricing">
+        <div className="pricing-header">
           <div>
-            <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: '#1a5c38', marginBottom: 16 }}>
-              One membership
-            </p>
-            <h2 style={{ fontSize: 'clamp(40px, 5vw, 64px)', fontWeight: 900, letterSpacing: '-3px', lineHeight: 1, color: '#0d0d0d', textTransform: 'uppercase' }}>
-              Golf,<br />on your<br />terms.
-            </h2>
-            <p style={{ fontSize: 14, color: '#6b7280', lineHeight: 1.75, marginTop: 20, maxWidth: 380 }}>
-              Book tee times at any partner course using monthly credits. No fees, no phone calls. Pick a time, show up, play.
-            </p>
-            <div style={{ marginTop: 36, borderTop: '1px solid #e5e7eb' }}>
-              {[
-                { num: '01', title: 'Choose a membership tier' },
-                { num: '02', title: 'Browse partner courses' },
-                { num: '03', title: 'Book with credits, show QR' },
-              ].map(step => (
-                <div key={step.num} className="step-row">
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#1a5c38', minWidth: 28 }}>{step.num}</span>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: '#0d0d0d', flex: 1 }}>{step.title}</span>
-                  <span style={{ fontSize: 14, color: '#e5e7eb' }}>→</span>
-                </div>
-              ))}
-            </div>
+            <div className="label" style={{ color: 'var(--amber)', marginBottom: 10 }}>Membership plans</div>
+            <h2 className="hl" style={{ fontSize: 'clamp(28px,3.5vw,44px)', color: 'var(--linen)' }}>Choose your plan.</h2>
+            <div className="pricing-subline">Credits refresh monthly · Any partner course · Zero booking fees</div>
           </div>
-
-          {/* Floating cards */}
-          <div style={{ position: 'relative', height: 420 }}>
-            {/* Badge: $0 fees */}
-            <div className="float-badge" style={{ position: 'absolute', top: -10, left: 8, zIndex: 10, background: '#fff', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', borderRadius: 12, padding: '12px 16px', textAlign: 'center', animationDelay: '.5s' }}>
-              <div style={{ fontSize: 22, fontWeight: 900, color: '#0d0d0d', lineHeight: 1 }}>$0</div>
-              <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#6b7280', marginTop: 2 }}>Booking Fees</div>
+        </div>
+        <div className="pricing-grid">
+          <div className="pricing-tier">
+            <div className="tier-label">Casual</div>
+            <div className="tier-credits">100</div>
+            <div className="tier-credits-label">credits / month</div>
+            <div className="tier-price">$99 / mo</div>
+            <div className="tier-price-note">~2–3 rounds per month</div>
+            <ul className="tier-features">
+              <li>Any partner course</li>
+              <li>Zero booking fees</li>
+              <li>Credits refresh monthly</li>
+              <li>QR code booking</li>
+            </ul>
+            <Link href="/signup?plan=casual" className="tier-cta tier-cta-default">Join Casual →</Link>
+          </div>
+          <div className="pricing-tier featured">
+            <div className="tier-label">
+              Core
+              <span className="tier-badge">Recommended</span>
             </div>
+            <div className="tier-credits">150</div>
+            <div className="tier-credits-label">credits / month</div>
+            <div className="tier-price">$149 / mo</div>
+            <div className="tier-price-note">~3–4 rounds per month</div>
+            <ul className="tier-features">
+              <li>Everything in Casual</li>
+              <li>Credits refresh monthly</li>
+              <li>Priority tee time access</li>
+              <li>Best value per credit</li>
+            </ul>
+            <Link href="/signup?plan=core" className="tier-cta tier-cta-featured">Join Core →</Link>
+          </div>
+          <div className="pricing-tier">
+            <div className="tier-label">Heavy</div>
+            <div className="tier-credits">210</div>
+            <div className="tier-credits-label">credits / month</div>
+            <div className="tier-price">$199 / mo</div>
+            <div className="tier-price-note">~5+ rounds per month</div>
+            <ul className="tier-features">
+              <li>Everything in Core</li>
+              <li>Credits refresh monthly</li>
+              <li>Early access to new courses</li>
+              <li>For the serious player</li>
+            </ul>
+            <Link href="/signup?plan=heavy" className="tier-cta tier-cta-default">Join Heavy →</Link>
+          </div>
+        </div>
+        <div className="pricing-footer">
+          <span>Cancel anytime · No contracts</span>
+          <span>Credits refresh monthly</span>
+          <span>Zero booking fees on all plans</span>
+        </div>
+      </section>
 
-            {EDITORIAL_CARDS.map((card, i) => (
-              <div
-                key={i}
-                className="float-card"
-                style={{
-                  position: 'absolute',
-                  width: card.width, height: card.height,
-                  top: card.top, left: card.left,
-                  borderRadius: 12,
-                  overflow: 'hidden',
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
-                  transform: `rotate(${card.rotate})`,
-                  transition: 'transform .3s, box-shadow .3s',
-                }}
-              >
-                {EDITORIAL_IMAGES_READY ? (
-                  <Image
-                    src={`/editorial-${i + 1}.jpg`}
-                    alt={card.label}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    sizes="300px"
-                  />
-                ) : (
-                  <div style={{ position: 'absolute', inset: 0, background: `hsl(${140 + i * 20}, 20%, ${40 - i * 5}%)` }} />
-                )}
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '12px 16px', background: 'linear-gradient(to top, rgba(0,0,0,.8), transparent)', color: '#fff', fontSize: 10, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>
-                  {card.label}
-                </div>
-              </div>
-            ))}
-
-            {/* Badge: 3× tiers */}
-            <div className="float-badge" style={{ position: 'absolute', bottom: 30, right: 20, zIndex: 10, background: '#fff', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', borderRadius: 12, padding: '12px 16px', textAlign: 'center', animationDelay: '1.5s' }}>
-              <div style={{ fontSize: 22, fontWeight: 900, color: '#0d0d0d', lineHeight: 1 }}>3×</div>
-              <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#6b7280', marginTop: 2 }}>Tier options</div>
-            </div>
+      {/* ── EDITORIAL PHOTO STRIP ── */}
+      <section className="editorial">
+        <div className="editorial-item">
+          <img src="/imagery/b124cb1f186169993c1b8198de403ae1.jpg" alt="The round" />
+          <div className="editorial-grad" />
+          <div className="editorial-body">
+            <h3 className="hl editorial-title">The round</h3>
+            <div className="editorial-sub">Morning light · On course</div>
+          </div>
+        </div>
+        <div className="editorial-item">
+          <img src="/imagery/a7ad9f79924f885fe8c6a8c3b35bded2.jpg" alt="The moment" />
+          <div className="editorial-grad" />
+          <span className="wm" style={{ position: 'absolute', top: 20, left: 20, fontSize: 15, color: '#F4EEE3', opacity: 0.8 }}>gimilab</span>
+          <div className="editorial-body">
+            <h3 className="hl editorial-title">The moment</h3>
+            <div className="editorial-sub">Sundown · Golden hour</div>
+          </div>
+        </div>
+        <div className="editorial-item">
+          <img src="/imagery/e015d14dec4bf78a78dbc852e3e01984.jpg" alt="The course" />
+          <div className="editorial-grad" />
+          <div className="editorial-body">
+            <h3 className="hl editorial-title">The course</h3>
+            <div className="editorial-sub">Wide open · No fences</div>
           </div>
         </div>
       </section>
 
-      {/* ── STATS STRIP ── */}
-      <div style={{ background: '#1a5c38', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)' }}>
-        {[
-          { num: '03', label: 'Membership Tiers' },
-          { num: '$99', label: 'Starting per month' },
-          { num: '0', label: 'Booking Fees. Ever.' },
-          { num: '∞', label: 'Partner courses' },
-        ].map((stat, i) => (
-          <div key={i} style={{ padding: '40px 36px', borderRight: i < 3 ? '1px solid rgba(255,255,255,0.1)' : 'none' }}>
-            <div style={{ fontSize: 52, fontWeight: 900, letterSpacing: '-2px', color: '#fff', lineHeight: 1 }}>{stat.num}</div>
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', marginTop: 8 }}>{stat.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* ── SAVINGS ── */}
-      <section style={{ background: '#fff', padding: '100px 60px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 60, gap: 40 }}>
-          <h2 style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 900, letterSpacing: '-3px', lineHeight: 1, textTransform: 'uppercase' }}>
-            Play more.<br /><span style={{ color: '#1a5c38' }}>Spend less.</span>
-          </h2>
-          <p style={{ fontSize: 13, color: '#6b7280', maxWidth: 280, lineHeight: 1.7, textAlign: 'right', flexShrink: 0 }}>
-            The average golfer pays $85 per round. With OneGolf Core, 3 rounds a month costs $149. The math is a no-brainer.
-          </p>
+      {/* ── VOICE ── */}
+      <section className="voice-section">
+        <div>
+          <div className="label" style={{ color: 'var(--amber)', marginBottom: 16 }}>What we&apos;re about</div>
+          <h2 className="hl voice-headline">Serious.<br />Not stuffy.<br />Bold.<br />Not loud.</h2>
         </div>
-
-        {/* Comparison grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, borderRadius: 16, overflow: 'hidden' }}>
-          {/* Without */}
-          <div style={{ background: '#f3f1ec', padding: 40 }}>
-            <div style={{ display: 'inline-block', fontSize: 9, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', padding: '4px 10px', borderRadius: 100, background: 'rgba(0,0,0,0.08)', color: '#666', marginBottom: 28 }}>
-              Without OneGolf / year
-            </div>
-            {[
-              { name: '36 rounds × $85', price: '$3,060' },
-              { name: 'Booking fees', price: '$180' },
-              { name: 'Phone calls to pro shop', price: 'Endless' },
-            ].map(row => (
-              <div key={row.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                <span style={{ fontSize: 13, color: '#777' }}>{row.name}</span>
-                <span style={{ fontSize: 15, fontWeight: 800, color: '#0d0d0d' }}>{row.price}</span>
-              </div>
-            ))}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 28, paddingTop: 20, borderTop: '2px solid rgba(0,0,0,0.08)' }}>
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#aaa' }}>Per year</span>
-              <span style={{ fontSize: 40, fontWeight: 900, letterSpacing: '-2px', color: '#0d0d0d' }}>$3,240</span>
-            </div>
-          </div>
-
-          {/* With OneGolf */}
-          <div style={{ background: '#1a5c38', padding: 40 }}>
-            <div style={{ display: 'inline-block', fontSize: 9, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', padding: '4px 10px', borderRadius: 100, background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)', marginBottom: 28 }}>
-              With OneGolf Core / year
-            </div>
-            {[
-              { name: '$149/mo × 12', price: '$1,788' },
-              { name: 'Booking fees', price: '$0' },
-              { name: 'Phone calls', price: 'Zero' },
-            ].map(row => (
-              <div key={row.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>{row.name}</span>
-                <span style={{ fontSize: 15, fontWeight: 800, color: '#fff' }}>{row.price}</span>
-              </div>
-            ))}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 28, paddingTop: 20, borderTop: '2px solid rgba(255,255,255,0.15)' }}>
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)' }}>Per year</span>
-              <span style={{ fontSize: 40, fontWeight: 900, letterSpacing: '-2px', color: '#fff' }}>$1,788</span>
-            </div>
-          </div>
+        <div>
+          <p className="voice-copy">Golf has a gatekeeping problem. Gimilab doesn&apos;t. Built for the player who loves the game without needing to perform it — all ages, all handicaps, all welcome.</p>
+          <ul className="voice-list">
+            <li>No country club membership required</li>
+            <li>No hidden fees, no upsells</li>
+            <li>Book in under two minutes</li>
+            <li>Credits that work for your schedule</li>
+          </ul>
         </div>
-
-        {/* Callout */}
-        <div style={{ background: '#0d0d0d', padding: '28px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20 }}>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#4ade80' }}>YOU SAVE</div>
-            <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: '-2px', color: '#fff' }}>$1,452 / year</div>
-            <div style={{ fontSize: 13, color: '#666', marginTop: 4 }}>That&apos;s a new driver. New irons. Both.</div>
-          </div>
-          <Link href="/signup" style={{ background: '#1a5c38', color: '#fff', fontSize: 11, fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', padding: '14px 32px', textDecoration: 'none', borderRadius: 8, flexShrink: 0 }}>
-            START SAVING TODAY
-          </Link>
-        </div>
-      </section>
-
-      {/* ── TOP COURSES ── */}
-      <section id="courses" style={{ background: '#faf9f6', padding: '80px 0 80px 60px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 36, paddingRight: 60 }}>
-          <h2 style={{ fontSize: 'clamp(24px, 3.5vw, 40px)', fontWeight: 900, letterSpacing: '-1.5px', textTransform: 'uppercase' }}>
-            Top Courses
-          </h2>
-          <Link href="/courses" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#6b7280', textDecoration: 'none', borderBottom: '1px solid #e5e7eb', paddingBottom: 2 }}>
-            View all →
-          </Link>
-        </div>
-        <CourseScroll courses={topCourses} />
       </section>
 
       {/* ── REVIEWS ── */}
-      <ReviewCarousel />
-
-      {/* ── DARK CTA ── */}
-      <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 520 }}>
-        <div style={{ background: '#1a1a1a', position: 'relative', overflow: 'hidden' }}>
-          {/* Placeholder until golfer photo placed */}
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #1a3a28 0%, #0d1f16 100%)' }} />
+      <section className="reviews-section">
+        <div className="reviews-header">
+          <div>
+            <div className="label" style={{ color: 'var(--amber)', marginBottom: 8 }}>What players say</div>
+            <h2 className="hl">Real golfers.<br />Real rounds.</h2>
+          </div>
         </div>
-        <div style={{ background: '#0d0d0d', padding: '72px 64px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: '#1a5c38', marginBottom: 20 }}>
-            Join today
-          </p>
-          <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 900, letterSpacing: '-3px', lineHeight: 1, color: '#fff', textTransform: 'uppercase', marginBottom: 16 }}>
-            Ready<br />to play?
-          </h2>
-          <p style={{ fontSize: 14, color: '#555', lineHeight: 1.75, maxWidth: 340, marginBottom: 40 }}>
-            Pick a plan, get your credits, book your first round. Setup takes 2 minutes. No contracts.
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <Link href="/signup" style={{ background: '#1a5c38', color: '#fff', fontSize: 11, fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', padding: '14px 32px', textDecoration: 'none', borderRadius: 8 }}>
-              GET STARTED
-            </Link>
-            <Link href="/pricing" style={{ border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontSize: 11, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', padding: '13px 28px', textDecoration: 'none', borderRadius: 6 }}>
-              View pricing →
-            </Link>
+        <div className="reviews-grid">
+          <div className="review-card">
+            <div className="review-stars">★★★★★</div>
+            <p className="review-body">&ldquo;Booked a tee time in literally 90 seconds on a Saturday morning. Used to spend 20 minutes on hold with the pro shop. Never going back.&rdquo;</p>
+            <div className="review-footer">
+              <div>
+                <div className="review-name">Marcus T.</div>
+                <div className="review-meta">14 hcp · Core member</div>
+              </div>
+              <span className="review-tag">Verified</span>
+            </div>
+          </div>
+          <div className="review-card">
+            <div className="review-stars">★★★★★</div>
+            <p className="review-body">&ldquo;I play 3–4 times a week. The Heavy plan basically pays for itself in the first two rounds. Booking without calling the pro shop alone is worth it.&rdquo;</p>
+            <div className="review-footer">
+              <div>
+                <div className="review-name">Diane K.</div>
+                <div className="review-meta">6.2 hcp · Heavy member</div>
+              </div>
+              <span className="review-tag">Verified</span>
+            </div>
+          </div>
+          <div className="review-card">
+            <div className="review-stars">★★★★★</div>
+            <p className="review-body">&ldquo;Finally. A golf app that doesn&apos;t feel like it was built for retirees at a private club. Clean, fast, does what it says. The QR code at the course just works.&rdquo;</p>
+            <div className="review-footer">
+              <div>
+                <div className="review-name">Jordan S.</div>
+                <div className="review-meta">22 hcp · Casual member</div>
+              </div>
+              <span className="review-tag">Verified</span>
+            </div>
+          </div>
+        </div>
+        <div className="reviews-aggregate">
+          <div>
+            <div className="agg-stars">★★★★★</div>
+            <div className="agg-score">4.9</div>
+            <div className="agg-label">Average rating</div>
+          </div>
+          <div style={{ width: 1, height: 48, background: '#847C72', opacity: 0.2, flexShrink: 0 }} />
+          <div className="agg-stat">
+            <div className="agg-stat-value">1,200+</div>
+            <div className="agg-stat-label">Rounds booked</div>
+          </div>
+          <div style={{ width: 1, height: 48, background: '#847C72', opacity: 0.2, flexShrink: 0 }} />
+          <div className="agg-stat">
+            <div className="agg-stat-value">98%</div>
+            <div className="agg-stat-label">Would recommend</div>
+          </div>
+          <div style={{ width: 1, height: 48, background: '#847C72', opacity: 0.2, flexShrink: 0 }} />
+          <div className="agg-stat">
+            <div className="agg-stat-value">Zero</div>
+            <div className="agg-stat-label">Booking fees charged</div>
           </div>
         </div>
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: '#000', padding: '40px 60px 0' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 32, borderBottom: '1px solid #111' }}>
-          <span style={{ fontSize: 13, fontWeight: 900, letterSpacing: '4px', color: '#fff' }}>ONEGOLF</span>
-          <div style={{ display: 'flex', gap: 24 }}>
-            {[
-              { href: '#how-it-works', label: 'How it works' },
-              { href: '#courses', label: 'Courses' },
-              { href: '/pricing', label: 'Pricing' },
-              { href: '/login', label: 'Log In' },
-              { href: '/signup', label: 'Join' },
-            ].map(link => (
-              <Link key={link.href} href={link.href} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: '#333', textDecoration: 'none' }}>
-                {link.label}
-              </Link>
-            ))}
+      <footer>
+        <div className="footer-top">
+          <div>
+            <Link href="/" className="wm footer-wordmark">gimilab</Link>
+            <p className="footer-blurb">Golf for real players. All ages, all skill levels, no gatekeeping.</p>
           </div>
-          <span style={{ fontSize: 10, color: '#333' }}>© 2026 OneGolf</span>
+          <div>
+            <div className="footer-col-title">Platform</div>
+            <ul className="footer-links">
+              <li><Link href="/courses">Find a course</Link></li>
+              <li><Link href="/courses">Book a tee time</Link></li>
+              <li><Link href="/#how-it-works">How it works</Link></li>
+              <li><Link href="/pricing">Pricing</Link></li>
+            </ul>
+          </div>
+          <div>
+            <div className="footer-col-title">Account</div>
+            <ul className="footer-links">
+              <li><Link href="/login">Log in</Link></li>
+              <li><Link href="/dashboard">My account</Link></li>
+              <li><Link href="/signup">Sign up</Link></li>
+            </ul>
+          </div>
+          <div>
+            <div className="footer-col-title">Legal</div>
+            <ul className="footer-links">
+              <li><Link href="/privacy">Privacy policy</Link></li>
+              <li><Link href="/terms">Terms of service</Link></li>
+            </ul>
+          </div>
         </div>
-        <div style={{ fontSize: 'clamp(70px, 14vw, 190px)', fontWeight: 900, letterSpacing: '-8px', color: '#111', textTransform: 'uppercase', lineHeight: 0.82, overflow: 'hidden', userSelect: 'none' }}>
-          ONEGOLF
+        <div className="footer-bottom">
+          <span className="footer-legal">© 2026 Gimilab. All rights reserved.</span>
+          <span className="footer-domain">gimilab.com</span>
         </div>
       </footer>
 
-      {/* ── CSS ANIMATIONS ── */}
+      {/* ── STYLES ── */}
       <style>{`
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        @keyframes heroZoom { to { transform: scale(1); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .6; transform: scale(1.3); } }
+        :root {
+          --midnight:  #0C0C0B;
+          --linen:     #F4EEE3;
+          --amber:     #BF7B2E;
+          --stone:     #847C72;
+          --off-white: #FDFAF6;
+          --smoke:     #E5DDD3;
+          --graphite:  #1E1D1B;
+        }
+        .hl {
+          font-family: var(--font-nunito), 'Nunito', sans-serif;
+          font-weight: 900;
+          letter-spacing: -0.025em;
+          line-height: 1.05;
+        }
+        .wm {
+          font-family: var(--font-nunito), 'Nunito', sans-serif;
+          font-weight: 900;
+          letter-spacing: -0.03em;
+          line-height: 1;
+        }
+        .label {
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          font-family: 'Inter', sans-serif;
+        }
+        a { text-decoration: none; }
 
-        .marquee-track { display: flex; white-space: nowrap; animation: marquee 22s linear infinite; }
-        .marquee-item { font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #c4c4c0; padding: 0 24px; border-right: 1px solid #f0f0f0; flex-shrink: 0; }
-        .marquee-item.accent { color: #1a5c38; }
+        /* ── HERO ── */
+        .hero {
+          position: relative;
+          width: 100%;
+          height: calc(100vh - 58px - 32px);
+          min-height: 580px;
+          overflow: hidden;
+        }
+        .hero-img {
+          object-fit: cover;
+          object-position: center 35%;
+        }
+        .hero-overlay {
+          position: absolute; inset: 0;
+          background: linear-gradient(to right, rgba(12,12,11,0.78) 0%, rgba(12,12,11,0.4) 55%, rgba(12,12,11,0.12) 100%);
+        }
+        .hero-content {
+          position: absolute; inset: 0;
+          display: flex; flex-direction: column;
+          justify-content: flex-end;
+          padding: 64px 72px;
+        }
+        .hero-eyebrow { color: var(--amber); margin-bottom: 14px; }
+        .hero-headline {
+          font-size: clamp(34px, 5.5vw, 72px);
+          color: var(--linen);
+          max-width: 680px;
+          margin-bottom: 16px;
+        }
+        .hero-sub {
+          font-size: 15px; line-height: 1.7;
+          color: var(--stone); max-width: 380px;
+          margin-bottom: 36px;
+        }
+        .hero-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .btn-primary {
+          display: inline-flex; align-items: center; gap: 10px;
+          background: var(--amber); color: var(--off-white);
+          font-size: 11px; font-weight: 700;
+          letter-spacing: 0.12em; text-transform: uppercase;
+          padding: 14px 24px; border-radius: 2px;
+          transition: background 0.15s;
+          font-family: 'Inter', sans-serif;
+        }
+        .btn-primary:hover { background: #a86b27; }
+        .btn-arrow {
+          width: 18px; height: 18px;
+          border: 1px solid rgba(253,250,246,0.4); border-radius: 50%;
+          display: inline-flex; align-items: center; justify-content: center;
+          font-size: 10px; flex-shrink: 0;
+        }
+        .btn-secondary {
+          display: inline-flex; align-items: center; gap: 8px;
+          background: transparent; color: var(--linen);
+          font-size: 11px; font-weight: 600;
+          letter-spacing: 0.1em; text-transform: uppercase;
+          padding: 13px 24px;
+          border: 1px solid rgba(244,238,227,0.25); border-radius: 2px;
+          transition: border-color 0.2s, color 0.2s;
+          font-family: 'Inter', sans-serif;
+        }
+        .btn-secondary:hover { border-color: rgba(244,238,227,0.6); color: var(--off-white); }
+        .btn-text-link {
+          display: inline-flex; align-items: center; gap: 6px;
+          color: var(--stone);
+          font-size: 11px; font-weight: 600;
+          letter-spacing: 0.1em; text-transform: uppercase;
+          transition: color 0.15s; padding: 14px 0;
+          font-family: 'Inter', sans-serif;
+        }
+        .btn-text-link:hover { color: var(--linen); }
+        .hero-course-tag {
+          position: absolute; bottom: 28px; right: 56px;
+          background: rgba(12,12,11,0.6);
+          padding: 8px 16px;
+          display: flex; flex-direction: column; gap: 2px;
+        }
+        .hero-course-tag span {
+          font-size: 10px; font-weight: 600;
+          letter-spacing: 0.14em; text-transform: uppercase; color: var(--stone);
+          font-family: 'Inter', sans-serif;
+        }
+        .hero-course-tag strong {
+          font-size: 13px; font-weight: 700; color: var(--linen);
+          font-family: 'Inter', sans-serif;
+        }
 
-        .hero-bg-img { animation: heroZoom 8s ease-out forwards; transform: scale(1.04); }
+        /* ── HOW IT WORKS ── */
+        .how-section { background: var(--midnight); }
+        .section-bar {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 12px 48px;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+        .how-item {
+          padding: 52px 48px;
+          border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        .how-item:last-child { border-right: none; }
+        .how-num {
+          font-size: 10px; font-weight: 700;
+          letter-spacing: 0.2em; color: var(--amber);
+          margin-bottom: 24px; font-family: 'Inter', sans-serif;
+        }
+        .how-title { font-size: 22px; color: var(--linen); margin-bottom: 12px; }
+        .how-body { font-size: 14px; line-height: 1.7; color: var(--stone); }
 
-        .live-dot { width: 6px; height: 6px; background: #4ade80; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+        /* ── COURSES ── */
+        .courses-section { background: var(--off-white); padding: 72px 48px; }
+        .courses-header {
+          display: flex; align-items: flex-end; justify-content: space-between;
+          margin-bottom: 36px; gap: 16px; flex-wrap: wrap;
+        }
+        .courses-header .hl { font-size: clamp(26px, 3vw, 38px); color: var(--midnight); }
+        .link-amber {
+          font-size: 11px; font-weight: 700;
+          letter-spacing: 0.12em; text-transform: uppercase;
+          color: var(--amber); transition: opacity 0.15s;
+          font-family: 'Inter', sans-serif;
+        }
+        .link-amber:hover { opacity: 0.7; }
+        .courses-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+        .course-card { position: relative; height: 380px; overflow: hidden; cursor: pointer; }
+        .course-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; display: block; }
+        .course-card:hover img { transform: scale(1.03); }
+        .course-card-grad {
+          position: absolute; inset: 0;
+          background: linear-gradient(to top, rgba(12,12,11,0.88) 0%, transparent 55%);
+        }
+        .course-card-tag {
+          position: absolute; top: 18px; left: 18px;
+          background: var(--amber); padding: 4px 10px;
+          font-size: 9px; font-weight: 700;
+          letter-spacing: 0.16em; text-transform: uppercase;
+          color: var(--off-white); font-family: 'Inter', sans-serif;
+        }
+        .course-card-body { position: absolute; bottom: 0; left: 0; right: 0; padding: 24px; }
+        .course-card-title { font-size: 20px; color: var(--linen); margin-bottom: 4px; }
+        .course-card-meta {
+          font-size: 11px; font-weight: 500;
+          letter-spacing: 0.1em; text-transform: uppercase; color: var(--stone);
+          font-family: 'Inter', sans-serif;
+        }
+        .course-card-cta {
+          display: inline-block; margin-top: 12px;
+          font-size: 10px; font-weight: 700;
+          letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber);
+          font-family: 'Inter', sans-serif;
+        }
 
-        .float-badge { animation: float 3s ease-in-out infinite; }
+        /* ── COMPARISON ── */
+        .comparison-section { background: var(--off-white); padding: 0 48px 80px; }
+        .comparison-headline { padding: 64px 0 48px; }
+        .comparison-headline .label { color: var(--amber); margin-bottom: 12px; display: block; }
+        .comparison-headline .hl { font-size: clamp(30px, 4vw, 48px); color: var(--midnight); }
+        .comparison-headline .hl span { color: var(--amber); }
+        .comparison-table { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--smoke); }
+        .comp-col { padding: 36px 40px; border-right: 1px solid var(--smoke); }
+        .comp-col-dark { background: var(--midnight); padding: 36px 40px; }
+        .comp-tag {
+          display: inline-block; border: 1px solid var(--smoke);
+          padding: 5px 14px; margin-bottom: 28px;
+          font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+          color: var(--stone); font-family: 'Inter', sans-serif;
+        }
+        .comp-tag-dark {
+          display: inline-block; border: 1px solid rgba(255,255,255,0.1);
+          padding: 5px 14px; margin-bottom: 28px;
+          font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+          color: rgba(132,124,114,0.6); font-family: 'Inter', sans-serif;
+        }
+        .comp-line {
+          display: flex; justify-content: space-between; align-items: baseline;
+          gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--smoke);
+          font-size: 14px; color: var(--stone); font-family: 'Inter', sans-serif;
+        }
+        .comp-line:last-of-type { border-bottom: none; }
+        .comp-line-value { font-weight: 700; color: var(--midnight); font-size: 14px; }
+        .comp-line-dark {
+          display: flex; justify-content: space-between; align-items: baseline;
+          gap: 16px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+          font-size: 14px; color: var(--stone); font-family: 'Inter', sans-serif;
+        }
+        .comp-line-dark:last-of-type { border-bottom: none; }
+        .comp-line-value-dark { font-weight: 700; color: var(--linen); font-size: 14px; }
+        .comp-total {
+          display: flex; justify-content: space-between; align-items: baseline;
+          padding-top: 20px; margin-top: 4px; border-top: 1px solid var(--smoke);
+        }
+        .comp-total-label {
+          font-size: 10px; font-weight: 700; letter-spacing: 0.16em;
+          text-transform: uppercase; color: var(--stone); font-family: 'Inter', sans-serif;
+        }
+        .comp-total-value {
+          font-size: 32px; font-weight: 900; letter-spacing: -0.02em;
+          color: var(--midnight);
+          font-family: var(--font-nunito), 'Nunito', sans-serif;
+        }
+        .comp-total-dark {
+          display: flex; justify-content: space-between; align-items: baseline;
+          padding-top: 20px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .comp-total-value-dark {
+          font-size: 32px; font-weight: 900; letter-spacing: -0.02em;
+          color: var(--linen);
+          font-family: var(--font-nunito), 'Nunito', sans-serif;
+        }
+        .comparison-savings {
+          background: var(--midnight); padding: 28px 40px;
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 24px; flex-wrap: wrap;
+        }
+        .savings-left .label { color: var(--amber); margin-bottom: 6px; display: block; }
+        .savings-amount {
+          font-size: 40px; font-weight: 900; letter-spacing: -0.03em; color: var(--linen);
+          font-family: var(--font-nunito), 'Nunito', sans-serif;
+        }
+        .savings-note { font-size: 12px; color: var(--stone); margin-top: 4px; font-family: 'Inter', sans-serif; }
+        .btn-savings {
+          display: inline-block;
+          background: var(--amber); color: var(--off-white);
+          font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+          padding: 14px 28px; border-radius: 2px;
+          white-space: nowrap; transition: background 0.15s;
+          font-family: 'Inter', sans-serif;
+        }
+        .btn-savings:hover { background: #a86b27; }
 
-        .float-card:hover { transform: rotate(0deg) translateY(-6px) !important; box-shadow: 0 30px 80px rgba(0,0,0,0.2) !important; }
+        /* ── PRICING ── */
+        .pricing-section { background: var(--midnight); padding: 80px 48px; }
+        .pricing-header {
+          display: flex; align-items: flex-end; justify-content: space-between;
+          margin-bottom: 48px; flex-wrap: wrap; gap: 16px;
+        }
+        .pricing-subline {
+          font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+          color: var(--stone); margin-top: 6px; font-family: 'Inter', sans-serif;
+        }
+        .pricing-grid {
+          display: grid; grid-template-columns: repeat(3, 1fr);
+          gap: 1px; border: 1px solid rgba(255,255,255,0.06);
+        }
+        .pricing-tier {
+          padding: 36px 32px; background: var(--graphite);
+          display: flex; flex-direction: column;
+          border-right: 1px solid rgba(255,255,255,0.06);
+        }
+        .pricing-tier:last-child { border-right: none; }
+        .pricing-tier.featured {
+          background: var(--midnight);
+          outline: 1px solid var(--linen); outline-offset: -1px;
+        }
+        .tier-label {
+          font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+          color: var(--stone); margin-bottom: 24px;
+          display: flex; justify-content: space-between; align-items: center;
+          font-family: 'Inter', sans-serif;
+        }
+        .tier-badge {
+          font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+          color: var(--linen); border: 1px solid rgba(255,255,255,0.2);
+          padding: 3px 8px; font-family: 'Inter', sans-serif;
+        }
+        .tier-credits {
+          font-family: var(--font-nunito), 'Nunito', sans-serif;
+          font-size: 64px; font-weight: 900; letter-spacing: -0.04em; color: var(--linen); line-height: 1;
+        }
+        .tier-credits-label {
+          font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+          color: var(--stone); margin-top: 6px; margin-bottom: 24px; font-family: 'Inter', sans-serif;
+        }
+        .tier-price {
+          font-size: 28px; font-weight: 900; letter-spacing: -0.02em;
+          font-family: var(--font-nunito), 'Nunito', sans-serif;
+          color: var(--linen); margin-bottom: 8px;
+        }
+        .tier-price-note { font-size: 11px; color: var(--stone); letter-spacing: 0.06em; margin-bottom: 28px; font-family: 'Inter', sans-serif; }
+        .tier-features {
+          list-style: none; flex: 1; display: flex; flex-direction: column;
+          gap: 10px; margin-bottom: 32px; padding-top: 20px;
+          border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .tier-features li {
+          font-size: 13px; color: var(--stone);
+          display: flex; align-items: flex-start; gap: 10px;
+          font-family: 'Inter', sans-serif;
+        }
+        .tier-features li::before { content: '→'; color: var(--amber); flex-shrink: 0; }
+        .tier-cta {
+          display: block; text-align: center;
+          font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+          padding: 13px 24px; border-radius: 2px; transition: all 0.15s;
+          font-family: 'Inter', sans-serif;
+        }
+        .tier-cta-default { border: 1px solid rgba(255,255,255,0.15); color: var(--linen); }
+        .tier-cta-default:hover { border-color: var(--linen); }
+        .tier-cta-featured { background: var(--linen); color: var(--midnight); }
+        .tier-cta-featured:hover { background: var(--off-white); }
+        .pricing-footer {
+          margin-top: 28px; padding-top: 20px;
+          border-top: 1px solid rgba(255,255,255,0.05);
+          display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+        }
+        .pricing-footer span { font-size: 11px; color: rgba(132,124,114,0.45); letter-spacing: 0.08em; font-family: 'Inter', sans-serif; }
 
-        .step-row { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid #e5e7eb; cursor: default; transition: padding-left .2s; }
-        .step-row:last-child { border-bottom: none; }
-        .step-row:hover { padding-left: 8px; }
+        /* ── EDITORIAL STRIP ── */
+        .editorial { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+        .editorial-item { position: relative; height: 440px; overflow: hidden; }
+        .editorial-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; display: block; }
+        .editorial-item:hover img { transform: scale(1.04); }
+        .editorial-grad {
+          position: absolute; inset: 0;
+          background: linear-gradient(to top, rgba(12,12,11,0.88) 0%, rgba(12,12,11,0.1) 50%, transparent 100%);
+        }
+        .editorial-body { position: absolute; bottom: 0; left: 0; right: 0; padding: 28px 24px; }
+        .editorial-title { font-size: 22px; color: var(--linen); margin-bottom: 5px; }
+        .editorial-sub {
+          font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+          color: var(--stone); font-family: 'Inter', sans-serif;
+        }
+
+        /* ── VOICE ── */
+        .voice-section {
+          background: var(--linen); padding: 80px 48px;
+          display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+        }
+        .voice-headline { font-size: clamp(30px, 4vw, 52px); color: var(--midnight); line-height: 1.02; }
+        .voice-copy { font-size: 15px; line-height: 1.75; color: var(--stone); margin-bottom: 24px; font-family: 'Inter', sans-serif; }
+        .voice-list { list-style: none; display: flex; flex-direction: column; gap: 12px; padding: 0; }
+        .voice-list li {
+          font-size: 14px; color: var(--midnight);
+          display: flex; align-items: flex-start; gap: 12px; line-height: 1.5;
+          font-family: 'Inter', sans-serif;
+        }
+        .voice-list li::before { content: '→'; color: var(--amber); flex-shrink: 0; }
+
+        /* ── REVIEWS ── */
+        .reviews-section { background: var(--off-white); padding: 80px 48px; border-top: 1px solid var(--smoke); }
+        .reviews-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 44px; flex-wrap: wrap; gap: 16px; }
+        .reviews-header .hl { font-size: clamp(26px, 3vw, 38px); color: var(--midnight); }
+        .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+        .review-card { background: var(--linen); padding: 36px 32px; display: flex; flex-direction: column; gap: 20px; }
+        .review-card:nth-child(2) { background: var(--midnight); }
+        .review-card:nth-child(2) .review-body { color: var(--stone); }
+        .review-card:nth-child(2) .review-name { color: var(--linen); }
+        .review-card:nth-child(2) .review-meta { color: rgba(132,124,114,0.6); }
+        .review-card:nth-child(2) .review-stars { color: var(--amber); }
+        .review-card:nth-child(2) .review-tag { border-color: rgba(255,255,255,0.1); color: rgba(132,124,114,0.5); }
+        .review-stars { color: var(--amber); font-size: 14px; letter-spacing: 2px; }
+        .review-body { font-size: 15px; line-height: 1.7; color: var(--stone); flex: 1; font-style: italic; font-family: 'Inter', sans-serif; }
+        .review-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .review-name { font-size: 13px; font-weight: 700; color: var(--midnight); letter-spacing: 0.02em; font-family: 'Inter', sans-serif; }
+        .review-meta { font-size: 11px; color: var(--stone); letter-spacing: 0.04em; margin-top: 2px; font-family: 'Inter', sans-serif; }
+        .review-tag {
+          font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+          color: var(--stone); border: 1px solid var(--smoke); padding: 4px 10px; flex-shrink: 0;
+          font-family: 'Inter', sans-serif;
+        }
+        .reviews-aggregate {
+          margin-top: 2px; background: var(--smoke);
+          padding: 20px 32px; display: flex; align-items: center; gap: 32px; flex-wrap: wrap;
+        }
+        .agg-score {
+          font-family: var(--font-nunito), 'Nunito', sans-serif;
+          font-size: 40px; font-weight: 900; letter-spacing: -0.03em; color: var(--midnight); line-height: 1;
+        }
+        .agg-stars { font-size: 16px; color: var(--amber); letter-spacing: 2px; margin-bottom: 3px; }
+        .agg-label { font-size: 11px; color: var(--stone); letter-spacing: 0.08em; font-family: 'Inter', sans-serif; }
+        .agg-stat-value { font-size: 20px; font-weight: 700; color: var(--midnight); font-family: 'Inter', sans-serif; }
+        .agg-stat-label { font-size: 11px; color: var(--stone); letter-spacing: 0.06em; margin-top: 2px; font-family: 'Inter', sans-serif; }
+
+        /* ── FOOTER ── */
+        footer { background: var(--midnight); padding: 56px 48px 32px; border-top: 1px solid rgba(255,255,255,0.04); }
+        .footer-top {
+          display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
+          gap: 40px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .footer-wordmark { font-size: 24px; color: var(--linen); display: block; margin-bottom: 12px; }
+        .footer-blurb { font-size: 13px; line-height: 1.7; color: var(--stone); max-width: 220px; font-family: 'Inter', sans-serif; }
+        .footer-col-title {
+          font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+          color: var(--stone); margin-bottom: 18px; font-family: 'Inter', sans-serif;
+        }
+        .footer-links { list-style: none; display: flex; flex-direction: column; gap: 11px; padding: 0; }
+        .footer-links a { font-size: 13px; color: var(--stone); transition: color 0.15s; font-family: 'Inter', sans-serif; }
+        .footer-links a:hover { color: var(--linen); }
+        .footer-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 24px; flex-wrap: wrap; gap: 10px; }
+        .footer-legal { font-size: 11px; color: rgba(132,124,114,0.4); font-family: 'Inter', sans-serif; }
+        .footer-domain { font-size: 11px; color: var(--amber); font-family: 'Inter', sans-serif; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1024px) {
+          .hero-content { padding: 40px 36px; }
+          .hero-course-tag { right: 28px; }
+          .how-grid { grid-template-columns: 1fr; }
+          .how-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
+          .courses-section, .comparison-section, .pricing-section, .voice-section, footer { padding-left: 28px; padding-right: 28px; }
+          .courses-grid { grid-template-columns: 1fr 1fr; }
+          .courses-grid .course-card:nth-child(3) { display: none; }
+          .pricing-grid { grid-template-columns: 1fr; }
+          .pricing-tier { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+          .editorial { grid-template-columns: 1fr 1fr; }
+          .editorial-item:nth-child(3) { display: none; }
+          .voice-section { grid-template-columns: 1fr; gap: 40px; }
+          .reviews-section { padding-left: 28px; padding-right: 28px; }
+          .reviews-grid { grid-template-columns: 1fr; }
+          .footer-top { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 640px) {
+          .hero-content { padding: 32px 24px; }
+          .hero-course-tag { display: none; }
+          .comparison-table { grid-template-columns: 1fr; }
+          .comp-col { border-right: none; border-bottom: 1px solid var(--smoke); }
+          .courses-grid { grid-template-columns: 1fr; }
+          .courses-grid .course-card:nth-child(3) { display: block; }
+          .editorial { grid-template-columns: 1fr; }
+          .editorial-item:nth-child(3) { display: block; }
+          .footer-top { grid-template-columns: 1fr; }
+        }
       `}</style>
-
-    </main>
+    </>
   )
 }

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gimilab — My Rounds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+:root { --midnight:#0C0C0B; --graphite:#1E1D1B; --amber:#BF7B2E; --amber-hover:#d48c37; --amber-dim:rgba(191,123,46,0.10); --linen:#F4EEE3; --stone:#847C72; --smoke:#E5DDD3; --offwhite:#FDFAF6; --white:#FFFFFF; --border:rgba(12,12,11,0.09); --border-dark:rgba(12,12,11,0.15); --sidebar-w:228px; }
+body { font-family: 'Inter', sans-serif; background: var(--offwhite); color: var(--midnight); display: flex; min-height: 100vh; }
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; }
+.sidebar-top { padding: 26px 24px 22px; border-bottom: 1px solid var(--border); }
+.wordmark { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 26px; letter-spacing: -0.02em; color: var(--midnight); text-decoration: none; display: block; line-height: 1; }
+.sidebar-nav { flex: 1; padding: 18px 0; }
+.nav-label { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; color: var(--stone); text-transform: uppercase; padding: 0 24px; margin-bottom: 6px; opacity: 0.7; }
+.nav-link { display: flex; align-items: center; gap: 11px; padding: 10px 24px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: var(--stone); text-decoration: none; text-transform: uppercase; transition: color 0.15s, background 0.15s; position: relative; }
+.nav-link:hover { color: var(--midnight); background: var(--offwhite); }
+.nav-link.active { color: var(--midnight); }
+.nav-link.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 2px; height: 18px; background: var(--amber); border-radius: 0 1px 1px 0; }
+.nav-icon { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.5; }
+.nav-link.active .nav-icon { opacity: 1; }
+.sidebar-bottom { padding: 18px 24px; border-top: 1px solid var(--border); }
+.member-tier-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--amber-dim); border: 1px solid rgba(191,123,46,0.22); border-radius: 2px; padding: 4px 9px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--amber); text-transform: uppercase; margin-bottom: 12px; }
+.member-name { font-size: 13px; font-weight: 700; color: var(--midnight); margin-bottom: 1px; }
+.member-email { font-size: 11px; color: var(--stone); margin-bottom: 12px; }
+.signout-link { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--stone); text-decoration: none; text-transform: uppercase; transition: color 0.15s; display: flex; align-items: center; gap: 5px; }
+.signout-link:hover { color: var(--midnight); }
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 36px; border-bottom: 1px solid var(--border); background: var(--white); position: sticky; top: 0; z-index: 50; gap: 20px; }
+.topbar-title { font-size: 17px; font-weight: 700; color: var(--midnight); letter-spacing: -0.02em; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.credit-chip { display: flex; align-items: center; gap: 8px; background: var(--offwhite); border: 1px solid var(--border-dark); border-radius: 2px; padding: 9px 14px; }
+.credit-chip-val { font-weight: 700; color: var(--amber); font-size: 16px; }
+.credit-chip-label { font-size: 12px; color: var(--stone); }
+.book-btn { background: var(--amber); color: var(--midnight); border: none; border-radius: 2px; padding: 10px 18px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; transition: background 0.15s; }
+.book-btn:hover { background: var(--amber-hover); }
+.content { flex: 1; padding: 24px 36px 48px; max-width: 860px; }
+
+/* Tabs */
+.tabs { display: flex; border-bottom: 1px solid var(--border-dark); margin-bottom: 24px; }
+.tab { padding: 10px 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s, border-color 0.15s; }
+.tab:hover { color: var(--midnight); }
+.tab.active { color: var(--midnight); border-bottom-color: var(--amber); }
+
+/* Upcoming */
+.upcoming-card { background: var(--white); border: 1px solid var(--border); padding: 20px 22px; margin-bottom: 8px; display: flex; align-items: center; gap: 18px; transition: box-shadow 0.15s; }
+.upcoming-card:hover { box-shadow: 0 3px 12px rgba(12,12,11,0.06); }
+.upcoming-date-block { width: 52px; flex-shrink: 0; text-align: center; background: var(--amber-dim); border: 1px solid rgba(191,123,46,0.2); border-radius: 2px; padding: 8px 6px; }
+.upcoming-month { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: var(--amber); text-transform: uppercase; margin-bottom: 2px; }
+.upcoming-day { font-size: 24px; font-weight: 700; color: var(--midnight); line-height: 1; letter-spacing: -0.03em; }
+.upcoming-info { flex: 1; }
+.upcoming-course { font-size: 14px; font-weight: 700; color: var(--midnight); margin-bottom: 4px; }
+.upcoming-meta { font-size: 12px; color: var(--stone); display: flex; gap: 14px; flex-wrap: wrap; }
+.upcoming-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+.status-badge { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px; padding: 3px 9px; color: var(--amber); background: var(--amber-dim); border: 1px solid rgba(191,123,46,0.2); }
+.upcoming-credits { font-size: 12px; color: var(--stone); }
+.cancel-link { font-size: 11px; color: var(--stone); text-decoration: none; transition: color 0.15s; }
+.cancel-link:hover { color: var(--midnight); }
+
+.no-more-cta { background: var(--white); border: 1px solid var(--border); padding: 20px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.no-more-text { font-size: 13px; color: var(--stone); }
+
+/* Past */
+.month-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone); margin-bottom: 8px; margin-top: 24px; }
+.month-label:first-child { margin-top: 0; }
+.round-row { display: flex; align-items: center; gap: 14px; background: var(--white); border: 1px solid var(--border); padding: 14px 18px; margin-bottom: 4px; text-decoration: none; color: var(--midnight); transition: background 0.12s; }
+.round-row:hover { background: var(--offwhite); }
+.round-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); opacity: 0.35; flex-shrink: 0; }
+.round-main { flex: 1; }
+.round-course { font-size: 13px; font-weight: 600; color: var(--midnight); margin-bottom: 2px; }
+.round-sub { font-size: 11px; color: var(--stone); }
+.round-credits { font-size: 12px; font-weight: 700; color: var(--stone); flex-shrink: 0; }
+.round-date { font-size: 11px; color: var(--stone); width: 56px; text-align: right; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-top"><a href="gimilab_dashboard.html" class="wordmark">gimilab</a></div>
+    <nav class="sidebar-nav">
+    <a href="gimilab_dashboard.html" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="6" height="7"/><rect x="11" y="3" width="6" height="4"/><rect x="11" y="10" width="6" height="7"/><rect x="3" y="13" width="6" height="4"/></svg>
+      Dashboard
+    </a>
+    <a href="gimilab_rounds.html" class="nav-link active">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><line x1="5" y1="2" x2="5" y2="18"/><path d="M5 4h9l-2 4 2 4H5"/></svg>
+      My Rounds
+    </a>
+    <a href="gimilab_credits.html" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7.5"/><path d="M10 7v6M8.5 8.5h2.5a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2H11"/></svg>
+      Credits
+    </a>
+    <a href="gimilab_account.html" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="7" r="3.5"/><path d="M3 17c0-3.31 3.13-6 7-6s7 2.69 7 6"/></svg>
+      Account
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="member-tier-badge"><svg width="9" height="9" viewBox="0 0 10 10" fill="currentColor"><path d="M5 0l1.12 3.45H9.76L6.82 5.59l1.12 3.46L5 7 1.06 9.05l1.12-3.46L-.24 3.45H3.88z"/></svg>Core Member</div>
+    <div class="member-name">Marko</div>
+    <div class="member-email">marko@example.com</div>
+    <a href="#" class="signout-link"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 3h4v14h-4M8 14l4-4-4-4M12 10H3"/></svg>Sign out</a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <span class="topbar-title">My Rounds</span>
+    <div class="topbar-right">
+      <div class="credit-chip"><span class="credit-chip-val">150</span><span class="credit-chip-label">credits</span></div>
+      <a href="gimilab_courses.html" class="book-btn"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="14" height="14" rx="1"/><line x1="7" y1="2" x2="7" y2="6"/><line x1="13" y1="2" x2="13" y2="6"/><line x1="3" y1="9" x2="17" y2="9"/></svg>Book Tee Time</a>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(0)">Upcoming</div>
+      <div class="tab" onclick="switchTab(1)">Past Rounds</div>
+    </div>
+
+    <div id="tab-upcoming">
+      <div class="upcoming-card">
+        <div class="upcoming-date-block"><div class="upcoming-month">Apr</div><div class="upcoming-day">5</div></div>
+        <div class="upcoming-info">
+          <div class="upcoming-course">Torrey Pines — South Course</div>
+          <div class="upcoming-meta">
+            <span><svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="7"/><polyline points="10 6 10 10 13 12"/></svg>&nbsp;7:42 AM</span>
+            <span><svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="7" r="3.5"/><path d="M3 17c0-3.31 3.13-6 7-6s7 2.69 7 6"/></svg>&nbsp;2 Players</span>
+            <span>La Jolla, CA</span>
+          </div>
+        </div>
+        <div class="upcoming-right">
+          <span class="status-badge">Confirmed</span>
+          <span class="upcoming-credits">1 credit</span>
+          <a href="#" class="cancel-link">Cancel →</a>
+        </div>
+      </div>
+      <div class="no-more-cta">
+        <span class="no-more-text">No other upcoming tee times.</span>
+        <a href="gimilab_courses.html" class="book-btn" style="font-size:11px; padding:9px 16px;">Book Another Round</a>
+      </div>
+    </div>
+
+    <div id="tab-past" style="display:none;">
+      <div class="month-label">March 2026</div>
+      <a href="#" class="round-row"><div class="round-dot"></div><div class="round-main"><div class="round-course">Torrey Pines — South Course</div><div class="round-sub">7:42 AM · 2 players</div></div><div class="round-credits">−1 cr.</div><div class="round-date">Mar 15</div></a>
+      <a href="#" class="round-row"><div class="round-dot"></div><div class="round-main"><div class="round-course">La Jolla Country Club</div><div class="round-sub">10:00 AM · 4 players</div></div><div class="round-credits">−2 cr.</div><div class="round-date">Mar 9</div></a>
+      <div class="month-label">February 2026</div>
+      <a href="#" class="round-row"><div class="round-dot"></div><div class="round-main"><div class="round-course">Aviara Golf Club</div><div class="round-sub">8:30 AM · 3 players</div></div><div class="round-credits">−1 cr.</div><div class="round-date">Feb 22</div></a>
+      <a href="#" class="round-row"><div class="round-dot"></div><div class="round-main"><div class="round-course">Rancho Bernardo Inn</div><div class="round-sub">9:00 AM · 2 players</div></div><div class="round-credits">−1 cr.</div><div class="round-date">Feb 8</div></a>
+      <div class="month-label">January 2026</div>
+      <a href="#" class="round-row"><div class="round-dot"></div><div class="round-main"><div class="round-course">Pelican Hill — North</div><div class="round-sub">11:30 AM · 2 players</div></div><div class="round-credits">−2 cr.</div><div class="round-date">Jan 18</div></a>
+    </div>
+  </div>
+</div>
+<script>
+  function switchTab(i) {
+    document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+    document.getElementById('tab-upcoming').style.display = i===0?'block':'none';
+    document.getElementById('tab-past').style.display = i===1?'block':'none';
+  }
+</script>
+</body>
+</html>

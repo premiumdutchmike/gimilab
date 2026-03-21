@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gimilab — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+:root {
+  --midnight:    #0C0C0B;
+  --graphite:    #1E1D1B;
+  --amber:       #BF7B2E;
+  --amber-hover: #d48c37;
+  --amber-dim:   rgba(191,123,46,0.10);
+  --amber-mid:   rgba(191,123,46,0.20);
+  --linen:       #F4EEE3;
+  --stone:       #847C72;
+  --smoke:       #E5DDD3;
+  --offwhite:    #FDFAF6;
+  --white:       #FFFFFF;
+  --border:      rgba(12,12,11,0.09);
+  --border-dark: rgba(12,12,11,0.15);
+  --sidebar-w:   228px;
+}
+body { font-family: 'Inter', sans-serif; background: var(--offwhite); color: var(--midnight); display: flex; min-height: 100vh; }
+
+/* ── Sidebar ── */
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; }
+.sidebar-top { padding: 26px 24px 22px; border-bottom: 1px solid var(--border); }
+.wordmark { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 26px; letter-spacing: -0.02em; color: var(--midnight); text-decoration: none; display: block; line-height: 1; }
+.sidebar-nav { flex: 1; padding: 18px 0; overflow-y: auto; }
+.nav-label { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; color: var(--stone); text-transform: uppercase; padding: 0 24px; margin-bottom: 6px; opacity: 0.7; }
+.nav-link { display: flex; align-items: center; gap: 11px; padding: 10px 24px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: var(--stone); text-decoration: none; text-transform: uppercase; transition: color 0.15s, background 0.15s; position: relative; }
+.nav-link:hover { color: var(--midnight); background: var(--offwhite); }
+.nav-link.active { color: var(--midnight); }
+.nav-link.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 2px; height: 18px; background: var(--amber); border-radius: 0 1px 1px 0; }
+.nav-icon { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.5; }
+.nav-link.active .nav-icon { opacity: 1; }
+.sidebar-bottom { padding: 18px 24px; border-top: 1px solid var(--border); }
+.member-tier-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--amber-dim); border: 1px solid rgba(191,123,46,0.22); border-radius: 2px; padding: 4px 9px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--amber); text-transform: uppercase; margin-bottom: 12px; }
+.member-name { font-size: 13px; font-weight: 700; color: var(--midnight); margin-bottom: 1px; }
+.member-email { font-size: 11px; color: var(--stone); margin-bottom: 12px; }
+.signout-link { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--stone); text-decoration: none; text-transform: uppercase; transition: color 0.15s; display: flex; align-items: center; gap: 5px; }
+.signout-link:hover { color: var(--midnight); }
+
+/* ── Main ── */
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── Topbar ── */
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 36px; border-bottom: 1px solid var(--border); background: var(--white); position: sticky; top: 0; z-index: 50; gap: 20px; }
+.topbar-greeting { display: flex; flex-direction: column; gap: 2px; }
+.greeting-text { font-size: 17px; font-weight: 700; color: var(--midnight); letter-spacing: -0.02em; }
+.greeting-date { font-size: 12px; color: var(--stone); }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.credit-chip { display: flex; align-items: center; gap: 10px; background: var(--offwhite); border: 1px solid var(--border-dark); border-radius: 2px; padding: 10px 16px; }
+.credit-chip-val { font-size: 22px; font-weight: 700; color: var(--amber); letter-spacing: -0.03em; line-height: 1; }
+.credit-chip-meta { display: flex; flex-direction: column; }
+.credit-chip-meta span:first-child { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--midnight); }
+.credit-chip-meta span:last-child { font-size: 10px; color: var(--stone); }
+.book-btn { background: var(--amber); color: var(--midnight); border: none; border-radius: 2px; padding: 11px 20px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: background 0.15s; }
+.book-btn:hover { background: var(--amber-hover); }
+
+/* ── Content ── */
+.content { flex: 1; padding: 28px 36px 48px; }
+
+/* ── Stats row ── */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; }
+.stat-card { background: var(--white); border: 1px solid var(--border); padding: 20px 24px; position: relative; overflow: hidden; }
+.stat-card.primary { border-left: 2px solid var(--amber); }
+.stat-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--stone); margin-bottom: 8px; }
+.stat-value { font-size: 36px; font-weight: 700; color: var(--midnight); letter-spacing: -0.04em; line-height: 1; margin-bottom: 4px; }
+.stat-card.primary .stat-value { color: var(--amber); }
+.stat-sub { font-size: 12px; color: var(--stone); }
+.stat-bar-track { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--border); }
+.stat-bar-fill { height: 100%; background: var(--amber); opacity: 0.6; }
+
+/* ── Search ── */
+.search-section { margin-bottom: 28px; }
+.search-box { background: var(--white); border: 1px solid var(--border); padding: 20px 24px; }
+.search-label-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.search-label-text { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--stone); }
+.ai-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: var(--amber); background: var(--amber-dim); border: 1px solid rgba(191,123,46,0.18); border-radius: 2px; padding: 2px 7px; text-transform: uppercase; }
+.search-input-row { display: flex; gap: 8px; }
+.search-input { flex: 1; background: var(--offwhite); border: 1px solid var(--border-dark); border-radius: 2px; padding: 12px 16px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--midnight); outline: none; transition: border-color 0.15s; }
+.search-input::placeholder { color: var(--stone); }
+.search-input:focus { border-color: var(--amber); }
+.search-submit { background: var(--midnight); border: none; border-radius: 2px; padding: 0 20px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--linen); text-transform: uppercase; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 7px; }
+.search-submit:hover { background: var(--graphite); }
+.search-hint { margin-top: 8px; font-size: 11px; color: var(--stone); }
+.search-hint em { font-style: normal; background: var(--offwhite); border: 1px solid var(--border); border-radius: 2px; padding: 1px 6px; margin: 0 2px; font-size: 10px; color: var(--midnight); }
+
+/* ── Section header ── */
+.section-hd { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+.section-title { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone); }
+.section-link { font-size: 11px; font-weight: 600; color: var(--stone); text-decoration: none; transition: color 0.15s; }
+.section-link:hover { color: var(--amber); }
+
+/* ── Action cards ── */
+.actions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 28px; }
+.action-card { background: var(--white); border: 1px solid var(--border); padding: 22px 24px; text-decoration: none; color: var(--midnight); display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; transition: box-shadow 0.15s, border-color 0.15s; }
+.action-card:hover { box-shadow: 0 4px 16px rgba(12,12,11,0.07); border-color: var(--border-dark); }
+.action-icon { width: 34px; height: 34px; background: var(--offwhite); border: 1px solid var(--border); border-radius: 2px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-bottom: 14px; }
+.action-icon svg { color: var(--amber); }
+.action-title { font-size: 14px; font-weight: 700; color: var(--midnight); margin-bottom: 5px; letter-spacing: -0.01em; }
+.action-desc { font-size: 12px; color: var(--stone); line-height: 1.5; }
+.action-badge { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--amber); background: var(--amber-dim); border: 1px solid rgba(191,123,46,0.18); border-radius: 2px; padding: 3px 8px; flex-shrink: 0; align-self: flex-start; }
+
+/* ── Activity ── */
+.activity-list { display: flex; flex-direction: column; gap: 2px; }
+.activity-row { display: flex; align-items: center; gap: 14px; background: var(--white); border: 1px solid var(--border); padding: 14px 18px; transition: background 0.12s; }
+.activity-row:hover { background: var(--offwhite); }
+.activity-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.activity-dot.credit { background: var(--amber); }
+.activity-dot.debit { background: var(--stone); opacity: 0.4; }
+.activity-main { flex: 1; }
+.activity-title { font-size: 13px; font-weight: 600; color: var(--midnight); margin-bottom: 2px; }
+.activity-sub { font-size: 11px; color: var(--stone); }
+.activity-amount { font-size: 13px; font-weight: 700; }
+.activity-amount.credit { color: var(--amber); }
+.activity-amount.debit { color: var(--stone); }
+.activity-date { font-size: 11px; color: var(--stone); width: 56px; text-align: right; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-top"><a href="#" class="wordmark">gimilab</a></div>
+    <nav class="sidebar-nav">
+    <a href="gimilab_dashboard.html" class="nav-link active">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="6" height="7"/><rect x="11" y="3" width="6" height="4"/><rect x="11" y="10" width="6" height="7"/><rect x="3" y="13" width="6" height="4"/></svg>
+      Dashboard
+    </a>
+    <a href="gimilab_rounds.html" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><line x1="5" y1="2" x2="5" y2="18"/><path d="M5 4h9l-2 4 2 4H5"/></svg>
+      My Rounds
+    </a>
+    <a href="gimilab_credits.html" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7.5"/><path d="M10 7v6M8.5 8.5h2.5a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2H11"/></svg>
+      Credits
+    </a>
+    <a href="gimilab_account.html" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="7" r="3.5"/><path d="M3 17c0-3.31 3.13-6 7-6s7 2.69 7 6"/></svg>
+      Account
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="member-tier-badge"><svg width="9" height="9" viewBox="0 0 10 10" fill="currentColor"><path d="M5 0l1.12 3.45H9.76L6.82 5.59l1.12 3.46L5 7 1.06 9.05l1.12-3.46L-.24 3.45H3.88z"/></svg> Core Member</div>
+    <div class="member-name">Marko</div>
+    <div class="member-email">marko@example.com</div>
+    <a href="#" class="signout-link"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 3h4v14h-4M8 14l4-4-4-4M12 10H3"/></svg>Sign out</a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-greeting">
+      <span class="greeting-text">Good morning, Marko.</span>
+      <span class="greeting-date">Friday, March 20, 2026</span>
+    </div>
+    <div class="topbar-right">
+      <div class="credit-chip">
+        <span class="credit-chip-val">150</span>
+        <div class="credit-chip-meta"><span>Credits</span><span>resets Apr 1</span></div>
+      </div>
+      <a href="#" class="book-btn">
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="14" height="14" rx="1"/><line x1="7" y1="2" x2="7" y2="6"/><line x1="13" y1="2" x2="13" y2="6"/><line x1="3" y1="9" x2="17" y2="9"/></svg>
+        Book Tee Time
+      </a>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card primary">
+        <div class="stat-label">Credits Available</div>
+        <div class="stat-value">150</div>
+        <div class="stat-sub">resets April 1, 2026</div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rounds This Month</div>
+        <div class="stat-value">3</div>
+        <div class="stat-sub">4 credits used</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Member Since</div>
+        <div class="stat-value" style="font-size:22px; margin-top:6px;">Jan '25</div>
+        <div class="stat-sub">15 months</div>
+      </div>
+    </div>
+
+    <!-- AI Search -->
+    <div class="search-section">
+      <div class="section-hd"><span class="section-title">Find a Tee Time</span></div>
+      <div class="search-box">
+        <div class="search-label-row">
+          <span class="search-label-text">AI Booking Search</span>
+          <span class="ai-badge">Beta</span>
+        </div>
+        <div class="search-input-row">
+          <input class="search-input" type="text" placeholder='e.g. "Saturday morning at Torrey Pines, 2 players"'>
+          <button class="search-submit"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="9" r="6"/><line x1="14" y1="14" x2="18" y2="18"/></svg>Search</button>
+        </div>
+        <div class="search-hint">Try: <em>Tomorrow, 8am</em> <em>$25–$50</em> <em>Within 20 miles</em></div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="margin-bottom: 28px;">
+      <div class="section-hd"><span class="section-title">Quick Actions</span></div>
+      <div class="actions-grid">
+        <a href="#" class="action-card">
+          <div>
+            <div class="action-icon"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="14" height="14" rx="1"/><line x1="7" y1="2" x2="7" y2="6"/><line x1="13" y1="2" x2="13" y2="6"/><line x1="3" y1="9" x2="17" y2="9"/></svg></div>
+            <div class="action-title">Book a Tee Time</div>
+            <div class="action-desc">Browse available tee times and book with your credits.</div>
+          </div>
+          <span class="action-badge">1–2 cr.</span>
+        </a>
+        <a href="gimilab_courses.html" class="action-card">
+          <div>
+            <div class="action-icon"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 2C7.24 2 5 4.24 5 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5Z"/><circle cx="10" cy="7" r="1.8"/></svg></div>
+            <div class="action-title">Browse Courses</div>
+            <div class="action-desc">Explore all 12 member courses — details and availability.</div>
+          </div>
+        </a>
+        <a href="gimilab_rounds.html" class="action-card">
+          <div>
+            <div class="action-icon"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><line x1="5" y1="2" x2="5" y2="18"/><path d="M5 4h9l-2 4 2 4H5"/></svg></div>
+            <div class="action-title">My Rounds</div>
+            <div class="action-desc">View upcoming tee times and past booking history.</div>
+          </div>
+        </a>
+        <a href="gimilab_credits.html" class="action-card">
+          <div>
+            <div class="action-icon"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7.5"/><path d="M10 7v6M8.5 8.5h2.5a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2H11"/></svg></div>
+            <div class="action-title">Credits</div>
+            <div class="action-desc">Check your balance, usage history, and plan details.</div>
+          </div>
+          <span class="action-badge">150 left</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div>
+      <div class="section-hd">
+        <span class="section-title">Recent Activity</span>
+        <a href="gimilab_rounds.html" class="section-link">View all →</a>
+      </div>
+      <div class="activity-list">
+        <div class="activity-row">
+          <div class="activity-dot debit"></div>
+          <div class="activity-main"><div class="activity-title">Torrey Pines — South Course</div><div class="activity-sub">7:42 AM · 2 players</div></div>
+          <div class="activity-amount debit">−1 cr.</div>
+          <div class="activity-date">Mar 15</div>
+        </div>
+        <div class="activity-row">
+          <div class="activity-dot debit"></div>
+          <div class="activity-main"><div class="activity-title">La Jolla Country Club</div><div class="activity-sub">10:00 AM · 4 players</div></div>
+          <div class="activity-amount debit">−2 cr.</div>
+          <div class="activity-date">Mar 9</div>
+        </div>
+        <div class="activity-row">
+          <div class="activity-dot credit"></div>
+          <div class="activity-main"><div class="activity-title">Credits renewed — Core plan</div><div class="activity-sub">Monthly renewal · 150 credits added</div></div>
+          <div class="activity-amount credit">+150 cr.</div>
+          <div class="activity-date">Mar 1</div>
+        </div>
+        <div class="activity-row">
+          <div class="activity-dot debit"></div>
+          <div class="activity-main"><div class="activity-title">Aviara Golf Club</div><div class="activity-sub">8:30 AM · 3 players</div></div>
+          <div class="activity-amount debit">−1 cr.</div>
+          <div class="activity-date">Feb 22</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

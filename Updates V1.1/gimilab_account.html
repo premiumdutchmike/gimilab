@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gimilab — My Account</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+:root { --midnight:#0C0C0B; --graphite:#1E1D1B; --amber:#BF7B2E; --amber-hover:#d48c37; --amber-dim:rgba(191,123,46,0.10); --linen:#F4EEE3; --stone:#847C72; --smoke:#E5DDD3; --offwhite:#FDFAF6; --white:#FFFFFF; --border:rgba(12,12,11,0.09); --border-dark:rgba(12,12,11,0.15); --danger:rgba(180,60,60,0.08); --danger-border:rgba(180,60,60,0.2); --danger-text:#b84444; --sidebar-w:228px; }
+body { font-family: 'Inter', sans-serif; background: var(--offwhite); color: var(--midnight); display: flex; min-height: 100vh; }
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; }
+.sidebar-top { padding: 26px 24px 22px; border-bottom: 1px solid var(--border); }
+.wordmark { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 26px; letter-spacing: -0.02em; color: var(--midnight); text-decoration: none; display: block; line-height: 1; }
+.sidebar-nav { flex: 1; padding: 18px 0; }
+.nav-label { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; color: var(--stone); text-transform: uppercase; padding: 0 24px; margin-bottom: 6px; opacity: 0.7; }
+.nav-link { display: flex; align-items: center; gap: 11px; padding: 10px 24px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: var(--stone); text-decoration: none; text-transform: uppercase; transition: color 0.15s, background 0.15s; position: relative; }
+.nav-link:hover { color: var(--midnight); background: var(--offwhite); }
+.nav-link.active { color: var(--midnight); }
+.nav-link.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 2px; height: 18px; background: var(--amber); border-radius: 0 1px 1px 0; }
+.nav-icon { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.5; }
+.nav-link.active .nav-icon { opacity: 1; }
+.sidebar-bottom { padding: 18px 24px; border-top: 1px solid var(--border); }
+.member-tier-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--amber-dim); border: 1px solid rgba(191,123,46,0.22); border-radius: 2px; padding: 4px 9px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--amber); text-transform: uppercase; margin-bottom: 12px; }
+.member-name { font-size: 13px; font-weight: 700; color: var(--midnight); margin-bottom: 1px; }
+.member-email { font-size: 11px; color: var(--stone); margin-bottom: 12px; }
+.signout-link { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--stone); text-decoration: none; text-transform: uppercase; transition: color 0.15s; display: flex; align-items: center; gap: 5px; }
+.signout-link:hover { color: var(--midnight); }
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 36px; border-bottom: 1px solid var(--border); background: var(--white); position: sticky; top: 0; z-index: 50; }
+.topbar-title { font-size: 17px; font-weight: 700; color: var(--midnight); letter-spacing: -0.02em; }
+.content { flex: 1; padding: 24px 36px 60px; max-width: 680px; }
+.sec-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone); margin-bottom: 10px; margin-top: 28px; display: block; }
+.sec-label:first-child { margin-top: 0; }
+
+/* Section card */
+.section-card { background: var(--white); border: 1px solid var(--border); overflow: hidden; margin-bottom: 4px; }
+.section-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--offwhite); }
+.section-head-title { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--stone); text-transform: uppercase; }
+.edit-btn { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--stone); background: none; border: none; cursor: pointer; text-transform: uppercase; font-family: 'Inter', sans-serif; transition: color 0.15s; }
+.edit-btn:hover { color: var(--amber); }
+
+/* Fields */
+.field-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border); gap: 12px; }
+.field-row:last-child { border-bottom: none; }
+.field-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--stone); text-transform: uppercase; width: 110px; flex-shrink: 0; }
+.field-value { font-size: 13px; color: var(--midnight); flex: 1; }
+.field-value.muted { color: var(--stone); }
+.field-change { font-size: 11px; color: var(--stone); text-decoration: none; transition: color 0.15s; flex-shrink: 0; }
+.field-change:hover { color: var(--amber); }
+
+/* Membership card */
+.membership-inner { padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.mc-tier { font-size: 15px; font-weight: 700; color: var(--midnight); margin-bottom: 4px; }
+.mc-detail { font-size: 12px; color: var(--stone); line-height: 1.6; }
+.mc-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.btn { border-radius: 2px; padding: 9px 16px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
+.btn-ghost { background: transparent; color: var(--stone); border: 1px solid var(--border-dark); }
+.btn-ghost:hover { border-color: var(--midnight); color: var(--midnight); }
+.btn-primary { background: var(--amber); color: var(--midnight); border: none; }
+.btn-primary:hover { background: var(--amber-hover); }
+
+/* Payment */
+.payment-row { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+.payment-row:last-child { border-bottom: none; }
+.card-icon { width: 38px; height: 26px; background: var(--offwhite); border: 1px solid var(--border); border-radius: 2px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.card-info { flex: 1; }
+.card-name { font-size: 13px; font-weight: 600; color: var(--midnight); margin-bottom: 2px; }
+.card-exp { font-size: 11px; color: var(--stone); }
+.default-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: var(--amber); background: var(--amber-dim); border: 1px solid rgba(191,123,46,0.2); border-radius: 2px; padding: 2px 7px; text-transform: uppercase; }
+.remove-link { font-size: 11px; color: var(--stone); text-decoration: none; transition: color 0.15s; flex-shrink: 0; }
+.remove-link:hover { color: var(--midnight); }
+
+/* Billing history */
+.billing-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 20px; border-bottom: 1px solid var(--border); gap: 12px; }
+.billing-row:last-child { border-bottom: none; }
+.billing-date { font-size: 12px; color: var(--stone); width: 100px; flex-shrink: 0; }
+.billing-desc { font-size: 13px; color: var(--midnight); flex: 1; }
+.billing-amount { font-size: 13px; font-weight: 700; color: var(--midnight); flex-shrink: 0; }
+.billing-view-all { display: block; text-align: center; padding: 12px; font-size: 11px; font-weight: 600; color: var(--stone); text-decoration: none; transition: color 0.15s; background: var(--offwhite); }
+.billing-view-all:hover { color: var(--amber); }
+
+/* Danger zone */
+.danger-row { background: var(--danger); border: 1px solid var(--danger-border); padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.danger-title { font-size: 13px; font-weight: 700; color: var(--danger-text); margin-bottom: 3px; }
+.danger-sub { font-size: 12px; color: var(--stone); }
+.danger-btn { background: transparent; border: 1px solid var(--danger-border); border-radius: 2px; padding: 9px 18px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--danger-text); text-transform: uppercase; cursor: pointer; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
+.danger-btn:hover { background: var(--danger); border-color: rgba(180,60,60,0.4); }
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-top"><a href="gimilab_dashboard.html" class="wordmark">gimilab</a></div>
+    <nav class="sidebar-nav">
+    <a href="gimilab_dashboard.html" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="6" height="7"/><rect x="11" y="3" width="6" height="4"/><rect x="11" y="10" width="6" height="7"/><rect x="3" y="13" width="6" height="4"/></svg>
+      Dashboard
+    </a>
+    <a href="gimilab_rounds.html" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><line x1="5" y1="2" x2="5" y2="18"/><path d="M5 4h9l-2 4 2 4H5"/></svg>
+      My Rounds
+    </a>
+    <a href="gimilab_credits.html" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7.5"/><path d="M10 7v6M8.5 8.5h2.5a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2H11"/></svg>
+      Credits
+    </a>
+    <a href="gimilab_account.html" class="nav-link active">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="7" r="3.5"/><path d="M3 17c0-3.31 3.13-6 7-6s7 2.69 7 6"/></svg>
+      Account
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="member-tier-badge"><svg width="9" height="9" viewBox="0 0 10 10" fill="currentColor"><path d="M5 0l1.12 3.45H9.76L6.82 5.59l1.12 3.46L5 7 1.06 9.05l1.12-3.46L-.24 3.45H3.88z"/></svg>Core Member</div>
+    <div class="member-name">Marko</div>
+    <div class="member-email">marko@example.com</div>
+    <a href="#" class="signout-link"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 3h4v14h-4M8 14l4-4-4-4M12 10H3"/></svg>Sign out</a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar"><span class="topbar-title">My Account</span></header>
+  <div class="content">
+
+    <span class="sec-label">Profile</span>
+    <div class="section-card">
+      <div class="section-head"><span class="section-head-title">Personal Information</span><button class="edit-btn">Edit</button></div>
+      <div class="field-row"><span class="field-label">Name</span><span class="field-value">Marko</span></div>
+      <div class="field-row"><span class="field-label">Email</span><span class="field-value">marko@example.com</span><a href="#" class="field-change">Change →</a></div>
+      <div class="field-row"><span class="field-label">Password</span><span class="field-value muted">••••••••••</span><a href="#" class="field-change">Change →</a></div>
+      <div class="field-row"><span class="field-label">Member Since</span><span class="field-value">January 2025</span></div>
+    </div>
+
+    <span class="sec-label">Membership</span>
+    <div class="section-card">
+      <div class="membership-inner">
+        <div>
+          <div class="mc-tier">Core — $149 / month</div>
+          <div class="mc-detail">150 credits per cycle · Renews April 1, 2026<br>Member since January 2025</div>
+        </div>
+        <div class="mc-actions">
+          <a href="gimilab_credits.html" class="btn btn-ghost">Manage Plan</a>
+          <a href="gimilab_credits.html" class="btn btn-primary">Upgrade</a>
+        </div>
+      </div>
+    </div>
+
+    <span class="sec-label">Billing</span>
+    <div class="section-card">
+      <div class="section-head"><span class="section-head-title">Payment Method</span><button class="edit-btn">Add Card</button></div>
+      <div class="payment-row">
+        <div class="card-icon">
+          <svg width="22" height="14" viewBox="0 0 32 22" fill="none"><rect x="0.5" y="0.5" width="31" height="21" rx="2.5" fill="#f8f5f0" stroke="rgba(12,12,11,0.1)"/><rect x="0" y="7" width="32" height="5" fill="rgba(12,12,11,0.04)"/><circle cx="11" cy="11" r="5.5" fill="#d4802a" opacity="0.7"/><circle cx="18" cy="11" r="5.5" fill="#e09030" opacity="0.6"/></svg>
+        </div>
+        <div class="card-info"><div class="card-name">Visa ···· 4411</div><div class="card-exp">Expires 08/27</div></div>
+        <span class="default-badge">Default</span>
+        <a href="#" class="remove-link">Remove</a>
+      </div>
+    </div>
+
+    <span class="sec-label">Billing History</span>
+    <div class="section-card">
+      <div class="billing-row"><span class="billing-date">Mar 1, 2026</span><span class="billing-desc">Core Membership</span><span class="billing-amount">$149.00</span></div>
+      <div class="billing-row"><span class="billing-date">Feb 1, 2026</span><span class="billing-desc">Core Membership</span><span class="billing-amount">$149.00</span></div>
+      <div class="billing-row"><span class="billing-date">Jan 1, 2026</span><span class="billing-desc">Core Membership</span><span class="billing-amount">$149.00</span></div>
+      <a href="#" class="billing-view-all">View full billing history →</a>
+    </div>
+
+    <span class="sec-label">Danger Zone</span>
+    <div class="danger-row">
+      <div>
+        <div class="danger-title">Cancel Membership</div>
+        <div class="danger-sub">Access and credits remain active through the end of the billing period.</div>
+      </div>
+      <button class="danger-btn">Cancel Membership</button>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

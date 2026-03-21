@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gimilab — Credits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+:root { --midnight:#0C0C0B; --graphite:#1E1D1B; --amber:#BF7B2E; --amber-hover:#d48c37; --amber-dim:rgba(191,123,46,0.10); --amber-mid:rgba(191,123,46,0.20); --linen:#F4EEE3; --stone:#847C72; --smoke:#E5DDD3; --offwhite:#FDFAF6; --white:#FFFFFF; --border:rgba(12,12,11,0.09); --border-dark:rgba(12,12,11,0.15); --sidebar-w:228px; }
+body { font-family: 'Inter', sans-serif; background: var(--offwhite); color: var(--midnight); display: flex; min-height: 100vh; }
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; }
+.sidebar-top { padding: 26px 24px 22px; border-bottom: 1px solid var(--border); }
+.wordmark { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 26px; letter-spacing: -0.02em; color: var(--midnight); text-decoration: none; display: block; line-height: 1; }
+.sidebar-nav { flex: 1; padding: 18px 0; }
+.nav-label { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; color: var(--stone); text-transform: uppercase; padding: 0 24px; margin-bottom: 6px; opacity: 0.7; }
+.nav-link { display: flex; align-items: center; gap: 11px; padding: 10px 24px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: var(--stone); text-decoration: none; text-transform: uppercase; transition: color 0.15s, background 0.15s; position: relative; }
+.nav-link:hover { color: var(--midnight); background: var(--offwhite); }
+.nav-link.active { color: var(--midnight); }
+.nav-link.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 2px; height: 18px; background: var(--amber); border-radius: 0 1px 1px 0; }
+.nav-icon { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.5; }
+.nav-link.active .nav-icon { opacity: 1; }
+.sidebar-bottom { padding: 18px 24px; border-top: 1px solid var(--border); }
+.member-tier-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--amber-dim); border: 1px solid rgba(191,123,46,0.22); border-radius: 2px; padding: 4px 9px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--amber); text-transform: uppercase; margin-bottom: 12px; }
+.member-name { font-size: 13px; font-weight: 700; color: var(--midnight); margin-bottom: 1px; }
+.member-email { font-size: 11px; color: var(--stone); margin-bottom: 12px; }
+.signout-link { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--stone); text-decoration: none; text-transform: uppercase; transition: color 0.15s; display: flex; align-items: center; gap: 5px; }
+.signout-link:hover { color: var(--midnight); }
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 36px; border-bottom: 1px solid var(--border); background: var(--white); position: sticky; top: 0; z-index: 50; }
+.topbar-title { font-size: 17px; font-weight: 700; color: var(--midnight); letter-spacing: -0.02em; }
+.content { flex: 1; padding: 24px 36px 48px; max-width: 820px; }
+.sec-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone); margin-bottom: 10px; margin-top: 24px; display: block; }
+.sec-label:first-child { margin-top: 0; }
+
+/* Balance hero */
+.balance-hero { background: var(--white); border: 1px solid var(--border); border-left: 3px solid var(--amber); padding: 28px 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 4px; }
+.bal-number { font-size: 72px; font-weight: 700; color: var(--amber); letter-spacing: -0.05em; line-height: 1; }
+.bal-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--stone); margin-bottom: 8px; }
+.bal-sub { font-size: 13px; color: var(--stone); }
+.bal-sub strong { color: var(--midnight); font-weight: 600; }
+.bal-track-wrap { flex: 1; max-width: 260px; }
+.bal-track-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--stone); margin-bottom: 8px; }
+.bal-track { height: 3px; background: var(--border-dark); }
+.bal-fill { height: 100%; background: var(--amber); }
+.bal-renew { font-size: 11px; color: var(--stone); text-align: right; margin-top: 8px; }
+.bal-renew strong { color: var(--midnight); }
+
+/* Plan card */
+.plan-row { background: var(--white); border: 1px solid var(--border); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.plan-name { font-size: 15px; font-weight: 700; color: var(--midnight); margin-bottom: 3px; }
+.plan-detail { font-size: 12px; color: var(--stone); }
+.plan-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.btn { border-radius: 2px; padding: 9px 16px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
+.btn-ghost { background: transparent; color: var(--stone); border: 1px solid var(--border-dark); }
+.btn-ghost:hover { border-color: var(--midnight); color: var(--midnight); }
+.btn-primary { background: var(--amber); color: var(--midnight); border: none; }
+.btn-primary:hover { background: var(--amber-hover); }
+
+/* Tier grid */
+.tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tier-card { background: var(--white); border: 1px solid var(--border); padding: 20px 20px 22px; position: relative; }
+.tier-card.current { border-top: 2px solid var(--amber); }
+.current-tag { position: absolute; top: 10px; right: 10px; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: var(--amber); background: var(--amber-dim); border: 1px solid rgba(191,123,46,0.2); border-radius: 2px; padding: 2px 7px; text-transform: uppercase; }
+.tier-name { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--stone); margin-bottom: 10px; }
+.tier-card.current .tier-name { color: var(--amber); }
+.tier-price { font-size: 28px; font-weight: 700; color: var(--midnight); letter-spacing: -0.03em; line-height: 1; margin-bottom: 2px; }
+.tier-price sup { font-size: 14px; vertical-align: super; }
+.tier-price-sub { font-size: 11px; color: var(--stone); margin-bottom: 14px; }
+.tier-credits { font-size: 24px; font-weight: 700; color: var(--amber); letter-spacing: -0.02em; margin-bottom: 2px; }
+.tier-credits-label { font-size: 11px; color: var(--stone); margin-bottom: 14px; }
+.tier-select-btn { width: 100%; background: transparent; border: 1px solid var(--border-dark); border-radius: 2px; padding: 9px 0; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--stone); text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+.tier-select-btn:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+.tier-card.current .tier-select-btn { background: var(--amber-dim); border-color: rgba(191,123,46,0.25); color: var(--amber); cursor: default; }
+
+/* History */
+.history-row { display: flex; align-items: center; gap: 14px; background: var(--white); border: 1px solid var(--border); padding: 14px 18px; margin-bottom: 4px; }
+.history-row:last-child { margin-bottom: 0; }
+.history-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.history-dot.cr { background: var(--amber); }
+.history-dot.db { background: var(--stone); opacity: 0.4; }
+.history-main { flex: 1; }
+.history-title { font-size: 13px; font-weight: 600; color: var(--midnight); margin-bottom: 1px; }
+.history-sub { font-size: 11px; color: var(--stone); }
+.history-amount { font-size: 13px; font-weight: 700; }
+.history-amount.cr { color: var(--amber); }
+.history-amount.db { color: var(--stone); }
+.history-date { font-size: 11px; color: var(--stone); width: 56px; text-align: right; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-top"><a href="gimilab_dashboard.html" class="wordmark">gimilab</a></div>
+    <nav class="sidebar-nav">
+    <a href="gimilab_dashboard.html" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="6" height="7"/><rect x="11" y="3" width="6" height="4"/><rect x="11" y="10" width="6" height="7"/><rect x="3" y="13" width="6" height="4"/></svg>
+      Dashboard
+    </a>
+    <a href="gimilab_rounds.html" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><line x1="5" y1="2" x2="5" y2="18"/><path d="M5 4h9l-2 4 2 4H5"/></svg>
+      My Rounds
+    </a>
+    <a href="gimilab_credits.html" class="nav-link active">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7.5"/><path d="M10 7v6M8.5 8.5h2.5a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2H11"/></svg>
+      Credits
+    </a>
+    <a href="gimilab_account.html" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="7" r="3.5"/><path d="M3 17c0-3.31 3.13-6 7-6s7 2.69 7 6"/></svg>
+      Account
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="member-tier-badge"><svg width="9" height="9" viewBox="0 0 10 10" fill="currentColor"><path d="M5 0l1.12 3.45H9.76L6.82 5.59l1.12 3.46L5 7 1.06 9.05l1.12-3.46L-.24 3.45H3.88z"/></svg>Core Member</div>
+    <div class="member-name">Marko</div>
+    <div class="member-email">marko@example.com</div>
+    <a href="#" class="signout-link"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 3h4v14h-4M8 14l4-4-4-4M12 10H3"/></svg>Sign out</a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar"><span class="topbar-title">Credits</span></header>
+  <div class="content">
+
+    <span class="sec-label">Available Balance</span>
+    <div class="balance-hero">
+      <div>
+        <div class="bal-label">Credits Available</div>
+        <div class="bal-number">150</div>
+        <div class="bal-sub">of <strong>150 credits</strong> remaining this cycle</div>
+      </div>
+      <div class="bal-track-wrap">
+        <div class="bal-track-labels"><span>Used: 0</span><span>Total: 150</span></div>
+        <div class="bal-track"><div class="bal-fill" style="width:100%"></div></div>
+        <div class="bal-renew">Renews <strong>April 1, 2026</strong></div>
+      </div>
+    </div>
+
+    <span class="sec-label">Your Plan</span>
+    <div class="plan-row">
+      <div>
+        <div class="plan-name">Core — $149 / month</div>
+        <div class="plan-detail">150 credits per cycle · Renews April 1, 2026 · Visa ····4411</div>
+      </div>
+      <div class="plan-actions">
+        <a href="gimilab_membership.html" class="btn btn-ghost">Change Plan</a>
+        <a href="#" class="btn btn-primary">Buy More Credits</a>
+      </div>
+    </div>
+
+    <span class="sec-label">All Plans</span>
+    <div class="tier-grid">
+      <div class="tier-card">
+        <div class="tier-name">Casual</div>
+        <div class="tier-price"><sup>$</sup>99</div>
+        <div class="tier-price-sub">per month</div>
+        <div class="tier-credits">100</div>
+        <div class="tier-credits-label">credits / month</div>
+        <button class="tier-select-btn">Downgrade</button>
+      </div>
+      <div class="tier-card current">
+        <span class="current-tag">Current</span>
+        <div class="tier-name">Core</div>
+        <div class="tier-price"><sup>$</sup>149</div>
+        <div class="tier-price-sub">per month</div>
+        <div class="tier-credits">150</div>
+        <div class="tier-credits-label">credits / month</div>
+        <button class="tier-select-btn">Current Plan</button>
+      </div>
+      <div class="tier-card">
+        <div class="tier-name">Heavy</div>
+        <div class="tier-price"><sup>$</sup>199</div>
+        <div class="tier-price-sub">per month</div>
+        <div class="tier-credits">210</div>
+        <div class="tier-credits-label">credits / month</div>
+        <button class="tier-select-btn">Upgrade</button>
+      </div>
+    </div>
+
+    <span class="sec-label">Credit History</span>
+    <div class="history-row"><div class="history-dot cr"></div><div class="history-main"><div class="history-title">Credits renewed — Core plan</div><div class="history-sub">Monthly renewal</div></div><div class="history-amount cr">+150</div><div class="history-date">Mar 1</div></div>
+    <div class="history-row"><div class="history-dot db"></div><div class="history-main"><div class="history-title">Torrey Pines — South Course</div><div class="history-sub">Tee time booking · 7:42 AM</div></div><div class="history-amount db">−1</div><div class="history-date">Mar 15</div></div>
+    <div class="history-row"><div class="history-dot db"></div><div class="history-main"><div class="history-title">La Jolla Country Club</div><div class="history-sub">Tee time booking · 10:00 AM</div></div><div class="history-amount db">−2</div><div class="history-date">Mar 9</div></div>
+    <div class="history-row"><div class="history-dot cr"></div><div class="history-main"><div class="history-title">Credits renewed — Core plan</div><div class="history-sub">Monthly renewal</div></div><div class="history-amount cr">+150</div><div class="history-date">Feb 1</div></div>
+
+  </div>
+</div>
+</body>
+</html>

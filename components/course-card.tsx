@@ -85,7 +85,7 @@ export function CourseCard({ course }: CourseCardProps) {
         {/* CTA */}
         <div className="mt-auto pt-2">
           <Link
-            href={`/book?courseId=${course.id}`}
+            href={`/courses/${course.slug ?? course.id}`}
             className="block w-full rounded-lg py-2.5 text-center text-sm font-semibold transition-opacity hover:opacity-90 active:opacity-75 bg-[#4ade80] text-[#090f1a]"
           >
             Book a Tee Time

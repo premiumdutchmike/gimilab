@@ -218,6 +218,8 @@ interface PricingComparisonProps {
 ```
 Values for booking fee and courses are static (`—` and `All`). Monthly credits come from DB data passed down from the page.
 
+**Tier ordering:** The page must sort tiers into `['casual', 'core', 'heavy']` order before passing to this component, so comparison grid columns align with the column headers regardless of DB return order. Use: `tiers.sort((a, b) => ['casual','core','heavy'].indexOf(a.id) - ['casual','core','heavy'].indexOf(b.id))`.
+
 **Mobile (below 640px):** The comparison grid adds `overflow-x: auto` on its wrapper so the 4-column grid scrolls horizontally rather than overflowing the viewport. Tier blocks stack cleanly — the body flex row (credit count left, price right) stays as a row at all widths since both values are short.
 
 ---
