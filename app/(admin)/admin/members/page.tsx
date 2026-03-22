@@ -25,8 +25,10 @@ export default async function AdminMembersPage() {
   try {
     ;[stats, members] = await Promise.all([getAdminStats(), getAdminMembers()])
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : String(e)
-    return <pre style={{ padding: 40, color: '#ef4444', whiteSpace: 'pre-wrap' }}>{msg}</pre>
+    const msg = e instanceof Error
+      ? `${e.message}\n\nCause: ${(e as NodeJS.ErrnoException & { cause?: unknown }).cause ?? 'none'}\n\nStack: ${e.stack}`
+      : String(e)
+    return <pre style={{ padding: 40, color: '#ef4444', whiteSpace: 'pre-wrap', fontSize: 11 }}>{msg}</pre>
   }
 
   return (
