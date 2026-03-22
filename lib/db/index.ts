@@ -2,22 +2,21 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import * as schema from './schema'
 
-// In production, use explicit params to avoid URL-encoding issues with special chars in password.
-// SUPABASE_DB_PASSWORD is the decoded (plain text) password stored as a separate env var.
+// In production, use explicit params so special chars in the password are correctly decoded.
+// decodeURIComponent handles any %-encoding in the URL (e.g. %21 → !, %40 → @).
 function makeClient() {
   const isProd = process.env.NODE_ENV === 'production'
   const connStr = process.env.SUPABASE_DATABASE_URL!
 
-  if (isProd && process.env.SUPABASE_DB_PASSWORD) {
-    // Parse URL for host/user/db, use plain-text password directly
+  if (isProd) {
     const url = new URL(connStr)
     return postgres({
       host: url.hostname,
       port: Number(url.port) || 5432,
       user: url.username,
-      password: process.env.SUPABASE_DB_PASSWORD,
-      database: url.pathname.replace('/', ''),
-      ssl: 'require',
+      password: decodeURIComponent(url.password),
+      database: url.pathname.slice(1),
+      ssl: { rejectUnauthorized: false },
       max: 1,
       prepare: false,
     })
