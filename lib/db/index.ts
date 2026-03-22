@@ -9,7 +9,7 @@ const pool =
   globalForDb.pool ??
   new Pool({
     connectionString: process.env.SUPABASE_DATABASE_URL,
-    max: 10,
+    max: process.env.NODE_ENV === 'production' ? 2 : 10,
   })
 
 if (process.env.NODE_ENV !== 'production') {
