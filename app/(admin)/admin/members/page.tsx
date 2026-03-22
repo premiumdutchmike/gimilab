@@ -27,9 +27,13 @@ export default async function AdminMembersPage() {
   try {
     ;[stats, members] = await Promise.all([getAdminStats(), getAdminMembers()])
   } catch (e: unknown) {
+    const pw = process.env.SUPABASE_DB_PASSWORD
+    const dbUrl = process.env.SUPABASE_DATABASE_URL ?? ''
+    const urlPw = (() => { try { return new URL(dbUrl).password } catch { return '(parse error)' } })()
+    const diagnostic = `\n\n--- DIAGNOSTIC ---\nSUPABASE_DB_PASSWORD set: ${!!pw} | length: ${pw?.length ?? 0} | starts with %: ${pw?.startsWith('%') ?? false}\nURL password starts with %: ${urlPw.startsWith('%')} | url_pw_len: ${urlPw.length}\nNODE_ENV: ${process.env.NODE_ENV}`
     const msg = e instanceof Error
-      ? `${e.message}\n\nCause: ${(e as NodeJS.ErrnoException & { cause?: unknown }).cause ?? 'none'}\n\nStack: ${e.stack}`
-      : String(e)
+      ? `${e.message}\n\nCause: ${(e as NodeJS.ErrnoException & { cause?: unknown }).cause ?? 'none'}${diagnostic}\n\nStack: ${e.stack}`
+      : String(e) + diagnostic
     return <pre style={{ padding: 40, color: '#ef4444', whiteSpace: 'pre-wrap', fontSize: 11 }}>{msg}</pre>
   }
 
