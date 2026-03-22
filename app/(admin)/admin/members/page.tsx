@@ -28,8 +28,8 @@ export default async function AdminMembersPage() {
     ;[stats, members] = await Promise.all([getAdminStats(), getAdminMembers()])
   } catch (e: unknown) {
     const dbUrl = process.env.SUPABASE_DATABASE_URL ?? ''
-    const parsed = (() => { try { const u = new URL(dbUrl); return { host: u.hostname, port: u.port, user: u.username, pwLen: u.password.length } } catch { return null } })()
-    const diagnostic = `\n\n--- DIAGNOSTIC ---\nHOST: ${parsed?.host ?? 'parse error'}\nPORT: ${parsed?.port ?? '?'}\nUSER: ${parsed?.user ?? '?'}\nPW_LEN: ${parsed?.pwLen ?? 0}\nNODE_ENV: ${process.env.NODE_ENV}`
+    const parsed = (() => { try { const u = new URL(dbUrl); return { host: u.hostname, port: u.port, user: u.username, pwEncLen: u.password.length, pwDecLen: decodeURIComponent(u.password).length } } catch { return null } })()
+    const diagnostic = `\n\n--- DIAGNOSTIC ---\nHOST: ${parsed?.host ?? 'parse error'}\nPORT: ${parsed?.port ?? '?'}\nUSER: ${parsed?.user ?? '?'}\nPW_ENCODED_LEN: ${parsed?.pwEncLen ?? 0}\nPW_DECODED_LEN: ${parsed?.pwDecLen ?? 0}\nNODE_ENV: ${process.env.NODE_ENV}`
     const msg = e instanceof Error
       ? `${e.message}\n\nCause: ${(e as NodeJS.ErrnoException & { cause?: unknown }).cause ?? 'none'}${diagnostic}\n\nStack: ${e.stack}`
       : String(e) + diagnostic
