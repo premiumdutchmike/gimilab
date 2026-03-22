@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     )
 
   return NextResponse.json({
-    released: result.rowCount ?? 0,
+    released: Array.isArray(result) ? result.length : 0,
     timestamp: now.toISOString(),
   })
 }

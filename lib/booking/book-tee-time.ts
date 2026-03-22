@@ -24,7 +24,7 @@ export async function bookTeeTime(
     const slotResult = await tx.execute(
       sql`SELECT * FROM tee_time_slots WHERE id = ${slotId} FOR UPDATE`
     )
-    const slot = slotResult.rows[0] as {
+    const slot = (Array.isArray(slotResult) ? slotResult[0] : (slotResult as { rows?: unknown[] }).rows?.[0]) as {
       id: string
       course_id: string
       credit_cost: number
