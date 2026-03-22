@@ -70,7 +70,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Are all courses available on every plan?',
-    a: 'Yes. All three plans give you access to every course in the Gimilab network. The difference is simply how many credits you get each month — which determines how often you can play.',
+    a: 'Yes. All three plans give you access to every course in the Gimmelab network. The difference is simply how many credits you get each month — which determines how often you can play.',
   },
 ]
 
@@ -257,13 +257,13 @@ export default function PricingClient({ tiers }: { tiers: Tier[] }) {
 
       {/* Footer */}
       <footer className="pr-footer">
-        <Link href="/" className="pr-footer-wm">gimilab</Link>
+        <Link href="/" className="pr-footer-wm">gimmelab</Link>
         <div className="pr-footer-links">
           <Link href="/">Home</Link>
           <Link href="/courses">Courses</Link>
           <Link href="/login">Log In</Link>
         </div>
-        <span className="pr-footer-copy">© 2026 Gimilab</span>
+        <span className="pr-footer-copy">© 2026 Gimmelab</span>
       </footer>
 
       <style>{`

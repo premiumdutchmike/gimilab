@@ -6,7 +6,7 @@ import { and, eq, gt, count, desc, sql } from 'drizzle-orm'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 
-export const metadata = { title: 'Dashboard — gimilab' }
+export const metadata = { title: 'Dashboard — gimmelab' }
 
 function getGreeting(firstName: string): string {
   const hour = new Date().getHours()

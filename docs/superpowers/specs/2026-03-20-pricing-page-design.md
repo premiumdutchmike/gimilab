@@ -15,7 +15,7 @@ Redesign `app/(public)/pricing/page.tsx` from the old dark card style (`#090f1a`
 - `components/pricing-tier-card.tsx` — new component (replaces `pricing-tier-row.tsx`)
 - `components/pricing-comparison.tsx` — new static feature comparison grid
 
-**Out of scope:** DB schema, subscription logic, Stripe integration, rollover (not used).
+**Out of scope:** DB schema, subscription logic, Stripe integration. **Rollover is now implemented** — display per-tier rollover as a feature on the pricing cards (Casual: none, Core: 10%, Heavy: 15%).
 
 ---
 
@@ -39,11 +39,12 @@ This page uses the **B&W editorial design system** — not the legacy dark theme
 **Max content width:** `860px`, centered, `padding: 0 24px`
 **Background:** `#000`, `min-h-screen`
 
-**DB field mapping:** The page destructures only the needed fields before passing to components — discarding `rolloverMax`, `stripePriceId`, and any other DB columns not in the component props:
+**DB field mapping:** The page passes the fields needed for display including `rolloverPct` for the rollover feature line. Discard `stripePriceId` and any other DB columns not in the component props:
 ```ts
 const tiers = await db.select().from(subscriptionTiers)
 // Pass only what components need:
-tiers.map(({ id, name, monthlyPriceCents, monthlyCredits }) => ...)
+tiers.map(({ id, name, monthlyPriceCents, monthlyCredits, rolloverPct }) => ...)
+// rolloverPct: 0 = Casual (no rollover), 0.10 = Core, 0.15 = Heavy
 ```
 
 **Empty state:** If `tiers` is an empty array (e.g. DB not seeded), render a minimal fallback in place of the tier blocks:
@@ -249,7 +250,7 @@ Right: "← BACK TO HOME" — Next.js Link to /
 | `components/pricing-tier-row.tsx` | Replaced by `components/pricing-tier-card.tsx` |
 | `bg: #090f1a` | `bg: #000` |
 | Rounded card style | Sharp bordered blocks |
-| Rollover references | Removed entirely — not implemented |
+| Rollover references | Now implemented — show per-tier rollover % on pricing cards |
 
 ---
 

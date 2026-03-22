@@ -2,11 +2,12 @@ import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 import { eq, asc } from 'drizzle-orm'
 import { createClient } from '@/lib/supabase/server'
+import { getCreditBalance } from '@/lib/credits/ledger'
 import CoursesBrowser from '@/components/courses-browser'
 import { FALLBACK_COURSES, type CourseItem } from './fallback-courses'
 
 export const metadata = {
-  title: 'Member Courses — gimilab',
+  title: 'Member Courses — gimmelab',
   description: 'Browse every partner course. Book with monthly credits — no fees, no phone calls.',
 }
 
@@ -17,11 +18,10 @@ export default async function PublicCoursesPage() {
   const { data: { user } } = await supabase.auth.getUser()
   const isLoggedIn = !!user
 
-  const activeCourses = await db
-    .select()
-    .from(courses)
-    .where(eq(courses.status, 'active'))
-    .orderBy(asc(courses.name))
+  const [activeCourses, balance] = await Promise.all([
+    db.select().from(courses).where(eq(courses.status, 'active')).orderBy(asc(courses.name)),
+    user ? getCreditBalance(user.id) : Promise.resolve(undefined),
+  ])
 
   const displayCourses: CourseItem[] = activeCourses.length > 0
     ? activeCourses.map(c => ({
@@ -37,5 +37,5 @@ export default async function PublicCoursesPage() {
       }))
     : FALLBACK_COURSES
 
-  return <CoursesBrowser courses={displayCourses} isLoggedIn={isLoggedIn} />
+  return <CoursesBrowser courses={displayCourses} isLoggedIn={isLoggedIn} balance={balance} />
 }

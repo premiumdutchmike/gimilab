@@ -5,7 +5,7 @@ import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 
 export const metadata = {
-  title: 'gimilab — One membership. Every course.',
+  title: 'gimmelab — One membership. Every course.',
   description: 'Book tee times at any partner course using monthly credits. No booking fees, no phone calls.',
 }
 
@@ -129,7 +129,7 @@ export default async function HomePage() {
         </div>
         <div className="comparison-table">
           <div className="comp-col">
-            <div className="comp-tag">Without Gimilab / year</div>
+            <div className="comp-tag">Without Gimmelab / year</div>
             <div className="comp-line"><span>36 rounds × $85</span><span className="comp-line-value">$3,060</span></div>
             <div className="comp-line"><span>Booking fees</span><span className="comp-line-value">$180</span></div>
             <div className="comp-line"><span>Phone calls to pro shop</span><span className="comp-line-value" style={{ color: 'var(--stone)' }}>Endless</span></div>
@@ -139,7 +139,7 @@ export default async function HomePage() {
             </div>
           </div>
           <div className="comp-col-dark">
-            <div className="comp-tag-dark">With Gimilab Core / year</div>
+            <div className="comp-tag-dark">With Gimmelab Core / year</div>
             <div className="comp-line-dark"><span>$149/mo × 12</span><span className="comp-line-value-dark">$1,788</span></div>
             <div className="comp-line-dark"><span>Booking fees</span><span className="comp-line-value-dark" style={{ color: 'var(--amber)' }}>$0</span></div>
             <div className="comp-line-dark"><span>Phone calls</span><span className="comp-line-value-dark" style={{ color: 'var(--amber)' }}>Zero</span></div>
@@ -235,7 +235,7 @@ export default async function HomePage() {
         <div className="editorial-item">
           <img src="/imagery/a7ad9f79924f885fe8c6a8c3b35bded2.jpg" alt="The moment" />
           <div className="editorial-grad" />
-          <span className="wm" style={{ position: 'absolute', top: 20, left: 20, fontSize: 15, color: '#F4EEE3', opacity: 0.8 }}>gimilab</span>
+          <span className="wm" style={{ position: 'absolute', top: 20, left: 20, fontSize: 15, color: '#F4EEE3', opacity: 0.8 }}>gimmelab</span>
           <div className="editorial-body">
             <h3 className="hl editorial-title">The moment</h3>
             <div className="editorial-sub">Sundown · Golden hour</div>
@@ -258,7 +258,7 @@ export default async function HomePage() {
           <h2 className="hl voice-headline">Serious.<br />Not stuffy.<br />Bold.<br />Not loud.</h2>
         </div>
         <div>
-          <p className="voice-copy">Golf has a gatekeeping problem. Gimilab doesn&apos;t. Built for the player who loves the game without needing to perform it — all ages, all handicaps, all welcome.</p>
+          <p className="voice-copy">Golf has a gatekeeping problem. Gimmelab doesn&apos;t. Built for the player who loves the game without needing to perform it — all ages, all handicaps, all welcome.</p>
           <ul className="voice-list">
             <li>No country club membership required</li>
             <li>No hidden fees, no upsells</li>
@@ -339,7 +339,7 @@ export default async function HomePage() {
       <footer>
         <div className="footer-top">
           <div>
-            <Link href="/" className="wm footer-wordmark">gimilab</Link>
+            <Link href="/" className="wm footer-wordmark">gimmelab</Link>
             <p className="footer-blurb">Golf for real players. All ages, all skill levels, no gatekeeping.</p>
           </div>
           <div>
@@ -368,8 +368,8 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span className="footer-legal">© 2026 Gimilab. All rights reserved.</span>
-          <span className="footer-domain">gimilab.com</span>
+          <span className="footer-legal">© 2026 Gimmelab. All rights reserved.</span>
+          <span className="footer-domain">gimmelab.com</span>
         </div>
       </footer>
 

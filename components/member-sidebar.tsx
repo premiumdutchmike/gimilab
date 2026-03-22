@@ -75,7 +75,7 @@ export default function MemberSidebar({ fullName, email, tier, credits, creditRe
       <aside className="member-sidebar">
         {/* Wordmark */}
         <div className="sidebar-top">
-          <Link href="/dashboard" className="sidebar-wordmark">gimilab</Link>
+          <Link href="/dashboard" className="sidebar-wordmark">gimmelab</Link>
         </div>
 
         {/* Nav */}

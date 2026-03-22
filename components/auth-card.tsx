@@ -94,9 +94,9 @@ export function AuthCard({ defaultTab = 'signin', plan }: AuthCardProps) {
       {/* Minimal nav */}
       <nav style={{ background: '#fff', borderBottom: '1px solid rgba(12,12,11,0.09)', padding: '20px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href="/" style={{ fontFamily: 'var(--font-nunito), Nunito, sans-serif', fontWeight: 900, fontSize: 24, letterSpacing: '-0.02em', color: '#0C0C0B', textDecoration: 'none', lineHeight: 1 }}>
-          gimilab
+          gimmelab
         </Link>
-        <a href="mailto:help@gimilab.com" style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', color: '#847C72', textDecoration: 'none', textTransform: 'uppercase' as const }}>
+        <a href="mailto:help@gimmelab.com" style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', color: '#847C72', textDecoration: 'none', textTransform: 'uppercase' as const }}>
           Need help?
         </a>
       </nav>
@@ -209,7 +209,7 @@ export function AuthCard({ defaultTab = 'signin', plan }: AuthCardProps) {
               </button>
 
               <div style={{ marginTop: 20, textAlign: 'center', fontSize: 12, color: '#847C72' }}>
-                New to Gimilab?{' '}
+                New to Gimmelab?{' '}
                 <button
                   onClick={() => { setActiveTab('signup'); setError(null) }}
                   style={{ color: '#BF7B2E', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: 12, fontFamily: 'Inter, sans-serif' }}
@@ -224,7 +224,7 @@ export function AuthCard({ defaultTab = 'signin', plan }: AuthCardProps) {
           {activeTab === 'signup' && (
             <div>
               <div style={{ marginBottom: 28 }}>
-                <div style={{ fontSize: 22, fontWeight: 700, color: '#0C0C0B', letterSpacing: '-0.02em', marginBottom: 6 }}>Join Gimilab</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: '#0C0C0B', letterSpacing: '-0.02em', marginBottom: 6 }}>Join Gimmelab</div>
                 <div style={{ fontSize: 13, color: '#847C72', lineHeight: 1.5 }}>Book tee times at top courses with a single credit balance.</div>
               </div>
 
@@ -339,7 +339,7 @@ export function AuthCard({ defaultTab = 'signin', plan }: AuthCardProps) {
 
       {/* Bottom brand strip */}
       <div style={{ padding: '22px 40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderTop: '1px solid rgba(12,12,11,0.09)' }}>
-        <span style={{ fontSize: 11, color: '#847C72' }}>Gimilab — Book smarter, play more.</span>
+        <span style={{ fontSize: 11, color: '#847C72' }}>Gimmelab — Book smarter, play more.</span>
       </div>
 
     </div>

@@ -33,12 +33,12 @@ export default function PublicNav() {
         <nav className="light-nav">
           {isMinimal ? (
             <div className="light-nav-inner">
-              <Link href="/" className="light-wm">gimilab</Link>
+              <Link href="/" className="light-wm">gimmelab</Link>
               <Link href="/login" className="light-nav-login">Already a member? Log in →</Link>
             </div>
           ) : (
             <div className="light-nav-inner">
-              <Link href="/" className="light-wm">gimilab</Link>
+              <Link href="/" className="light-wm">gimmelab</Link>
               <ul className="light-nav-links">
                 <li><Link href="/#how-it-works">How It Works</Link></li>
                 <li><Link href="/courses" className={pathname.startsWith('/courses') ? 'active' : ''}>Courses</Link></li>
@@ -91,7 +91,7 @@ export default function PublicNav() {
       </div>
 
       <nav className="public-nav">
-        <Link href="/" className="wm nav-wordmark">gimilab</Link>
+        <Link href="/" className="wm nav-wordmark">gimmelab</Link>
         <ul className="nav-links">
           <li><Link href="/#how-it-works">How it works</Link></li>
           <li><Link href="/courses">Courses</Link></li>

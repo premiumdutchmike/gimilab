@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { AuthCard } from '@/components/auth-card'
 
 export const metadata: Metadata = {
-  title: 'Create Account — gimilab',
-  description: 'Join gimilab and start booking tee times at top courses with monthly credits.',
+  title: 'Create Account — gimmelab',
+  description: 'Join gimmelab and start booking tee times at top courses with monthly credits.',
 }
 
 export default async function SignupPage({

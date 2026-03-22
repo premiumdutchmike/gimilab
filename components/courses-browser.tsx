@@ -25,9 +25,11 @@ type TypeFilter = 'All' | 'Public' | 'Semi-Private' | 'Resort'
 export default function CoursesBrowser({
   courses,
   isLoggedIn,
+  balance,
 }: {
   courses: CourseItem[]
   isLoggedIn: boolean
+  balance?: number
 }) {
   const [search, setSearch] = useState('')
   const [region, setRegion] = useState('All Regions')
@@ -68,16 +70,38 @@ export default function CoursesBrowser({
           <p className="cb-sub">One membership. Every course in our network. Book with monthly credits — no green fees, no booking fees, ever.</p>
         </div>
         <div className="cb-hero-right">
-          <p className="cb-cta-note">Membership from $99/month</p>
-          <Link href="/pricing" className="cb-join-hero-btn">
-            Choose Your Plan
-            <span className="cb-arrow-ring">
-              <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="2" y1="6" x2="10" y2="6"/>
-                <polyline points="7 3 10 6 7 9"/>
-              </svg>
-            </span>
-          </Link>
+          {isLoggedIn ? (
+            <>
+              {balance !== undefined && (
+                <div className="cb-balance-pill">
+                  <span className="cb-balance-num">{balance}</span>
+                  <span className="cb-balance-label">Credits available</span>
+                </div>
+              )}
+              <Link href="/dashboard" className="cb-join-hero-btn">
+                Book a Tee Time
+                <span className="cb-arrow-ring">
+                  <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="2" y1="6" x2="10" y2="6"/>
+                    <polyline points="7 3 10 6 7 9"/>
+                  </svg>
+                </span>
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="cb-cta-note">Membership from $99/month</p>
+              <Link href="/pricing" className="cb-join-hero-btn">
+                Choose Your Plan
+                <span className="cb-arrow-ring">
+                  <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="2" y1="6" x2="10" y2="6"/>
+                    <polyline points="7 3 10 6 7 9"/>
+                  </svg>
+                </span>
+              </Link>
+            </>
+          )}
         </div>
       </div>
 
@@ -218,13 +242,13 @@ export default function CoursesBrowser({
 
       {/* Footer */}
       <footer className="cb-footer">
-        <Link href="/" className="cb-footer-wm">gimilab</Link>
+        <Link href="/" className="cb-footer-wm">gimmelab</Link>
         <div className="cb-footer-links">
           <Link href="/#how-it-works">How It Works</Link>
           <Link href="/pricing">Pricing</Link>
           <Link href="/courses">Courses</Link>
         </div>
-        <span className="cb-footer-copy">© 2026 Gimilab</span>
+        <span className="cb-footer-copy">© 2026 Gimmelab</span>
       </footer>
 
       <style>{`
@@ -234,6 +258,9 @@ export default function CoursesBrowser({
         .cb-sub { font-size: 15px; color: #847C72; line-height: 1.6; max-width: 480px; font-family: 'Inter', sans-serif; }
         .cb-hero-right { flex-shrink: 0; text-align: right; }
         .cb-cta-note { font-size: 12px; color: #847C72; margin-bottom: 10px; font-family: 'Inter', sans-serif; }
+        .cb-balance-pill { display: flex; align-items: baseline; gap: 7px; background: #FDFAF6; border: 1px solid rgba(191,123,46,0.3); border-radius: 2px; padding: 10px 18px; margin-bottom: 14px; }
+        .cb-balance-num { font-size: 28px; font-weight: 700; color: #BF7B2E; letter-spacing: -0.04em; line-height: 1; font-family: 'Inter', sans-serif; }
+        .cb-balance-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #847C72; font-family: 'Inter', sans-serif; }
         .cb-join-hero-btn { display: inline-flex; align-items: center; gap: 10px; background: #BF7B2E; color: #0C0C0B; border: none; border-radius: 2px; padding: 13px 24px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; transition: background 0.15s; }
         .cb-join-hero-btn:hover { background: #d48c37; }
         .cb-arrow-ring { width: 20px; height: 20px; border: 2px solid rgba(12,12,11,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; }

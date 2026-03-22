@@ -1,7 +1,8 @@
 import { db } from '@/lib/db'
-import { bookings, teeTimeSlots, creditLedger } from '@/lib/db/schema'
+import { bookings, teeTimeSlots, creditLedger, courses } from '@/lib/db/schema'
 import { eq, sql } from 'drizzle-orm'
 import { debitCredits } from '@/lib/credits/ledger'
+import { CREDIT_VALUE_CENTS } from '@/lib/stripe/client'
 import { randomUUID } from 'crypto'
 import type { Booking } from '@/lib/db/schema'
 
@@ -13,8 +14,11 @@ export interface BookingResult {
 // Uses SELECT FOR UPDATE to prevent race conditions on concurrent bookings.
 export async function bookTeeTime(
   userId: string,
-  slotId: string
+  slotId: string,
+  players = 1
 ): Promise<BookingResult> {
+  if (players < 1 || players > 4) throw new Error('INVALID_PLAYERS')
+
   return db.transaction(async (tx) => {
     // 1. Lock the slot row — prevents concurrent bookings of the same slot
     const slotResult = await tx.execute(
@@ -31,25 +35,36 @@ export async function bookTeeTime(
       throw new Error('SLOT_NOT_AVAILABLE')
     }
 
-    // 2. Generate IDs before debit so referenceId is set correctly
+    const totalCreditCost = slot.credit_cost * players
+
+    // 2. Fetch course payout rate
+    const [course] = await tx
+      .select({ payoutRate: courses.payoutRate })
+      .from(courses)
+      .where(eq(courses.id, slot.course_id))
+    const payoutRate = Number(course?.payoutRate ?? '0.70')
+    const payoutAmountCents = Math.floor(totalCreditCost * CREDIT_VALUE_CENTS * payoutRate)
+
+    // 3. Generate IDs before debit so referenceId is set correctly
     const qrCode = randomUUID()
     const bookingId = randomUUID()
 
-    // 3. Debit credits — balance check + insert run in the same transaction snapshot
-    await debitCredits(userId, slot.credit_cost, bookingId, tx)
+    // 4. Debit credits — balance check + insert run in the same transaction snapshot
+    await debitCredits(userId, totalCreditCost, bookingId, tx)
 
-    // 4. Create booking record
+    // 5. Create booking record
     const [booking] = await tx
       .insert(bookings)
       .values({
-        id: bookingId as unknown as undefined,
+        id: bookingId,
         userId,
         slotId,
         courseId: slot.course_id,
-        creditCost: slot.credit_cost,
+        creditCost: totalCreditCost,
         status: 'CONFIRMED',
         qrCode,
         payoutStatus: 'PENDING',
+        payoutAmountCents,
       })
       .returning()
 
@@ -118,7 +133,7 @@ export async function cancelBooking(
         userId,
         amount: refundAmount,
         type: 'BOOKING_REFUND',
-        referenceId: bookingId as unknown as undefined,
+        referenceId: bookingId,
         notes: `Refund for cancelled booking ${bookingId}`,
         expiresAt: null,
       })

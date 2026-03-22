@@ -163,7 +163,7 @@ const REVIEWS: Review[] = [
   },
   {
     id: 4,
-    quote: 'As someone who plays 3–4 times a month, the Heavy plan just makes sense. Credits roll over too — I\'ve never lost a single one.',
+    quote: 'As someone who plays 3–4 times a month, the Heavy plan just makes sense. Up to 15% of my unused credits carry to next month — I\'ve never wasted a single one.',
     author: 'Sarah K.',
     meta: 'Heavy Member · 6 months',
     avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',

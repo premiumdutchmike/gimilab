@@ -26,7 +26,7 @@ export default function MemberNav({ credits, firstName }: MemberNavProps) {
       <div className="member-nav-wrap">
         {/* Top bar */}
         <div className="member-topbar">
-          <Link href="/dashboard" className="wm member-wordmark">gimilab</Link>
+          <Link href="/dashboard" className="wm member-wordmark">gimmelab</Link>
           <Link href="/credits" className="member-credits-pill">
             <span className="member-credits-num">{credits}</span>
             <span className="member-credits-label">credits · {firstName}</span>

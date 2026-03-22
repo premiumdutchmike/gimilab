@@ -17,7 +17,7 @@ export async function generateMetadata({
   const { slug } = await params
   const course = FALLBACK_COURSES.find(c => c.slug === slug)
   return {
-    title: course ? `${course.name} — gimilab` : 'Course — gimilab',
+    title: course ? `${course.name} — gimmelab` : 'Course — gimmelab',
     description: course
       ? `Book ${course.name} with monthly credits. No green fees, no booking fees.`
       : 'Book with monthly credits — no green fees, no booking fees.',
@@ -183,7 +183,7 @@ export default async function CourseDetailPage({
           {/* About */}
           <div className="cd-section-title">About This Course</div>
           <p className="cd-about-text">
-            {course.name} is part of the Gimilab member network — available for booking with your monthly credits, with no green fees or booking fees ever. One of the finest courses in our network, offering a premier golf experience for members at every tier.
+            {course.name} is part of the Gimmelab member network — available for booking with your monthly credits, with no green fees or booking fees ever. One of the finest courses in our network, offering a premier golf experience for members at every tier.
           </p>
 
           {/* Photo strip */}
@@ -208,7 +208,7 @@ export default async function CourseDetailPage({
 
           {/* Tee Times */}
           <div className="cd-section-title">Available Tee Times</div>
-          <TeeTimes courseSlug={course.slug} isLoggedIn={isLoggedIn} />
+          <TeeTimes courseId={course.id} isLoggedIn={isLoggedIn} />
         </div>
 
         {/* Sidebar */}
@@ -220,7 +220,7 @@ export default async function CourseDetailPage({
               <div className="cd-sb-sub">
                 {isLoggedIn
                   ? `Use your monthly credits to book ${course.name}.`
-                  : `Join Gimilab to unlock tee time booking at ${course.name} and every course in our network.`}
+                  : `Join Gimmelab to unlock tee time booking at ${course.name} and every course in our network.`}
               </div>
             </div>
             <div className="cd-sb-body">
@@ -298,13 +298,13 @@ export default async function CourseDetailPage({
 
       {/* Footer */}
       <footer className="cd-footer">
-        <Link href="/" className="cd-footer-wm">gimilab</Link>
+        <Link href="/" className="cd-footer-wm">gimmelab</Link>
         <div className="cd-footer-links">
           <Link href="/#how-it-works">How It Works</Link>
           <Link href="/pricing">Pricing</Link>
           <Link href="/courses">Courses</Link>
         </div>
-        <span className="cd-footer-copy">© 2026 Gimilab</span>
+        <span className="cd-footer-copy">© 2026 Gimmelab</span>
       </footer>
 
       <style>{`

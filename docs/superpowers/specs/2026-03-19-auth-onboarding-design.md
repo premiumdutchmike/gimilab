@@ -15,11 +15,13 @@ This is the first sub-project in the OneGolf build sequence. Nothing else works 
 
 ## Subscription Tiers (source of truth: `lib/stripe/client.ts`)
 
-| Tier | Price | Credits/mo | Rollover Max |
-|------|-------|-----------|--------------|
-| Casual | $99/mo | 100 | 50 |
-| Core | $149/mo | 150 | 75 |
-| Heavy | $199/mo | 210 | 105 |
+| Tier | Price | Credits/mo | Rollover |
+|------|-------|-----------|----------|
+| Casual | $99/mo | 100 | None — credits expire on billing date |
+| Core | $149/mo | 150 | 10% of unused credits roll over (1 month cap) |
+| Heavy | $199/mo | 210 | 15% of unused credits roll over (1 month cap) |
+
+**Rollover is tier-based.** Casual credits expire on billing date — never imply otherwise. Core and Heavy members roll over a percentage of unused credits for one additional month; after that they expire. Surface rollover as a benefit on Core/Heavy tier displays only.
 
 ---
 
@@ -45,7 +47,6 @@ This is the first sub-project in the OneGolf build sequence. Nothing else works 
 - Tier name (Casual / Core / Heavy)
 - Monthly price ($99 / $149 / $199)
 - Credits per month (100 / 150 / 210)
-- Rollover max (up to 50 / 75 / 105)
 - "Most Popular" badge on Core
 
 **Interaction:** Clicking any row navigates to `/signup?plan=<tier>` with the chosen tier in the query param.
@@ -150,7 +151,7 @@ if (existing.length > 0) return  // already processed
 **Layout:**
 - Large golf emoji + "You're in, [First Name]!"
 - Credit balance: "X credits are in your wallet" (amount varies by tier)
-- One-paragraph explainer: how credits work, rollover, what a typical round costs
+- One-paragraph explainer: how credits work, what a typical round costs, that credits reset at each billing date
 - Single CTA: "Start Booking →" → `/dashboard`
 
 **Behaviour:**

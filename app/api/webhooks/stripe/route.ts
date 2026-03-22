@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { stripe, TIER_CREDITS } from '@/lib/stripe/client'
 import { db } from '@/lib/db'
-import { users, creditLedger } from '@/lib/db/schema'
+import { users, creditLedger, partners } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
 
 // Stripe requires the raw body for signature verification
@@ -135,6 +135,27 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     .where(eq(users.id, user.id))
 }
 
+async function handleAccountUpdated(account: Stripe.Account) {
+  const [partner] = await db
+    .select()
+    .from(partners)
+    .where(eq(partners.stripeConnectId, account.id))
+
+  if (!partner) return
+
+  const status =
+    account.charges_enabled && account.payouts_enabled
+      ? 'active'
+      : account.requirements?.disabled_reason
+      ? 'restricted'
+      : 'pending'
+
+  await db
+    .update(partners)
+    .set({ stripeConnectStatus: status, updatedAt: new Date() })
+    .where(eq(partners.id, partner.id))
+}
+
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   if (session.mode !== 'subscription') return
 
@@ -202,6 +223,9 @@ export async function POST(request: NextRequest) {
         break
       case 'checkout.session.completed':
         await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session)
+        break
+      case 'account.updated':
+        await handleAccountUpdated(event.data.object as Stripe.Account)
         break
       default:
         // Unhandled event type — not an error

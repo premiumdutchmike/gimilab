@@ -11,9 +11,12 @@ const activeTabs = [
   { label: 'Dashboard', href: '/partner/dashboard' },
   { label: 'Course', href: '/partner/course' },
   { label: 'Inventory', href: '/partner/inventory' },
+  { label: 'Bookings', href: '/partner/bookings' },
+  { label: 'Payouts', href: '/partner/payouts' },
+  { label: 'Settings', href: '/partner/settings' },
 ] as const
 
-const lockedTabs = ['Bookings', 'Payouts'] as const
+const lockedTabs: string[] = []
 
 export default function PartnerNav({ businessName }: PartnerNavProps) {
   const pathname = usePathname()
@@ -45,7 +48,7 @@ export default function PartnerNav({ businessName }: PartnerNavProps) {
             textDecoration: 'none',
           }}
         >
-          ONEGOLF
+          GIMMELAB
         </Link>
         <span
           style={{

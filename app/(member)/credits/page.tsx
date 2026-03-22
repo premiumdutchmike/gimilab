@@ -6,7 +6,7 @@ import { db } from '@/lib/db'
 import { users } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 
-export const metadata = { title: 'Credits — gimilab' }
+export const metadata = { title: 'Credits — gimmelab' }
 
 const TIER_CONFIG: Record<string, { name: string; price: number; credits: number }> = {
   casual: { name: 'Casual', price: 99, credits: 100 },

@@ -84,7 +84,7 @@ export function BookingClient({ courseOptions, balance }: BookingClientProps) {
   function handleConfirm() {
     if (!picked) return
     startBooking(async () => {
-      const res = await confirmBooking(picked.slotId)
+      const res = await confirmBooking(picked.slotId, players)
       if (res.error) {
         setBookingError(res.error)
       } else {

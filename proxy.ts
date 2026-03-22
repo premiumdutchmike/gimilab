@@ -35,7 +35,11 @@ export async function proxy(request: NextRequest) {
 
   // ── Public routes — no auth needed ──────────────────────────────────────
   const publicPaths = ['/', '/pricing', '/about', '/partner', '/partner/apply', '/signup', '/login', '/welcome']
-  const isPublicPath = publicPaths.some(p => pathname === p || pathname.startsWith('/auth') || pathname.startsWith('/welcome') || pathname.startsWith('/api/'))
+  const isPublicPath = publicPaths.some(p => pathname === p)
+    || pathname.startsWith('/auth')
+    || pathname.startsWith('/welcome')
+    || pathname.startsWith('/api/')
+    || pathname.startsWith('/courses') // course listing + detail are public (auth state handled in page)
 
   // ── Unauthenticated: redirect to login ──────────────────────────────────
   if (!user && !isPublicPath) {
@@ -52,13 +56,13 @@ export async function proxy(request: NextRequest) {
   // Get role from user metadata
   const role = user.user_metadata?.role as string | undefined
 
-  // ── Member routes (/dashboard, /book, /rounds, /credits, /courses, /account)
+  // ── Member routes (/dashboard, /book, /rounds, /credits, /account)
+  // Note: /courses is intentionally excluded — it's a public page that adapts to auth state
   const isMemberRoute =
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/book') ||
     pathname.startsWith('/rounds') ||
     pathname.startsWith('/credits') ||
-    pathname.startsWith('/courses') ||
     pathname.startsWith('/account')
 
   // ── Partner routes (/partner/dashboard and below)

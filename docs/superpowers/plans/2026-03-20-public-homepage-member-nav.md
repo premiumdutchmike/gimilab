@@ -247,7 +247,7 @@ const steps = [
   {
     num: '01',
     title: 'Choose your membership',
-    desc: 'Casual, Core, or Heavy. Credits renew monthly. Unused credits roll over — up to half your monthly allowance.',
+    desc: 'Casual, Core, or Heavy. Credits renew monthly. Core and Heavy members roll over unused credits — up to 10% or 15% respectively.',
     stat: 'From\n$99/mo',
   },
   {

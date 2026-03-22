@@ -18,6 +18,9 @@ export const TIER_CREDITS = {
   heavy: 210,
 } as const
 
+// 1 credit = $1.00. Used for payout calculations.
+export const CREDIT_VALUE_CENTS = 100
+
 // Rollover max per tier (50% of monthly allocation)
 export const TIER_ROLLOVER_MAX = {
   casual: 50,

@@ -5,7 +5,7 @@ import { users } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { AccountClient } from './account-client'
 
-export const metadata = { title: 'My Account — gimilab' }
+export const metadata = { title: 'My Account — gimmelab' }
 
 const TIER_CONFIG: Record<string, { name: string; price: number; credits: number }> = {
   casual: { name: 'Casual', price: 99,  credits: 100 },

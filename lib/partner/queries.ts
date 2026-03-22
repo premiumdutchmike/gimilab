@@ -1,7 +1,7 @@
 import { cache } from 'react'
 import { db } from '@/lib/db'
-import { partners, courses, teeTimeBlocks, teeTimeSlots } from '@/lib/db/schema'
-import { eq, desc, asc, and, gte, lt } from 'drizzle-orm'
+import { partners, courses, teeTimeBlocks, teeTimeSlots, bookings, users, payoutTransfers } from '@/lib/db/schema'
+import { eq, desc, asc, and, gte, lt, or, inArray, sum, count, isNull } from 'drizzle-orm'
 
 export const getPartnerByUserId = cache(async function getPartnerByUserId(userId: string) {
   const rows = await db
@@ -29,6 +29,76 @@ export const getPartnerBlocks = cache(async function getPartnerBlocks(partnerId:
     .where(eq(courses.partnerId, partnerId))
     .orderBy(desc(teeTimeBlocks.createdAt))
   return rows.map((r) => r.block)
+})
+
+export const getPartnerBookings = cache(async function getPartnerBookings(
+  courseId: string,
+  filter: 'upcoming' | 'past' = 'upcoming',
+) {
+  const today = new Date().toISOString().split('T')[0]
+
+  const conditions = [eq(bookings.courseId, courseId)]
+
+  if (filter === 'upcoming') {
+    conditions.push(gte(teeTimeSlots.date, today))
+    conditions.push(eq(bookings.status, 'CONFIRMED'))
+  } else {
+    conditions.push(
+      or(
+        lt(teeTimeSlots.date, today),
+        inArray(bookings.status, ['COMPLETED', 'CANCELLED', 'NO_SHOW']),
+      )!
+    )
+  }
+
+  const rows = await db
+    .select({
+      bookingId: bookings.id,
+      status: bookings.status,
+      creditCost: bookings.creditCost,
+      payoutStatus: bookings.payoutStatus,
+      createdAt: bookings.createdAt,
+      date: teeTimeSlots.date,
+      startTime: teeTimeSlots.startTime,
+      memberName: users.fullName,
+      memberEmail: users.email,
+    })
+    .from(bookings)
+    .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
+    .innerJoin(users, eq(bookings.userId, users.id))
+    .where(and(...conditions))
+    .orderBy(asc(teeTimeSlots.date), asc(teeTimeSlots.startTime))
+
+  return rows
+})
+
+export const getPartnerPayoutSummary = cache(async function getPartnerPayoutSummary(partnerId: string) {
+  const course = await getPartnerCourse(partnerId)
+  if (!course) return { pendingCents: 0, pendingCount: 0, totalPaidCents: 0 }
+
+  const [pending] = await db
+    .select({ total: sum(bookings.payoutAmountCents), cnt: count() })
+    .from(bookings)
+    .where(and(eq(bookings.courseId, course.id), eq(bookings.payoutStatus, 'PENDING')))
+
+  const [paid] = await db
+    .select({ total: sum(bookings.payoutAmountCents) })
+    .from(bookings)
+    .where(and(eq(bookings.courseId, course.id), eq(bookings.payoutStatus, 'PROCESSED')))
+
+  return {
+    pendingCents: Number(pending?.total ?? 0),
+    pendingCount: Number(pending?.cnt ?? 0),
+    totalPaidCents: Number(paid?.total ?? 0),
+  }
+})
+
+export const getPartnerPayoutTransfers = cache(async function getPartnerPayoutTransfers(partnerId: string) {
+  return db
+    .select()
+    .from(payoutTransfers)
+    .where(eq(payoutTransfers.partnerId, partnerId))
+    .orderBy(desc(payoutTransfers.createdAt))
 })
 
 export const getUpcomingSlots = cache(async function getUpcomingSlots(courseId: string, days = 14) {

@@ -58,6 +58,19 @@ export const partners = pgTable('partners', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
+// ─── Payout Transfers (batched Stripe transfers to partners) ─────────────────
+export const payoutTransfers = pgTable('payout_transfers', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  partnerId: uuid('partner_id').references(() => partners.id).notNull(),
+  stripeTransferId: text('stripe_transfer_id').unique(), // null until Stripe confirms
+  amountCents: integer('amount_cents').notNull(),
+  bookingCount: integer('booking_count').notNull(),
+  status: text('status').default('PENDING').notNull(), // 'PENDING' | 'COMPLETED' | 'FAILED'
+  failedReason: text('failed_reason'),
+  completedAt: timestamp('completed_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+})
+
 // ─── Courses ─────────────────────────────────────────────────────────────────
 export const courses = pgTable('courses', {
   id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
@@ -126,6 +139,7 @@ export const bookings = pgTable('bookings', {
   qrCode: text('qr_code'), // unique check-in code
   payoutStatus: text('payout_status').default('PENDING'), // 'PENDING' | 'PROCESSED' | 'HELD'
   payoutAmountCents: integer('payout_amount_cents'), // actual $ paid to course
+  payoutTransferId: uuid('payout_transfer_id').references(() => payoutTransfers.id),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
@@ -167,6 +181,12 @@ export const usersRelations = relations(users, ({ one, many }) => ({
 export const partnersRelations = relations(partners, ({ one, many }) => ({
   user: one(users, { fields: [partners.userId], references: [users.id] }),
   courses: many(courses),
+  payoutTransfers: many(payoutTransfers),
+}))
+
+export const payoutTransfersRelations = relations(payoutTransfers, ({ one, many }) => ({
+  partner: one(partners, { fields: [payoutTransfers.partnerId], references: [partners.id] }),
+  bookings: many(bookings),
 }))
 
 export const coursesRelations = relations(courses, ({ one, many }) => ({
@@ -193,6 +213,7 @@ export const bookingsRelations = relations(bookings, ({ one }) => ({
   slot: one(teeTimeSlots, { fields: [bookings.slotId], references: [teeTimeSlots.id] }),
   course: one(courses, { fields: [bookings.courseId], references: [courses.id] }),
   rating: one(ratings, { fields: [bookings.id], references: [ratings.bookingId] }),
+  payoutTransfer: one(payoutTransfers, { fields: [bookings.payoutTransferId], references: [payoutTransfers.id] }),
 }))
 
 export const creditLedgerRelations = relations(creditLedger, ({ one }) => ({
@@ -222,6 +243,8 @@ export type CreditLedgerEntry = typeof creditLedger.$inferSelect
 export type NewCreditLedgerEntry = typeof creditLedger.$inferInsert
 export type Rating = typeof ratings.$inferSelect
 export type NewRating = typeof ratings.$inferInsert
+export type PayoutTransfer = typeof payoutTransfers.$inferSelect
+export type NewPayoutTransfer = typeof payoutTransfers.$inferInsert
 export type SubscriptionTier = typeof subscriptionTiers.$inferSelect
 
 export type LedgerEntryType =

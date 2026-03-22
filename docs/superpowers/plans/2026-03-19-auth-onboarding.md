@@ -660,7 +660,7 @@ export function PricingTierRow({
             )}
           </div>
           <p className="text-sm text-white/50 mt-0.5">
-            {monthlyCredits} credits · up to {rolloverMax} rollover
+            {monthlyCredits} credits{rolloverMax > 0 ? ` · up to ${rolloverMax}% rollover` : ' · no rollover'}
           </p>
         </div>
       </div>
@@ -716,7 +716,7 @@ export default async function PricingPage() {
         </div>
 
         <p className="text-center text-white/30 text-xs mt-8">
-          Cancel anytime. Credits roll over each month (up to your tier max).
+          Cancel anytime. Core and Heavy members roll over unused credits each month.
         </p>
       </div>
     </main>
@@ -1258,8 +1258,11 @@ export function WelcomeCredits({ userId, firstName, tierName, expectedCredits }:
         <p className="text-green-400 text-sm font-semibold mb-1">How credits work</p>
         <p className="text-white/50 text-sm leading-relaxed">
           Each tee time costs credits based on the course, time, and demand.
-          Unused credits roll over each month — {tierName} members keep up to{' '}
-          {tierName === 'Casual' ? '50' : tierName === 'Core' ? '75' : '105'}.
+          {tierName === 'Casual'
+            ? ' Credits reset each month — use them or lose them.'
+            : tierName === 'Core'
+            ? ' Up to 10% of unused credits roll over to the next month, then expire.'
+            : ' Up to 15% of unused credits roll over to the next month, then expire.'}
         </p>
       </div>
 

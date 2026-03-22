@@ -90,7 +90,7 @@ Three rows, each `border-bottom: 1px solid #111`. No card wrappers. Flex row per
 | Aside (`160px`) | Stat label in `10px` uppercase, `color: #222` |
 
 Steps:
-1. **Choose your membership** — "Casual, Core, or Heavy. Credits renew monthly. Unused credits roll over — up to half your monthly allowance." / Aside: `From $99/mo`
+1. **Choose your membership** — "Casual, Core, or Heavy. Credits renew monthly. Core and Heavy members roll over unused credits — up to 10% or 15% respectively." / Aside: `From $99/mo`
 2. **Browse partner courses** — "Find courses near you. View live availability. Filter by date, time, and players — no phone calls, no waiting." / Aside: `Any course`
 3. **Book with credits** — "Confirm in seconds. Show your QR code at the course. No surprise fees. Ever." / Aside: `Zero fees`
 

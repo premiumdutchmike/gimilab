@@ -4,10 +4,56 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { db } from '@/lib/db'
-import { courses } from '@/lib/db/schema'
+import { courses, partners } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { getPartnerByUserId, getPartnerCourse } from '@/lib/partner/queries'
 import { createCourseSchema } from '@/lib/validations'
+import { stripe } from '@/lib/stripe/client'
+
+export async function initiateStripeConnect(): Promise<{ url?: string; error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated.' }
+
+  const partner = await getPartnerByUserId(user.id)
+  if (!partner) return { error: 'Partner account not found.' }
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const refreshUrl = `${baseUrl}/partner/settings?refresh=1`
+  const returnUrl  = `${baseUrl}/partner/settings?connected=1`
+
+  try {
+    // Reuse existing Connect account if already created, otherwise create a new one
+    let connectId = partner.stripeConnectId
+    if (!connectId) {
+      const account = await stripe.accounts.create({
+        type: 'express',
+        country: 'US',
+        capabilities: {
+          card_payments: { requested: true },
+          transfers: { requested: true },
+        },
+      })
+      connectId = account.id
+      await db
+        .update(partners)
+        .set({ stripeConnectId: connectId, stripeConnectStatus: 'pending', updatedAt: new Date() })
+        .where(eq(partners.id, partner.id))
+    }
+
+    const accountLink = await stripe.accountLinks.create({
+      account: connectId,
+      refresh_url: refreshUrl,
+      return_url: returnUrl,
+      type: 'account_onboarding',
+    })
+
+    return { url: accountLink.url }
+  } catch (err) {
+    console.error('[initiateStripeConnect]', err)
+    return { error: 'Failed to start Stripe Connect. Please try again.' }
+  }
+}
 
 export async function createCourse(formData: FormData): Promise<{ error: string } | never> {
   const supabase = await createClient()

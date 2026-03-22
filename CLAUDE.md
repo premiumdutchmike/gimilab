@@ -1,4 +1,4 @@
-# OneGolf — Claude Code Reference
+# Gimmelab — Claude Code Reference
 
 A credit-based golf access SaaS. Three systems fused together: a fintech-grade **credit ledger**, a real-time **tee time inventory engine**, and an **AI-native UX layer**.
 
@@ -45,11 +45,13 @@ Resend + React Email → transactional email
 
 ## Subscription Tiers
 
-| Tier | Price | Credits/mo | Rollover Max |
-|------|-------|-----------|--------------|
-| Casual | $99/mo | 100 | 50 |
-| Core | $149/mo | 150 | 75 |
-| Heavy | $199/mo | 210 | 105 |
+| Tier | Price | Credits/mo | Rollover |
+|------|-------|-----------|----------|
+| Casual | $99/mo | 100 | None — credits expire on billing date |
+| Core | $149/mo | 150 | 10% of unused credits roll over — 1-month cap, then expire |
+| Heavy | $199/mo | 210 | 15% of unused credits roll over — 1-month cap, then expire |
+
+**Rollover is tier-based.** Casual has no rollover. Core and Heavy roll over a percentage of unused credits for one additional month only — after that they expire. Rollover is processed by the nightly cron at billing date.
 
 Top-up credits expire in 90 days. Bonus credits expire in 60 days.
 
@@ -60,7 +62,8 @@ Top-up credits expire in 90 days. Bonus credits expire in 60 days.
 - Balance = `SUM(amount)` on the `credit_ledger` table — always computed.
 - Every credit event is an immutable new row — never UPDATE ledger rows.
 - Use `getCreditBalance(userId)` from `lib/credits/ledger.ts`.
-- Ledger entry types: `SUBSCRIPTION_GRANT` | `BOOKING_DEBIT` | `BOOKING_REFUND` | `TOP_UP_PURCHASE` | `ADMIN_ADJUSTMENT` | `CREDIT_EXPIRY` | `BONUS_GRANT`
+- Ledger entry types: `SUBSCRIPTION_GRANT` | `BOOKING_DEBIT` | `BOOKING_REFUND` | `TOP_UP_PURCHASE` | `ADMIN_ADJUSTMENT` | `CREDIT_EXPIRY` | `BONUS_GRANT` | `ROLLOVER_GRANT`
+- `ROLLOVER_GRANT` — inserted at billing date for Core/Heavy members; amount = floor(unused_credits × rollover_pct); expires after 1 month
 
 ### Booking Engine
 - **ALWAYS** use `db.transaction()` for bookings — credit debit + slot update must be atomic.
@@ -171,7 +174,7 @@ CRON_SECRET
 
 - Dark theme default: bg `#090f1a`, surface `#0f1923`
 - Accent green: `#4ade80` (golf/member), sky blue: `#38bdf8` (partner), purple: `#a855f7` (AI/admin), amber: `#fbbf24` (warnings)
-- Typography: Inter for UI, JetBrains Mono for code/numbers/IDs
+- Typography: Geist for all headlines and UI, Nunito 900 for wordmark only (never for headlines), Geist Mono for code/numbers/IDs
 - Mobile-first PWA — golfers book from parking lots
 - Animations: Motion (tasteful — credit balance counters, booking confirmations)
 

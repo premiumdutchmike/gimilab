@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db'
 import { teeTimeSlots, courses } from '@/lib/db/schema'
-import { and, eq, lt, gte, sql } from 'drizzle-orm'
+import { and, eq, lt, gte } from 'drizzle-orm'
 import { createClient } from '@/lib/supabase/server'
 
 export type CourseSlot = {
@@ -19,6 +19,36 @@ export type CourseWithSlots = {
   amenities: string[]
   baseCreditCost: number
   slots: CourseSlot[]
+}
+
+// Public — no auth required. Used on the course detail page to show real availability.
+export async function getPublicSlotsByCourse(
+  courseId: string,
+  date: string,
+): Promise<{ slots: CourseSlot[]; error?: string }> {
+  try {
+    const rows = await db
+      .select({
+        id: teeTimeSlots.id,
+        startTime: teeTimeSlots.startTime,
+        creditCost: teeTimeSlots.creditCost,
+      })
+      .from(teeTimeSlots)
+      .innerJoin(courses, eq(teeTimeSlots.courseId, courses.id))
+      .where(
+        and(
+          eq(teeTimeSlots.courseId, courseId),
+          eq(teeTimeSlots.date, date),
+          eq(teeTimeSlots.status, 'AVAILABLE'),
+          eq(courses.status, 'active'),
+        )
+      )
+      .orderBy(teeTimeSlots.startTime)
+
+    return { slots: rows.map(r => ({ id: r.id, startTime: r.startTime, creditCost: r.creditCost })) }
+  } catch {
+    return { slots: [], error: 'Failed to load tee times.' }
+  }
 }
 
 export async function getSlotsByDate(

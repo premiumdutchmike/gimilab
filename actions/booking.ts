@@ -29,6 +29,7 @@ export async function bookSlot(slotId: string): Promise<{ error: string } | neve
 
 export async function confirmBooking(
   slotId: string,
+  players = 1,
 ): Promise<{ error?: string; success?: boolean }> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -36,7 +37,7 @@ export async function confirmBooking(
   if (!user) return { error: 'Not authenticated.' }
 
   try {
-    await bookTeeTime(user.id, slotId)
+    await bookTeeTime(user.id, slotId, players)
   } catch (err) {
     const message = err instanceof Error ? err.message : ''
     if (message === 'SLOT_NOT_AVAILABLE') {
@@ -44,6 +45,9 @@ export async function confirmBooking(
     }
     if (message === 'INSUFFICIENT_CREDITS') {
       return { error: 'Not enough credits to book this slot.' }
+    }
+    if (message === 'INVALID_PLAYERS') {
+      return { error: 'Invalid number of players.' }
     }
     return { error: 'Something went wrong. Please try again.' }
   }

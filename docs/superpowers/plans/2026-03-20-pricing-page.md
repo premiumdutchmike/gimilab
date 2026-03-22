@@ -331,7 +331,7 @@ git commit -m "feat: add PricingComparison static feature grid"
 **Files:**
 - Modify: `app/(public)/pricing/page.tsx`
 
-Fetch tiers from DB, sort to `['casual', 'core', 'heavy']` order, destructure only needed fields (discarding `rolloverMax`, `stripePriceId`), render new components. Empty state if DB returns nothing.
+Fetch tiers from DB, sort to `['casual', 'core', 'heavy']` order, pass `rolloverPct` to components (Casual: 0, Core: 0.10, Heavy: 0.15), discard `stripePriceId` and other unused DB fields. Render new components. Empty state if DB returns nothing.
 
 **Note:** The public layout (`app/(public)/layout.tsx`) already renders `<PublicNav>` — no nav needed in this page.
 
@@ -355,17 +355,18 @@ const TIER_ORDER = ['casual', 'core', 'heavy']
 export default async function PricingPage() {
   const rawTiers = await db.select().from(subscriptionTiers)
 
-  // Sort to canonical order; discard DB fields not needed by components
+  // Sort to canonical order; pass rolloverPct, discard unused DB fields
   const tiers = rawTiers
     .sort(
       (a, b) =>
         TIER_ORDER.indexOf(a.id) - TIER_ORDER.indexOf(b.id)
     )
-    .map(({ id, name, monthlyPriceCents, monthlyCredits }) => ({
+    .map(({ id, name, monthlyPriceCents, monthlyCredits, rolloverPct }) => ({
       id,
       name,
       monthlyPriceCents,
       monthlyCredits,
+      rolloverPct, // 0 = Casual (no rollover), 0.10 = Core, 0.15 = Heavy
     }))
 
   return (

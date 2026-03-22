@@ -19,7 +19,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: 'gimilab — One membership. Every course.',
+  title: 'gimmelab — One membership. Every course.',
   description: 'Book tee times at any partner course using monthly credits. No booking fees, no phone calls.',
 };
 

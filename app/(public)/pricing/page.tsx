@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import PricingClient from './pricing-client'
 
 export const metadata: Metadata = {
-  title: 'Membership Plans — gimilab',
+  title: 'Membership Plans — gimmelab',
   description: 'Choose a plan and start booking tee times with monthly credits. No booking fees. Cancel anytime.',
 }
 
