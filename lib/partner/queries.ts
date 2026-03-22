@@ -1,7 +1,7 @@
 import { cache } from 'react'
 import { db } from '@/lib/db'
 import { partners, courses, teeTimeBlocks, teeTimeSlots, bookings, users, payoutTransfers } from '@/lib/db/schema'
-import { eq, desc, asc, and, gte, lt, or, inArray, sum, count, isNull } from 'drizzle-orm'
+import { eq, desc, asc, and, gte, lt, or, inArray, sum, count, isNull, sql } from 'drizzle-orm'
 
 export const getPartnerByUserId = cache(async function getPartnerByUserId(userId: string) {
   const rows = await db
@@ -99,6 +99,38 @@ export const getPartnerPayoutTransfers = cache(async function getPartnerPayoutTr
     .from(payoutTransfers)
     .where(eq(payoutTransfers.partnerId, partnerId))
     .orderBy(desc(payoutTransfers.createdAt))
+})
+
+export const getPartnerAnalytics = cache(async function getPartnerAnalytics(partnerId: string) {
+  const course = await getPartnerCourse(partnerId)
+  if (!course) return { monthly: [], totals: { bookingCount: 0, totalCredits: 0, revenueCents: 0 } }
+
+  const [monthly, totalsRows] = await Promise.all([
+    db
+      .select({
+        month: sql<string>`TO_CHAR(${bookings.createdAt}, 'Mon YYYY')`,
+        monthKey: sql<string>`TO_CHAR(${bookings.createdAt}, 'YYYY-MM')`,
+        bookingCount: sql<number>`COUNT(*)`,
+        totalCredits: sql<number>`COALESCE(SUM(${bookings.creditCost}), 0)`,
+        revenueCents: sql<number>`COALESCE(SUM(${bookings.payoutAmountCents}), 0)`,
+      })
+      .from(bookings)
+      .where(eq(bookings.courseId, course.id))
+      .groupBy(sql`TO_CHAR(${bookings.createdAt}, 'Mon YYYY')`, sql`TO_CHAR(${bookings.createdAt}, 'YYYY-MM')`)
+      .orderBy(sql`TO_CHAR(${bookings.createdAt}, 'YYYY-MM') DESC`)
+      .limit(12),
+
+    db
+      .select({
+        bookingCount: sql<number>`COUNT(*)`,
+        totalCredits: sql<number>`COALESCE(SUM(${bookings.creditCost}), 0)`,
+        revenueCents: sql<number>`COALESCE(SUM(${bookings.payoutAmountCents}), 0)`,
+      })
+      .from(bookings)
+      .where(eq(bookings.courseId, course.id)),
+  ])
+
+  return { monthly, totals: totalsRows[0] ?? { bookingCount: 0, totalCredits: 0, revenueCents: 0 } }
 })
 
 export const getUpcomingSlots = cache(async function getUpcomingSlots(courseId: string, days = 14) {

@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 const TIER_ORDER = ['casual', 'core', 'heavy']
 
 const FALLBACK_TIERS = [
-  { id: 'casual', name: 'Casual', monthlyPriceCents: 9900, monthlyCredits: 100, rolloverMax: 50, stripePriceId: '' },
-  { id: 'core',   name: 'Core',   monthlyPriceCents: 14900, monthlyCredits: 150, rolloverMax: 75, stripePriceId: '' },
-  { id: 'heavy',  name: 'Heavy',  monthlyPriceCents: 19900, monthlyCredits: 210, rolloverMax: 105, stripePriceId: '' },
+  { id: 'casual', name: 'Casual', monthlyPriceCents: 9900,  monthlyCredits: 100, stripePriceId: '' },
+  { id: 'core',   name: 'Core',   monthlyPriceCents: 14900, monthlyCredits: 150, stripePriceId: '' },
+  { id: 'heavy',  name: 'Heavy',  monthlyPriceCents: 19900, monthlyCredits: 210, stripePriceId: '' },
 ]
 
 export default async function PricingPage() {
@@ -29,7 +29,6 @@ export default async function PricingPage() {
           name: t.name,
           monthlyPriceCents: t.monthlyPriceCents,
           monthlyCredits: t.monthlyCredits,
-          rolloverMax: t.rolloverMax,
           stripePriceId: t.stripePriceId ?? '',
         }))
     }

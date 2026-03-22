@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import Link from 'next/link'
+import { submitRating } from '@/actions/rating'
 
 interface UpcomingBooking {
   id: string
@@ -12,6 +13,7 @@ interface UpcomingBooking {
   playerCount: number | null
   creditCost: number
   status: string
+  qrCode: string | null
 }
 
 interface PastBooking {
@@ -21,6 +23,9 @@ interface PastBooking {
   startTime: string
   playerCount: number | null
   creditCost: number
+  ratingScore: number | null
+  ratingId: string | null
+  bookingStatus: string
 }
 
 interface Props {
@@ -47,6 +52,92 @@ function groupByMonth(bookings: PastBooking[]): Array<{ label: string; items: Pa
     map.get(label)!.push(b)
   }
   return Array.from(map.entries()).map(([label, items]) => ({ label, items }))
+}
+
+function CheckInCode({ code }: { code: string | null }) {
+  const [expanded, setExpanded] = useState(false)
+  const displayCode = code ? code.split('-')[0].toUpperCase() : null
+  if (!displayCode) return null
+  return (
+    <>
+      <button className="checkin-toggle" onClick={() => setExpanded(v => !v)}>
+        {expanded ? 'Hide code' : 'Check-in code'}
+      </button>
+      {expanded && (
+        <div className="checkin-card">
+          <div className="checkin-label">Show at the pro shop</div>
+          <div className="checkin-code">{displayCode}</div>
+        </div>
+      )}
+    </>
+  )
+}
+
+function StarRating({ bookingId, existingScore }: { bookingId: string; existingScore: number | null }) {
+  const [hovered, setHovered] = useState(0)
+  const [selected, setSelected] = useState(existingScore ?? 0)
+  const [showForm, setShowForm] = useState(false)
+  const [comment, setComment] = useState('')
+  const [submitted, setSubmitted] = useState(!!existingScore)
+  const [error, setError] = useState('')
+  const [isPending, startTransition] = useTransition()
+
+  if (submitted) {
+    return (
+      <div className="stars-display">
+        {[1,2,3,4,5].map(s => (
+          <span key={s} className={`star-icon${s <= selected ? ' filled' : ''}`}>★</span>
+        ))}
+      </div>
+    )
+  }
+
+  if (!showForm) {
+    return (
+      <button className="rate-btn" onClick={() => setShowForm(true)}>
+        Rate
+      </button>
+    )
+  }
+
+  function handleSubmit() {
+    if (selected === 0) { setError('Pick a star rating.'); return }
+    startTransition(async () => {
+      const res = await submitRating(bookingId, selected, comment)
+      if (res.error) { setError(res.error); return }
+      setSubmitted(true)
+    })
+  }
+
+  return (
+    <div className="rating-form">
+      <div className="star-picker">
+        {[1,2,3,4,5].map(s => (
+          <button
+            key={s}
+            className={`star-btn${s <= (hovered || selected) ? ' lit' : ''}`}
+            onMouseEnter={() => setHovered(s)}
+            onMouseLeave={() => setHovered(0)}
+            onClick={() => setSelected(s)}
+          >★</button>
+        ))}
+      </div>
+      <textarea
+        className="rating-comment"
+        placeholder="Optional comment…"
+        value={comment}
+        onChange={e => setComment(e.target.value)}
+        rows={2}
+      />
+      {error && <div className="rating-error">{error}</div>}
+      <div className="rating-actions">
+        <button className="rate-cancel" onClick={() => { setShowForm(false); setError('') }}>Cancel</button>
+        <button className="rate-submit" onClick={handleSubmit} disabled={isPending}>
+          {isPending ? 'Saving…' : 'Submit'}
+        </button>
+      </div>
+    </div>
+  )
 }
 
 export function RoundsClient({ upcoming, past, balance }: Props) {
@@ -139,6 +230,7 @@ export function RoundsClient({ upcoming, past, balance }: Props) {
                       <div className="upcoming-right">
                         <span className="status-badge">Confirmed</span>
                         <span className="upcoming-credits">{b.creditCost} credit{b.creditCost !== 1 ? 's' : ''}</span>
+                        <CheckInCode code={b.qrCode} />
                       </div>
                     </div>
                   )
@@ -167,6 +259,7 @@ export function RoundsClient({ upcoming, past, balance }: Props) {
                   <div className="month-label">{group.label}</div>
                   {group.items.map((b) => {
                     const dateLabel = new Date(b.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                    const canRate = b.bookingStatus !== 'CANCELLED'
                     return (
                       <div key={b.id} className="round-row">
                         <div className="round-dot" />
@@ -176,6 +269,9 @@ export function RoundsClient({ upcoming, past, balance }: Props) {
                             {formatTime(b.startTime)}
                             {b.playerCount ? ` · ${b.playerCount} players` : ''}
                           </div>
+                          {canRate && (
+                            <StarRating bookingId={b.id} existingScore={b.ratingScore} />
+                          )}
                         </div>
                         <div className="round-credits">−{b.creditCost} cr.</div>
                         <div className="round-date">{dateLabel}</div>
@@ -296,6 +392,74 @@ export function RoundsClient({ upcoming, past, balance }: Props) {
         .round-sub { font-size: 11px; color: #847C72; }
         .round-credits { font-size: 12px; font-weight: 700; color: #847C72; flex-shrink: 0; }
         .round-date { font-size: 11px; color: #847C72; width: 56px; text-align: right; flex-shrink: 0; }
+
+        /* Check-in code */
+        .checkin-toggle {
+          margin-top: 8px; padding: 4px 10px;
+          font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+          text-transform: uppercase; cursor: pointer;
+          background: rgba(191,123,46,0.08); border: 1px solid rgba(191,123,46,0.25);
+          border-radius: 2px; color: #BF7B2E; font-family: 'Inter', sans-serif;
+        }
+        .checkin-card {
+          margin-top: 8px; padding: 10px 14px;
+          background: #FDFAF6; border: 1px solid rgba(191,123,46,0.2);
+          border-radius: 2px; text-align: right;
+        }
+        .checkin-label {
+          font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+          text-transform: uppercase; color: #847C72; margin-bottom: 4px;
+        }
+        .checkin-code {
+          font-size: 22px; font-weight: 900; font-family: monospace;
+          color: #BF7B2E; letter-spacing: 0.08em;
+        }
+
+        /* Ratings */
+        .stars-display { display: flex; gap: 2px; margin-top: 6px; }
+        .star-icon { font-size: 14px; color: #e8e8e8; }
+        .star-icon.filled { color: #BF7B2E; }
+
+        .rate-btn {
+          margin-top: 6px; padding: 3px 10px;
+          font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+          text-transform: uppercase; cursor: pointer;
+          background: none; border: 1px solid rgba(12,12,11,0.15);
+          border-radius: 2px; color: #847C72;
+          font-family: 'Inter', sans-serif;
+        }
+        .rate-btn:hover { border-color: #BF7B2E; color: #BF7B2E; }
+
+        .rating-form { margin-top: 8px; }
+        .star-picker { display: flex; gap: 2px; margin-bottom: 8px; }
+        .star-btn {
+          font-size: 20px; cursor: pointer; background: none; border: none;
+          color: #e8e8e8; padding: 0; line-height: 1; transition: color 0.1s;
+        }
+        .star-btn.lit { color: #BF7B2E; }
+        .rating-comment {
+          width: 100%; box-sizing: border-box;
+          font-size: 12px; font-family: 'Inter', sans-serif;
+          padding: 7px 10px; border: 1px solid rgba(12,12,11,0.15);
+          border-radius: 2px; resize: none; color: #0C0C0B;
+          background: #fff; outline: none;
+        }
+        .rating-comment:focus { border-color: #BF7B2E; }
+        .rating-error { font-size: 11px; color: #dc2626; margin-top: 4px; }
+        .rating-actions { display: flex; gap: 8px; margin-top: 8px; }
+        .rate-cancel {
+          padding: 5px 12px; font-size: 11px; font-weight: 700;
+          letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+          background: none; border: 1px solid rgba(12,12,11,0.15);
+          border-radius: 2px; color: #847C72; font-family: 'Inter', sans-serif;
+        }
+        .rate-submit {
+          padding: 5px 14px; font-size: 11px; font-weight: 700;
+          letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+          background: #BF7B2E; border: none; border-radius: 2px;
+          color: #0C0C0B; font-family: 'Inter', sans-serif;
+        }
+        .rate-submit:disabled { opacity: 0.5; cursor: default; }
 
         @media (max-width: 860px) {
           .pg-content { padding: 20px 24px 40px; }

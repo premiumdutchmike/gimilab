@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getCreditBalance } from '@/lib/credits/ledger'
 import { db } from '@/lib/db'
-import { bookings, teeTimeSlots, courses } from '@/lib/db/schema'
-import { and, eq, desc, sql } from 'drizzle-orm'
+import { bookings, teeTimeSlots, courses, ratings } from '@/lib/db/schema'
+import { eq, desc } from 'drizzle-orm'
 import { RoundsClient } from './rounds-client'
 
 export const metadata = { title: 'My Rounds — gimmelab' }
@@ -25,10 +25,14 @@ export default async function RoundsPage() {
         courseAddress: courses.address,
         slotDate: teeTimeSlots.date,
         slotStartTime: teeTimeSlots.startTime,
+        qrCode: bookings.qrCode,
+        ratingScore: ratings.score,
+        ratingId: ratings.id,
       })
       .from(bookings)
       .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
       .innerJoin(courses, eq(bookings.courseId, courses.id))
+      .leftJoin(ratings, eq(ratings.bookingId, bookings.id))
       .where(eq(bookings.userId, user.id))
       .orderBy(desc(teeTimeSlots.date), desc(teeTimeSlots.startTime)),
     getCreditBalance(user.id),
@@ -48,6 +52,7 @@ export default async function RoundsPage() {
       playerCount: null as number | null,
       creditCost: r.creditCost,
       status: r.bookingStatus,
+      qrCode: r.qrCode,
     }))
     .sort((a, b) => a.date < b.date ? -1 : 1)
 
@@ -64,6 +69,9 @@ export default async function RoundsPage() {
       startTime: r.slotStartTime,
       playerCount: null as number | null,
       creditCost: r.creditCost,
+      ratingScore: r.ratingScore ?? null,
+      ratingId: r.ratingId ?? null,
+      bookingStatus: r.bookingStatus,
     }))
 
   return (

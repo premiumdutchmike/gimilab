@@ -116,7 +116,8 @@ export async function processPartnerPayouts(
       .set({ payoutStatus: 'PROCESSED', payoutTransferId: transfer.id, updatedAt: new Date() })
       .where(inArray(bookings.id, bookingIds))
 
-    revalidatePath('/admin/members')
+    revalidatePath('/admin/payouts')
+    revalidatePath('/admin/revenue')
     return { transferId: stripeTransfer.id, amountCents: totalCents }
   } catch (err) {
     const msg = err instanceof Error ? err.message : ''

@@ -4,8 +4,9 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { db } from '@/lib/db'
-import { courses, partners } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { courses, partners, bookings, teeTimeSlots, teeTimeBlocks } from '@/lib/db/schema'
+import { sql } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
 import { getPartnerByUserId, getPartnerCourse } from '@/lib/partner/queries'
 import { createCourseSchema } from '@/lib/validations'
 import { stripe } from '@/lib/stripe/client'
@@ -96,6 +97,115 @@ export async function createCourse(formData: FormData): Promise<{ error: string 
 
   revalidatePath('/partner/dashboard')
   redirect('/partner/dashboard')
+}
+
+export async function updateCoursePricing(
+  courseId: string,
+  baseCreditCost: number,
+): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated.' }
+
+  const partner = await getPartnerByUserId(user.id)
+  if (!partner) return { error: 'Partner account not found.' }
+
+  const [course] = await db.select({ id: courses.id, partnerId: courses.partnerId, creditFloor: courses.creditFloor, creditCeiling: courses.creditCeiling })
+    .from(courses).where(eq(courses.id, courseId)).limit(1)
+
+  if (!course || course.partnerId !== partner.id) return { error: 'Not authorized.' }
+  if (baseCreditCost < 1) return { error: 'Must be at least 1 credit.' }
+  if (course.creditFloor && baseCreditCost < course.creditFloor) return { error: `Below admin-set minimum of ${course.creditFloor} cr.` }
+  if (course.creditCeiling && baseCreditCost > course.creditCeiling) return { error: `Above admin-set maximum of ${course.creditCeiling} cr.` }
+
+  await db.update(courses).set({ baseCreditCost, updatedAt: new Date() }).where(eq(courses.id, courseId))
+  revalidatePath('/partner/pricing')
+  return {}
+}
+
+export async function updateBlockCreditOverride(
+  blockId: string,
+  creditOverride: number | null,
+): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated.' }
+
+  const partner = await getPartnerByUserId(user.id)
+  if (!partner) return { error: 'Partner account not found.' }
+
+  const [block] = await db
+    .select({ id: teeTimeBlocks.id, courseId: teeTimeBlocks.courseId })
+    .from(teeTimeBlocks)
+    .where(eq(teeTimeBlocks.id, blockId))
+    .limit(1)
+
+  if (!block) return { error: 'Block not found.' }
+
+  const [course] = await db.select({ partnerId: courses.partnerId })
+    .from(courses).where(eq(courses.id, block.courseId)).limit(1)
+
+  if (!course || course.partnerId !== partner.id) return { error: 'Not authorized.' }
+  if (creditOverride !== null && creditOverride < 1) return { error: 'Must be at least 1 credit.' }
+
+  await db.update(teeTimeBlocks).set({ creditOverride, updatedAt: new Date() }).where(eq(teeTimeBlocks.id, blockId))
+  revalidatePath('/partner/pricing')
+  return {}
+}
+
+export async function checkInBooking(
+  code: string,
+): Promise<{ error?: string; booking?: { memberName: string; courseName: string; date: string; time: string; players: number } }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated.' }
+
+  const partner = await getPartnerByUserId(user.id)
+  if (!partner) return { error: 'Partner account not found.' }
+
+  const normalized = code.trim().toLowerCase()
+  if (normalized.length < 8) return { error: 'Code must be at least 8 characters.' }
+
+  // Look up booking by first 8 chars of qr_code (case-insensitive)
+  const [row] = await db
+    .select({
+      bookingId: bookings.id,
+      userId: bookings.userId,
+      status: bookings.status,
+      courseId: bookings.courseId,
+      courseName: courses.name,
+      partnerId: partners.id,
+      slotDate: teeTimeSlots.date,
+      slotStartTime: teeTimeSlots.startTime,
+    })
+    .from(bookings)
+    .innerJoin(courses, eq(bookings.courseId, courses.id))
+    .innerJoin(partners, eq(courses.partnerId, partners.id))
+    .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
+    .where(sql`LOWER(LEFT(${bookings.qrCode}, 8)) = ${normalized.slice(0, 8)}`)
+    .limit(1)
+
+  if (!row) return { error: 'Check-in code not found.' }
+  if (row.partnerId !== partner.id) return { error: 'This booking is not for your course.' }
+  if (row.status === 'CANCELLED') return { error: 'This booking was cancelled.' }
+  if (row.status === 'COMPLETED') return { error: 'Already checked in.' }
+  if (row.status !== 'CONFIRMED') return { error: 'Booking is not in a confirmable state.' }
+
+  await db
+    .update(bookings)
+    .set({ status: 'COMPLETED', updatedAt: new Date() })
+    .where(eq(bookings.id, row.bookingId))
+
+  revalidatePath('/partner/checkin')
+  revalidatePath('/partner/bookings')
+
+  const [h, m] = row.slotStartTime.split(':').map(Number)
+  const time = `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`
+  const date = new Date(row.slotDate + 'T00:00:00').toLocaleDateString('en-US', {
+    weekday: 'short', month: 'short', day: 'numeric',
+  })
+
+  return { booking: { memberName: '', courseName: row.courseName, date, time, players: 1 } }
 }
 
 export async function updateCourse(

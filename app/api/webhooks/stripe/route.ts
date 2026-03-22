@@ -4,6 +4,8 @@ import { stripe, TIER_CREDITS } from '@/lib/stripe/client'
 import { db } from '@/lib/db'
 import { users, creditLedger, partners } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
+import { sendEmail } from '@/lib/email'
+import Welcome from '@/emails/welcome'
 
 // Stripe requires the raw body for signature verification
 export const runtime = 'nodejs'
@@ -177,6 +179,21 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       updatedAt: new Date(),
     })
     .where(eq(users.id, user.id))
+
+  // Welcome email — fire and forget
+  if (user.email) {
+    const tier = user.subscriptionTier
+    const credits = tier ? TIER_CREDITS[tier as keyof typeof TIER_CREDITS] : 100
+    sendEmail({
+      to: user.email,
+      subject: "Welcome to Gimmelab — you're all set",
+      react: Welcome({
+        memberName: user.fullName ?? user.email,
+        tier: tier ?? 'casual',
+        credits,
+      }),
+    })
+  }
 }
 
 export async function POST(request: NextRequest) {

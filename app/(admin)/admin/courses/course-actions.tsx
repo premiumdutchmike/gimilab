@@ -23,8 +23,8 @@ export default function CourseActions({ courseId }: { courseId: string }) {
     return (
       <span style={{
         fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
-        color: done === 'approved' ? '#4ade80' : '#f87171',
-        background: done === 'approved' ? 'rgba(74,222,128,0.10)' : 'rgba(248,113,113,0.10)',
+        color: done === 'approved' ? '#16a34a' : '#dc2626',
+        background: done === 'approved' ? 'rgba(22,163,74,0.08)' : 'rgba(220,38,38,0.08)',
         padding: '4px 10px', borderRadius: 2,
       }}>
         {done}
@@ -38,10 +38,10 @@ export default function CourseActions({ courseId }: { courseId: string }) {
         onClick={() => handle('approve')}
         disabled={isPending}
         style={{
-          background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.3)',
+          background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.25)',
           borderRadius: 2, padding: '6px 14px', cursor: isPending ? 'default' : 'pointer',
           fontSize: 11, fontWeight: 700, letterSpacing: '0.06em',
-          color: '#4ade80', textTransform: 'uppercase', fontFamily: 'inherit',
+          color: '#16a34a', textTransform: 'uppercase', fontFamily: 'inherit',
           opacity: isPending ? 0.6 : 1,
         }}
       >
@@ -51,16 +51,16 @@ export default function CourseActions({ courseId }: { courseId: string }) {
         onClick={() => handle('reject')}
         disabled={isPending}
         style={{
-          background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
+          background: 'transparent', border: '1px solid #e8e8e8',
           borderRadius: 2, padding: '6px 14px', cursor: isPending ? 'default' : 'pointer',
           fontSize: 11, fontWeight: 700, letterSpacing: '0.06em',
-          color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', fontFamily: 'inherit',
+          color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', fontFamily: 'inherit',
           opacity: isPending ? 0.6 : 1,
         }}
       >
         Reject
       </button>
-      {error && <span style={{ fontSize: 11, color: '#f87171' }}>{error}</span>}
+      {error && <span style={{ fontSize: 11, color: '#dc2626' }}>{error}</span>}
     </div>
   )
 }

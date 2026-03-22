@@ -41,17 +41,17 @@ export default function PayoutRateEditor({
           onKeyDown={e => { if (e.key === 'Enter') save(); if (e.key === 'Escape') setEditing(false) }}
           autoFocus
           style={{
-            width: 52, background: '#0f0f0f', border: '1px solid #a855f7',
-            borderRadius: 2, padding: '3px 6px', color: '#fff', fontSize: 12,
+            width: 52, background: '#fff', border: '1px solid #a855f7',
+            borderRadius: 2, padding: '3px 6px', color: '#111', fontSize: 12,
             fontFamily: 'inherit', outline: 'none',
           }}
         />
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>%</span>
+        <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.4)' }}>%</span>
         <button
           onClick={save}
           disabled={isPending}
           style={{
-            background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)',
+            background: 'rgba(168,85,247,0.08)', border: '1px solid rgba(168,85,247,0.25)',
             borderRadius: 2, padding: '3px 8px', cursor: isPending ? 'default' : 'pointer',
             fontSize: 10, fontWeight: 700, color: '#a855f7', fontFamily: 'inherit',
             opacity: isPending ? 0.6 : 1,
@@ -59,7 +59,7 @@ export default function PayoutRateEditor({
         >
           Save
         </button>
-        {error && <span style={{ fontSize: 10, color: '#f87171' }}>{error}</span>}
+        {error && <span style={{ fontSize: 10, color: '#dc2626' }}>{error}</span>}
       </div>
     )
   }
@@ -73,7 +73,7 @@ export default function PayoutRateEditor({
       }}
     >
       <span style={{ fontSize: 13, fontWeight: 700, color: '#a855f7' }}>{displayed}%</span>
-      <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.08em' }}>EDIT</span>
+      <span style={{ fontSize: 9, color: 'rgba(0,0,0,0.25)', letterSpacing: '0.08em' }}>EDIT</span>
     </button>
   )
 }

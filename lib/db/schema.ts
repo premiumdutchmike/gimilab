@@ -19,7 +19,6 @@ export const subscriptionTiers = pgTable('subscription_tiers', {
   name: text('name').notNull(),
   monthlyPriceCents: integer('monthly_price_cents').notNull(),
   monthlyCredits: integer('monthly_credits').notNull(),
-  rolloverMax: integer('rollover_max').notNull(),
   stripePriceId: text('stripe_price_id').notNull(),
 })
 

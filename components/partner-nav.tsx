@@ -12,7 +12,10 @@ const activeTabs = [
   { label: 'Course', href: '/partner/course' },
   { label: 'Inventory', href: '/partner/inventory' },
   { label: 'Bookings', href: '/partner/bookings' },
+  { label: 'Check-in', href: '/partner/checkin' },
   { label: 'Payouts', href: '/partner/payouts' },
+  { label: 'Analytics', href: '/partner/analytics' },
+  { label: 'Pricing', href: '/partner/pricing' },
   { label: 'Settings', href: '/partner/settings' },
 ] as const
 

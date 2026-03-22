@@ -8,7 +8,6 @@ type Tier = {
   name: string
   monthlyPriceCents: number
   monthlyCredits: number
-  rolloverMax: number
   stripePriceId: string
 }
 
