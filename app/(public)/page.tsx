@@ -9,19 +9,26 @@ export const metadata = {
   description: 'Book tee times at any partner course using monthly credits. No booking fees, no phone calls.',
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage() {
-  const topCourses = await db
-    .select({
-      id: courses.id,
-      name: courses.name,
-      address: courses.address,
-      holes: courses.holes,
-      baseCreditCost: courses.baseCreditCost,
-      photos: courses.photos,
-    })
-    .from(courses)
-    .where(eq(courses.status, 'active'))
-    .limit(3)
+  let topCourses: { id: string; name: string; address: string; holes: number | null; baseCreditCost: number; photos: string[] | null }[] = []
+  try {
+    topCourses = await db
+      .select({
+        id: courses.id,
+        name: courses.name,
+        address: courses.address,
+        holes: courses.holes,
+        baseCreditCost: courses.baseCreditCost,
+        photos: courses.photos,
+      })
+      .from(courses)
+      .where(eq(courses.status, 'active'))
+      .limit(3)
+  } catch {
+    // DB unavailable at build time — homepage renders with fallback content
+  }
 
   // Fallback imagery for course cards when no DB courses exist
   const fallbackCourses = [
