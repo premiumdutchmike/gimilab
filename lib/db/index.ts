@@ -10,6 +10,7 @@ const pool =
   new Pool({
     connectionString: process.env.SUPABASE_DATABASE_URL,
     max: process.env.NODE_ENV === 'production' ? 2 : 10,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
   })
 
 if (process.env.NODE_ENV !== 'production') {
