@@ -20,7 +20,14 @@ function formatDate(d: Date) {
 }
 
 export default async function AdminMembersPage() {
-  const [stats, members] = await Promise.all([getAdminStats(), getAdminMembers()])
+  let stats: Awaited<ReturnType<typeof getAdminStats>>
+  let members: Awaited<ReturnType<typeof getAdminMembers>>
+  try {
+    ;[stats, members] = await Promise.all([getAdminStats(), getAdminMembers()])
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e)
+    return <pre style={{ padding: 40, color: '#ef4444', whiteSpace: 'pre-wrap' }}>{msg}</pre>
+  }
 
   return (
     <div style={{ padding: '32px 28px', maxWidth: 1200, margin: '0 auto' }}>
