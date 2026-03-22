@@ -88,6 +88,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
+  if (isMemberRoute && role === 'admin') {
+    return NextResponse.redirect(new URL('/admin', request.url))
+  }
+
   if (isMemberRoute && !role) {
     // Authenticated but no role set yet — send to onboarding
     return NextResponse.redirect(new URL('/signup', request.url))
