@@ -27,10 +27,9 @@ export default async function AdminMembersPage() {
   try {
     ;[stats, members] = await Promise.all([getAdminStats(), getAdminMembers()])
   } catch (e: unknown) {
-    const pw = process.env.SUPABASE_DB_PASSWORD
     const dbUrl = process.env.SUPABASE_DATABASE_URL ?? ''
-    const urlPw = (() => { try { return new URL(dbUrl).password } catch { return '(parse error)' } })()
-    const diagnostic = `\n\n--- DIAGNOSTIC ---\nSUPABASE_DB_PASSWORD set: ${!!pw} | length: ${pw?.length ?? 0} | starts with %: ${pw?.startsWith('%') ?? false}\nURL password starts with %: ${urlPw.startsWith('%')} | url_pw_len: ${urlPw.length}\nNODE_ENV: ${process.env.NODE_ENV}`
+    const parsed = (() => { try { const u = new URL(dbUrl); return { host: u.hostname, port: u.port, user: u.username, pwLen: u.password.length } } catch { return null } })()
+    const diagnostic = `\n\n--- DIAGNOSTIC ---\nHOST: ${parsed?.host ?? 'parse error'}\nPORT: ${parsed?.port ?? '?'}\nUSER: ${parsed?.user ?? '?'}\nPW_LEN: ${parsed?.pwLen ?? 0}\nNODE_ENV: ${process.env.NODE_ENV}`
     const msg = e instanceof Error
       ? `${e.message}\n\nCause: ${(e as NodeJS.ErrnoException & { cause?: unknown }).cause ?? 'none'}${diagnostic}\n\nStack: ${e.stack}`
       : String(e) + diagnostic
