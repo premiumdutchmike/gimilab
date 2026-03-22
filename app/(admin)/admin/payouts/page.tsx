@@ -1,6 +1,8 @@
 import { getAdminPayoutsData } from '@/lib/admin/queries'
 import PayoutButton from './payout-button'
 
+export const dynamic = 'force-dynamic'
+
 function fmt$(cents: number) {
   return '$' + (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }

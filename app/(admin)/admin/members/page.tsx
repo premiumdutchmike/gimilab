@@ -1,6 +1,8 @@
 import { getAdminStats, getAdminMembers } from '@/lib/admin/queries'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = { title: 'Members — Gimmelab Admin' }
 
 const TIER_COLOR: Record<string, string> = {

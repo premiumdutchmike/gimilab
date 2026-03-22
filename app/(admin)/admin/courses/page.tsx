@@ -3,6 +3,8 @@ import CourseActions from './course-actions'
 import PayoutRateEditor from './payout-rate-editor'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = { title: 'Courses — Gimmelab Admin' }
 
 const STATUS_STYLE: Record<string, { label: string; color: string; bg: string }> = {

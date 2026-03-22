@@ -2,6 +2,8 @@ import { getAdminMembersWithCredits } from '@/lib/admin/queries'
 import CreditGrantForm from './credit-grant-form'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = { title: 'Credits — Gimmelab Admin' }
 
 const TIER_COLOR: Record<string, string> = {
