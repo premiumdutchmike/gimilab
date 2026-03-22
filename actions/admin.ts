@@ -125,6 +125,26 @@ export async function processPartnerPayouts(
   }
 }
 
+export async function updateCoursePayoutRate(
+  courseId: string,
+  ratePct: number, // e.g. 70 means 70%
+): Promise<{ error?: string }> {
+  try {
+    await requireAdmin()
+    if (ratePct < 0 || ratePct > 100) return { error: 'Rate must be between 0 and 100.' }
+    await db
+      .update(courses)
+      .set({ payoutRate: String(ratePct / 100), updatedAt: new Date() })
+      .where(eq(courses.id, courseId))
+    revalidatePath('/admin/courses')
+    return {}
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : ''
+    if (msg === 'FORBIDDEN') return { error: 'Not authorized.' }
+    return { error: 'Failed to update payout rate.' }
+  }
+}
+
 export async function adminGrantCredits(
   userId: string,
   amount: number,

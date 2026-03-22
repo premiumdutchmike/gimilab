@@ -1,5 +1,6 @@
 import { getAllCourses } from '@/lib/admin/queries'
 import CourseActions from './course-actions'
+import PayoutRateEditor from './payout-rate-editor'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Courses — Gimmelab Admin' }
@@ -83,10 +84,10 @@ export default async function AdminCoursesPage() {
           </p>
           <div style={{ background: '#141414', border: '1px solid #1f1f1f', overflow: 'hidden' }}>
             <div style={{
-              display: 'grid', gridTemplateColumns: '1fr 160px 80px 100px 110px 110px',
+              display: 'grid', gridTemplateColumns: '1fr 160px 80px 100px 110px 120px',
               padding: '10px 20px', borderBottom: '1px solid #1f1f1f',
             }}>
-              {['Course', 'Partner', 'Holes', 'Base cost', 'Status', 'Added'].map(h => (
+              {['Course', 'Partner', 'Holes', 'Base cost', 'Status', 'Payout %'].map(h => (
                 <span key={h} style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)' }}>
                   {h}
                 </span>
@@ -96,7 +97,7 @@ export default async function AdminCoursesPage() {
               const s = STATUS_STYLE[c.courseStatus] ?? { label: c.courseStatus, color: '#fff', bg: 'transparent' }
               return (
                 <div key={c.courseId} style={{
-                  display: 'grid', gridTemplateColumns: '1fr 160px 80px 100px 110px 110px',
+                  display: 'grid', gridTemplateColumns: '1fr 160px 80px 100px 110px 120px',
                   padding: '13px 20px', alignItems: 'center',
                   borderBottom: i < rest.length - 1 ? '1px solid #1f1f1f' : 'none',
                 }}>
@@ -114,7 +115,10 @@ export default async function AdminCoursesPage() {
                   }}>
                     {s.label}
                   </span>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{formatDate(c.createdAt)}</span>
+                  <PayoutRateEditor
+                    courseId={c.courseId}
+                    initialRate={c.payoutRate ? Number(c.payoutRate) : null}
+                  />
                 </div>
               )
             })}

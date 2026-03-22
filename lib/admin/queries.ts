@@ -69,6 +69,7 @@ export const getAllCourses = cache(async function getAllCourses() {
       baseCreditCost: courses.baseCreditCost,
       courseStatus: courses.status,
       createdAt: courses.createdAt,
+      payoutRate: courses.payoutRate,
       businessName: partners.businessName,
       partnerId: partners.id,
     })
