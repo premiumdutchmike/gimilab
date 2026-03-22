@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getPartnerByUserId, getPartnerCourse } from '@/lib/partner/queries'
 
-export const metadata = { title: 'Partner Dashboard — OneGolf' }
+export const metadata = { title: 'Partner Dashboard — Gimmelab' }
 
 export default async function PartnerDashboardPage() {
   const supabase = await createClient()

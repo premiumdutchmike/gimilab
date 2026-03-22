@@ -6,7 +6,7 @@ import { teeTimeBlocks } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import BlockForm from '@/components/block-form'
 
-export const metadata = { title: 'Edit Block — OneGolf' }
+export const metadata = { title: 'Edit Block — Gimmelab' }
 
 export default async function EditBlockPage({
   params,

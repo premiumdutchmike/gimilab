@@ -35,7 +35,7 @@ export function WelcomeCredits({ userId, firstName, tierName, expectedCredits }:
 
   // Set welcomed cookie so back-navigation redirects to dashboard
   useEffect(() => {
-    document.cookie = 'onegolf-welcomed=1; path=/; max-age=31536000; samesite=lax'
+    document.cookie = 'gimmelab-welcomed=1; path=/; max-age=31536000; samesite=lax'
   }, [])
 
   const displayCredits = credits ?? '…'

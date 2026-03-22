@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     .onConflictDoNothing()
 
   // Read pending plan from cookie
-  const pendingPlan = cookieStore.get('onegolf-pending-plan')?.value
+  const pendingPlan = cookieStore.get('gimmelab-pending-plan')?.value
   const tier: SubscriptionTierKey = subscriptionTierSchema.safeParse(pendingPlan).success
     ? (pendingPlan as SubscriptionTierKey)
     : 'core'
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
   })
 
   // Clear pending plan cookie
-  cookieStore.delete('onegolf-pending-plan')
+  cookieStore.delete('gimmelab-pending-plan')
 
   return NextResponse.redirect(session.url!)
 }

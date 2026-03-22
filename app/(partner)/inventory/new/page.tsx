@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getPartnerByUserId, getPartnerCourse } from '@/lib/partner/queries'
 import BlockForm from '@/components/block-form'
 
-export const metadata = { title: 'Add Block — OneGolf' }
+export const metadata = { title: 'Add Block — Gimmelab' }
 
 export default async function NewBlockPage() {
   const supabase = await createClient()

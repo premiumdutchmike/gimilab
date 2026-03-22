@@ -110,7 +110,7 @@ export async function signInWithGoogle(plan: string) {
   const validPlan = subscriptionTierSchema.safeParse(plan).success ? plan : 'core'
 
   // Store chosen plan in cookie so /auth/callback can read it
-  cookieStore.set('onegolf-pending-plan', validPlan, {
+  cookieStore.set('gimmelab-pending-plan', validPlan, {
     maxAge: 60 * 60, // 1 hour
     httpOnly: true,
     sameSite: 'lax',

@@ -10,7 +10,7 @@ import {
 import { toggleBlock, deleteBlock } from '@/actions/inventory'
 import type { TeeTimeBlock } from '@/lib/db/schema'
 
-export const metadata = { title: 'Inventory — OneGolf' }
+export const metadata = { title: 'Inventory — Gimmelab' }
 
 const DAY_ABBR = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 

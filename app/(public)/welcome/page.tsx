@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm'
 import { createClient } from '@/lib/supabase/server'
 import { WelcomeCredits } from '@/components/welcome-credits'
 
-export const metadata = { title: 'Welcome — OneGolf' }
+export const metadata = { title: 'Welcome — Gimmelab' }
 
 export default async function WelcomePage() {
   const supabase = await createClient()
@@ -18,7 +18,7 @@ export default async function WelcomePage() {
 
   // If already welcomed before, redirect to dashboard
   const cookieStore = await cookies()
-  const alreadyWelcomed = cookieStore.get('onegolf-welcomed')?.value
+  const alreadyWelcomed = cookieStore.get('gimmelab-welcomed')?.value
   const [dbUser] = await db.select().from(users).where(eq(users.id, user.id))
 
   if (alreadyWelcomed && dbUser?.subscriptionStatus === 'active') {

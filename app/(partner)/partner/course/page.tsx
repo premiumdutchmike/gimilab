@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getPartnerByUserId, getPartnerCourse } from '@/lib/partner/queries'
 import CourseForm from '@/components/course-form'
 
-export const metadata = { title: 'Edit course — OneGolf' }
+export const metadata = { title: 'Edit course — Gimmelab' }
 
 export default async function EditCoursePage() {
   const supabase = await createClient()
