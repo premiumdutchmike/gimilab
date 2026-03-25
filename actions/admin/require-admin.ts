@@ -1,3 +1,5 @@
+'use server'
+
 // actions/admin/require-admin.ts
 import { createClient } from '@/lib/supabase/server'
 
