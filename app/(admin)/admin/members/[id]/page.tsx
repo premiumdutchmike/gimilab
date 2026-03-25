@@ -1,5 +1,4 @@
 // app/(admin)/admin/members/[id]/page.tsx
-'use server'
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getMemberDetail, getMemberLedger, getMemberBookings } from '@/lib/admin/queries'
@@ -164,20 +163,20 @@ export default async function MemberDetailPage({
                 <div style={{ flex: 1, minWidth: 300 }}>
                   <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.35)', marginBottom: 12 }}>Ledger</p>
                   <div style={{ border: '1px solid #e8e8e8' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 60px 100px', padding: '8px 16px', background: '#fafafa', borderBottom: '1px solid #e8e8e8' }}>
-                      {['Date', 'Type', 'Amount', 'Expires'].map(h => (
+                    <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 60px 80px 100px', padding: '8px 16px', background: '#fafafa', borderBottom: '1px solid #e8e8e8' }}>
+                      {['Date', 'Type', 'Amount', 'Notes', 'Expires'].map(h => (
                         <span key={h} style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.35)' }}>{h}</span>
                       ))}
                     </div>
                     {ledger.map((e, i) => (
-                      <div key={e.id} style={{ display: 'grid', gridTemplateColumns: '100px 1fr 60px 100px', padding: '9px 16px', alignItems: 'center', borderBottom: i < ledger.length - 1 ? '1px solid #f5f5f5' : 'none' }}>
+                      <div key={e.id} style={{ display: 'grid', gridTemplateColumns: '100px 1fr 60px 80px 100px', padding: '9px 16px', alignItems: 'center', borderBottom: i < ledger.length - 1 ? '1px solid #f5f5f5' : 'none' }}>
                         <span style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)' }}>{fmtDate(e.createdAt)}</span>
-                        <div>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: LEDGER_COLOR[e.type] ?? '#111' }}>{e.type.replace(/_/g, ' ')}</span>
-                          {e.notes && <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)' }}>{e.notes}</div>}
-                        </div>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: LEDGER_COLOR[e.type] ?? '#111' }}>{e.type.replace(/_/g, ' ')}</span>
                         <span style={{ fontSize: 13, fontWeight: 700, color: e.amount > 0 ? '#16a34a' : '#dc2626' }}>
                           {e.amount > 0 ? '+' : ''}{e.amount}
+                        </span>
+                        <span style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {e.notes ?? '—'}
                         </span>
                         <span style={{ fontSize: 11, color: 'rgba(0,0,0,0.3)' }}>
                           {e.expiresAt ? fmtDate(e.expiresAt) : '—'}
