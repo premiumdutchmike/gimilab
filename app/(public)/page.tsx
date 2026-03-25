@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
+import CarouselArrows from '@/components/carousel-arrows'
 
 export const metadata = {
   title: 'gimmelab — One membership. Every course.',
@@ -119,17 +120,14 @@ export default async function HomePage() {
             <h2 className="hl">Book your next round.</h2>
           </div>
           <div className="courses-header-right">
-            <div className="carousel-arrows">
-              <button className="carousel-arrow carousel-arrow-prev" aria-label="Previous courses">←</button>
-              <button className="carousel-arrow carousel-arrow-next" aria-label="Next courses">→</button>
-            </div>
+            <CarouselArrows selector=".courses-carousel" />
             <Link href="/courses" className="link-amber">See all courses →</Link>
           </div>
         </div>
         <div className="courses-carousel-wrap">
           <div className="courses-carousel">
             {displayCourses.map((course) => (
-              <Link key={course.id} href="/courses" className="course-card" style={{ textDecoration: 'none' }}>
+              <Link key={course.id} href="/courses" className="course-card" data-card style={{ textDecoration: 'none' }}>
                 <img src={course.img} alt={course.name} />
                 <div className="course-card-grad" />
                 <div className="course-card-tag">{course.tag}</div>
@@ -857,7 +855,7 @@ export default async function HomePage() {
         }
         .stats-quote-text strong { font-weight: 700; font-style: normal; }
         .stats-quote-attr {
-          font-size: 13px; color: rgba(255,255,255,0.4); text-align: right;
+          font-size: 13px; color: rgba(255,255,255,0.85); text-align: right;
           white-space: nowrap; font-family: 'Inter', sans-serif;
         }
 
@@ -1022,6 +1020,11 @@ export default async function HomePage() {
           .reviews-section { padding-left: 28px; padding-right: 28px; }
           .reviews-grid { grid-template-columns: 1fr; }
           .footer-top { grid-template-columns: 1fr 1fr; }
+          .savings-section-new { grid-template-columns: 1fr; gap: 48px; padding: 72px 28px; }
+          .stats-section { padding: 56px 28px 40px; }
+          .stats-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+          .stats-quote { flex-direction: column; align-items: flex-start; gap: 20px; }
+          .stats-quote-attr { text-align: left; white-space: normal; }
         }
         @media (max-width: 640px) {
           .hero-content { padding: 32px 24px; }
@@ -1032,9 +1035,14 @@ export default async function HomePage() {
           .editorial { grid-template-columns: 1fr; }
           .editorial-item:nth-child(3) { display: block; }
           .footer-top { grid-template-columns: 1fr; }
+          .stats-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+          .stat-block { padding-right: 0; }
+          .savings-section-new { padding: 56px 24px; }
+          .savings-new-right { grid-template-columns: 1fr 1fr; }
+          .savings-stat-card-big { grid-column: span 2; }
+          .savings-new-h2 { font-size: clamp(36px, 10vw, 60px); }
         }
       `}</style>
-      <script dangerouslySetInnerHTML={{ __html: "document.addEventListener('DOMContentLoaded',function(){var c=document.querySelector('.courses-carousel');var p=document.querySelector('.carousel-arrow-prev');var n=document.querySelector('.carousel-arrow-next');if(!c||!p||!n)return;function g(){var d=c.querySelector('.course-card');return d?d.offsetWidth+16:400}p.addEventListener('click',function(){c.scrollBy({left:-g(),behavior:'smooth'})});n.addEventListener('click',function(){c.scrollBy({left:g(),behavior:'smooth'})})})" }} />
     </>
   )
 }

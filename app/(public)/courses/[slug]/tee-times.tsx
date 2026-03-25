@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { getPublicSlotsByCourse, type CourseSlot } from '@/actions/slots'
 
@@ -39,7 +39,7 @@ export default function TeeTimes({
   courseId: string
   isLoggedIn: boolean
 }) {
-  const days = buildDays(7)
+  const days = useMemo(() => buildDays(7), [])
   const [activeDay, setActiveDay] = useState(0)
   const [slots, setSlots] = useState<CourseSlot[] | null>(null)
   const [loading, setLoading] = useState(false)

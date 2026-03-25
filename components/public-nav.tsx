@@ -2,14 +2,27 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 export default function PublicNav() {
   const pathname = usePathname()
+  const [user, setUser] = useState<{ firstName: string } | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        const firstName = user.user_metadata?.first_name || user.user_metadata?.name?.split(' ')[0] || 'there'
+        setUser({ firstName })
+      }
+    })
+  }, [])
 
   // Auth pages render their own nav — suppress the shared nav
   if (pathname === '/login' || pathname === '/signup') return null
 
-  const isLight = pathname.startsWith('/courses') || pathname.startsWith('/pricing')
+  const isLight = pathname.startsWith('/courses') || pathname.startsWith('/pricing') || pathname.startsWith('/partners')
   const showTicker = pathname === '/' || pathname === '/courses'
   const isMinimal = pathname.startsWith('/pricing')
 
@@ -34,7 +47,11 @@ export default function PublicNav() {
           {isMinimal ? (
             <div className="light-nav-inner">
               <Link href="/" className="light-wm">gimmelab</Link>
-              <Link href="/login" className="light-nav-login">Already a member? Log in →</Link>
+              {user ? (
+                <Link href="/dashboard" className="light-nav-login">Hi, {user.firstName} →</Link>
+              ) : (
+                <Link href="/login" className="light-nav-login">Already a member? Log in →</Link>
+              )}
             </div>
           ) : (
             <div className="light-nav-inner">
@@ -43,10 +60,17 @@ export default function PublicNav() {
                 <li><Link href="/#how-it-works">How It Works</Link></li>
                 <li><Link href="/courses" className={pathname.startsWith('/courses') ? 'active' : ''}>Courses</Link></li>
                 <li><Link href="/pricing" className={pathname === '/pricing' ? 'active' : ''}>Pricing</Link></li>
+                <li><Link href="/partners" className={pathname === '/partners' ? 'active' : ''}>For Courses</Link></li>
               </ul>
               <div className="light-nav-right">
-                <Link href="/login" className="light-nav-login">Log In</Link>
-                <Link href="/signup" className="light-nav-join">Join Now →</Link>
+                {user ? (
+                  <Link href="/dashboard" className="light-nav-join">Hi, {user.firstName} →</Link>
+                ) : (
+                  <>
+                    <Link href="/login" className="light-nav-login">Log In</Link>
+                    <Link href="/signup" className="light-nav-join">Join Now →</Link>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -96,11 +120,18 @@ export default function PublicNav() {
           <li><Link href="/#how-it-works">How it works</Link></li>
           <li><Link href="/courses">Courses</Link></li>
           <li><Link href="/pricing">Pricing</Link></li>
+          <li><Link href="/partners">For Courses</Link></li>
         </ul>
         <div className="nav-right">
-          <Link href="/login" className="nav-login">Log in</Link>
-          <Link href="/dashboard" className="nav-login">My account</Link>
-          <Link href="/signup" className="nav-cta">Join now →</Link>
+          {user ? (
+            <Link href="/dashboard" className="nav-cta">Hi, {user.firstName} →</Link>
+          ) : (
+            <>
+              <Link href="/login" className="nav-login">Log in</Link>
+              <Link href="/dashboard" className="nav-login">My account</Link>
+              <Link href="/signup" className="nav-cta">Join now →</Link>
+            </>
+          )}
         </div>
       </nav>
 

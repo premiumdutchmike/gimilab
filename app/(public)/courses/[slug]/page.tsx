@@ -253,7 +253,7 @@ export default async function CourseDetailPage({
               )}
 
               <div className="cd-sb-trust">
-                {['No booking fees, ever', 'Credits reset monthly', 'Cancel anytime', 'Access all 12 courses'].map(item => (
+                {['No booking fees, ever', 'Monthly credits included', 'Cancel anytime', 'Access all member courses'].map(item => (
                   <div key={item} className="cd-sb-trust-item">
                     {CHECK_ICON}
                     {item}
