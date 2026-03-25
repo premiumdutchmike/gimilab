@@ -1,6 +1,5 @@
 import { getAllCourses } from '@/lib/admin/queries'
 import CourseActions from './course-actions'
-import PayoutRateEditor from './payout-rate-editor'
 import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
@@ -65,10 +64,10 @@ export default async function AdminCoursesPage() {
                 padding: '14px 20px', alignItems: 'center',
                 borderBottom: i < pending.length - 1 ? '1px solid #f0f0f0' : 'none',
               }}>
-                <div>
+                <a href={`/admin/courses/${c.courseId}`} style={{ textDecoration: 'none' }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#111', marginBottom: 2 }}>{c.courseName}</div>
                   <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)' }}>{c.address}</div>
-                </div>
+                </a>
                 <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)' }}>{c.businessName}</span>
                 <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)' }}>{c.holes}</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: '#a855f7' }}>{c.baseCreditCost} cr</span>
@@ -105,10 +104,10 @@ export default async function AdminCoursesPage() {
                   padding: '13px 20px', alignItems: 'center',
                   borderBottom: i < rest.length - 1 ? '1px solid #f0f0f0' : 'none',
                 }}>
-                  <div>
+                  <a href={`/admin/courses/${c.courseId}`} style={{ textDecoration: 'none' }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: '#111', marginBottom: 2 }}>{c.courseName}</div>
                     <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)' }}>{c.address}</div>
-                  </div>
+                  </a>
                   <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)' }}>{c.businessName}</span>
                   <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)' }}>{c.holes}</span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: '#a855f7' }}>{c.baseCreditCost} cr</span>
@@ -119,10 +118,9 @@ export default async function AdminCoursesPage() {
                   }}>
                     {s.label}
                   </span>
-                  <PayoutRateEditor
-                    courseId={c.courseId}
-                    initialRate={c.payoutRate ? Number(c.payoutRate) : null}
-                  />
+                  <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(0,0,0,0.5)' }}>
+                    {c.payoutRate ? `${Math.round(Number(c.payoutRate) * 100)}%` : '—'}
+                  </span>
                 </div>
               )
             })}
