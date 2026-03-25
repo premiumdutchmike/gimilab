@@ -39,14 +39,29 @@ export function CourseSettingsForm({ course }: {
   function handleSave() {
     setError('')
     setSaved(false)
+    const holesNum = parseInt(holes)
+    const creditNum = parseInt(baseCreditCost)
+    const rateNum = parseInt(payoutRate)
+    if (isNaN(holesNum) || isNaN(creditNum) || isNaN(rateNum)) {
+      setError('Holes, base credits, and payout % must be valid numbers')
+      return
+    }
+    if (rateNum < 1 || rateNum > 100) {
+      setError('Payout % must be between 1 and 100')
+      return
+    }
+    if (creditNum < 1) {
+      setError('Base credits must be at least 1')
+      return
+    }
     startTransition(async () => {
       const result = await updateCourseFields(course.courseId, {
         name,
         description,
         address,
-        holes: parseInt(holes),
-        baseCreditCost: parseInt(baseCreditCost),
-        payoutRate: (parseInt(payoutRate) / 100).toFixed(3),
+        holes: holesNum,
+        baseCreditCost: creditNum,
+        payoutRate: (rateNum / 100).toFixed(3),
       })
       if (result.error) setError(result.error)
       else setSaved(true)

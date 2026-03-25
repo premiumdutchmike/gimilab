@@ -1,5 +1,6 @@
 // app/(admin)/admin/courses/[id]/course-sidebar.tsx
 'use client'
+import { setCourseStatus } from '@/actions/admin/update-course'
 
 const SECTIONS = [
   { key: 'overview', label: 'Overview' },
@@ -43,19 +44,21 @@ export function CourseSidebar({
       ))}
       <div style={{ flex: 1 }} />
       <div style={{ padding: '0 12px 16px' }}>
-        <a
-          href={`/admin/courses/${courseId}?action=${isSuspended ? 'activate' : 'suspend'}`}
-          style={{
-            display: 'block', textAlign: 'center', padding: '7px 12px',
-            fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
-            color: isSuspended ? '#16a34a' : '#dc2626',
-            background: isSuspended ? 'rgba(22,163,74,0.08)' : 'rgba(220,38,38,0.08)',
-            border: `1px solid ${isSuspended ? 'rgba(22,163,74,0.2)' : 'rgba(220,38,38,0.2)'}`,
-            borderRadius: 2, textDecoration: 'none',
-          }}
-        >
-          {isSuspended ? 'Activate' : 'Suspend'}
-        </a>
+        <form action={async () => { await setCourseStatus(courseId, isSuspended ? 'active' : 'suspended') }}>
+          <button
+            type="submit"
+            style={{
+              display: 'block', width: '100%', textAlign: 'center', padding: '7px 12px',
+              fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
+              color: isSuspended ? '#16a34a' : '#dc2626',
+              background: isSuspended ? 'rgba(22,163,74,0.08)' : 'rgba(220,38,38,0.08)',
+              border: `1px solid ${isSuspended ? 'rgba(22,163,74,0.2)' : 'rgba(220,38,38,0.2)'}`,
+              borderRadius: 2, cursor: 'pointer',
+            }}
+          >
+            {isSuspended ? 'Activate' : 'Suspend'}
+          </button>
+        </form>
       </div>
     </div>
   )

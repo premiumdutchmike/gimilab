@@ -1,8 +1,7 @@
 // app/(admin)/admin/courses/[id]/page.tsx
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getCourseDetail, getCourseBookings, getCoursePayouts } from '@/lib/admin/queries'
-import { setCourseStatus } from '@/actions/admin/update-course'
 import { CourseSidebar } from './course-sidebar'
 import { CourseSettingsForm } from './course-settings-form'
 import type { Metadata } from 'next'
@@ -16,7 +15,8 @@ function fmtCents(cents: number) {
 function fmtDate(d: string | Date) {
   return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
-function fmtTime(t: string) {
+function fmtTime(t: string | null | undefined) {
+  if (!t) return '—'
   const [h, m] = t.split(':')
   const hour = parseInt(h)
   return `${hour % 12 || 12}:${m} ${hour < 12 ? 'AM' : 'PM'}`
@@ -40,21 +40,13 @@ export default async function CourseDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ section?: string; action?: string }>
+  searchParams: Promise<{ section?: string }>
 }) {
   const { id } = await params
-  const { section = 'overview', action } = await searchParams
+  const { section = 'overview' } = await searchParams
 
   const course = await getCourseDetail(id)
   if (!course) notFound()
-
-  // Handle suspend/activate action from sidebar link
-  // IMPORTANT: redirect immediately after mutation to clear the `action` param from the URL.
-  // Without this, reloading the page re-fires the mutation on every refresh.
-  if (action === 'suspend' || action === 'activate') {
-    await setCourseStatus(id, action === 'suspend' ? 'suspended' : 'active')
-    redirect(`/admin/courses/${id}?section=overview`)
-  }
 
   const [bookings, payouts] = await Promise.all([
     section === 'bookings' || section === 'overview' ? getCourseBookings(id) : Promise.resolve([]),
