@@ -1,6 +1,6 @@
 import { cache } from 'react'
 import { db } from '@/lib/db'
-import { users, partners, courses, bookings, creditLedger, payoutTransfers } from '@/lib/db/schema'
+import { users, partners, courses, bookings, creditLedger, payoutTransfers, teeTimeSlots, ratings } from '@/lib/db/schema'
 import { eq, desc, sql, and, isNull, or, gt, inArray } from 'drizzle-orm'
 
 export const getAdminStats = cache(async function getAdminStats() {
@@ -188,4 +188,161 @@ export const getAllCourses = cache(async function getAllCourses() {
     .from(courses)
     .innerJoin(partners, eq(courses.partnerId, partners.id))
     .orderBy(desc(courses.createdAt))
+})
+
+export const getCourseDetail = cache(async function getCourseDetail(courseId: string) {
+  const rows = await db
+    .select({
+      courseId: courses.id,
+      courseName: courses.name,
+      slug: courses.slug,
+      description: courses.description,
+      address: courses.address,
+      holes: courses.holes,
+      baseCreditCost: courses.baseCreditCost,
+      payoutRate: courses.payoutRate,
+      courseStatus: courses.status,
+      createdAt: courses.createdAt,
+      updatedAt: courses.updatedAt,
+      approvedAt: partners.approvedAt,
+      businessName: partners.businessName,
+      partnerId: partners.id,
+      partnerUserId: partners.userId,
+      totalBookings: sql<number>`COUNT(DISTINCT ${bookings.id})`,
+      totalEarningsCents: sql<number>`COALESCE(SUM(CASE WHEN ${bookings.status} IN ('CONFIRMED','COMPLETED') THEN ${bookings.payoutAmountCents} ELSE 0 END), 0)`,
+    })
+    .from(courses)
+    .innerJoin(partners, eq(courses.partnerId, partners.id))
+    .leftJoin(bookings, eq(bookings.courseId, courses.id))
+    .where(eq(courses.id, courseId))
+    .groupBy(
+      courses.id, courses.name, courses.slug, courses.description, courses.address,
+      courses.holes, courses.baseCreditCost, courses.payoutRate, courses.status,
+      courses.createdAt, courses.updatedAt, partners.approvedAt,
+      partners.businessName, partners.id, partners.userId,
+    )
+    .limit(1)
+  return rows[0] ?? null
+})
+
+export const getCourseBookings = cache(async function getCourseBookings(courseId: string) {
+  return db
+    .select({
+      bookingId: bookings.id,
+      status: bookings.status,
+      creditCost: bookings.creditCost,
+      payoutStatus: bookings.payoutStatus,
+      payoutAmountCents: bookings.payoutAmountCents,
+      checkedInAt: bookings.checkedInAt,
+      cancelledAt: bookings.cancelledAt,
+      createdAt: bookings.createdAt,
+      memberName: users.fullName,
+      memberEmail: users.email,
+      date: teeTimeSlots.date,
+      startTime: teeTimeSlots.startTime,
+    })
+    .from(bookings)
+    .innerJoin(users, eq(bookings.userId, users.id))
+    .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
+    .where(eq(bookings.courseId, courseId))
+    .orderBy(desc(teeTimeSlots.date))
+})
+
+export const getCoursePayouts = cache(async function getCoursePayouts(partnerId: string, courseId: string) {
+  const [pendingRows, transfers] = await Promise.all([
+    db
+      .select({ pendingCents: sql<number>`COALESCE(SUM(${bookings.payoutAmountCents}), 0)` })
+      .from(bookings)
+      .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
+      .where(and(
+        eq(teeTimeSlots.courseId, courseId),
+        eq(bookings.payoutStatus, 'PENDING'),
+        inArray(bookings.status, ['CONFIRMED', 'COMPLETED']),
+      )),
+    db
+      .select({
+        id: payoutTransfers.id,
+        amountCents: payoutTransfers.amountCents,
+        bookingCount: payoutTransfers.bookingCount,
+        status: payoutTransfers.status,
+        stripeTransferId: payoutTransfers.stripeTransferId,
+        failedReason: payoutTransfers.failedReason,
+        completedAt: payoutTransfers.completedAt,
+        createdAt: payoutTransfers.createdAt,
+      })
+      .from(payoutTransfers)
+      .where(eq(payoutTransfers.partnerId, partnerId))
+      .orderBy(desc(payoutTransfers.createdAt))
+      .limit(50),
+  ])
+  return { pendingCents: Number(pendingRows[0]?.pendingCents ?? 0), transfers }
+})
+
+export const getMemberDetail = cache(async function getMemberDetail(userId: string) {
+  const rows = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      fullName: users.fullName,
+      avatarUrl: users.avatarUrl,
+      subscriptionTier: users.subscriptionTier,
+      subscriptionStatus: users.subscriptionStatus,
+      stripeSubscriptionId: users.stripeSubscriptionId,
+      stripeCustomerId: users.stripeCustomerId,
+      isSuspended: users.isSuspended,
+      createdAt: users.createdAt,
+      creditBalance: sql<number>`COALESCE(SUM(CASE WHEN (${creditLedger.expiresAt} IS NULL OR ${creditLedger.expiresAt} > NOW()) THEN ${creditLedger.amount} ELSE 0 END), 0)`,
+      totalRounds: sql<number>`COUNT(DISTINCT CASE WHEN ${bookings.status} IN ('CONFIRMED','COMPLETED') THEN ${bookings.id} END)`,
+    })
+    .from(users)
+    .leftJoin(creditLedger, eq(creditLedger.userId, users.id))
+    .leftJoin(bookings, eq(bookings.userId, users.id))
+    .where(eq(users.id, userId))
+    .groupBy(
+      users.id, users.email, users.fullName, users.avatarUrl,
+      users.subscriptionTier, users.subscriptionStatus, users.stripeSubscriptionId,
+      users.stripeCustomerId, users.isSuspended, users.createdAt,
+    )
+    .limit(1)
+  return rows[0] ?? null
+})
+
+export const getMemberLedger = cache(async function getMemberLedger(userId: string) {
+  return db
+    .select({
+      id: creditLedger.id,
+      amount: creditLedger.amount,
+      type: creditLedger.type,
+      referenceId: creditLedger.referenceId,
+      notes: creditLedger.notes,
+      expiresAt: creditLedger.expiresAt,
+      createdAt: creditLedger.createdAt,
+    })
+    .from(creditLedger)
+    .where(eq(creditLedger.userId, userId))
+    .orderBy(desc(creditLedger.createdAt))
+})
+
+export const getMemberBookings = cache(async function getMemberBookings(userId: string) {
+  return db
+    .select({
+      bookingId: bookings.id,
+      status: bookings.status,
+      creditCost: bookings.creditCost,
+      refundAmount: bookings.refundAmount,
+      qrCode: bookings.qrCode,
+      createdAt: bookings.createdAt,
+      cancelledAt: bookings.cancelledAt,
+      courseName: courses.name,
+      courseId: courses.id,
+      date: teeTimeSlots.date,
+      startTime: teeTimeSlots.startTime,
+      ratingScore: ratings.score,
+    })
+    .from(bookings)
+    .innerJoin(courses, eq(bookings.courseId, courses.id))
+    .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
+    .leftJoin(ratings, eq(ratings.bookingId, bookings.id))
+    .where(eq(bookings.userId, userId))
+    .orderBy(desc(bookings.createdAt))
 })
