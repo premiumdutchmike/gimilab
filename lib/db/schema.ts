@@ -278,6 +278,7 @@ export type LedgerEntryType =
   | 'ADMIN_ADJUSTMENT'
   | 'CREDIT_EXPIRY'
   | 'BONUS_GRANT'
+  | 'ROLLOVER_GRANT'
 
 export type BookingStatus = 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'NO_SHOW'
 export type SlotStatus = 'AVAILABLE' | 'BOOKED' | 'RELEASED' | 'EXPIRED'
