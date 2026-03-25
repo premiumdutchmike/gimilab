@@ -99,6 +99,14 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/signup', request.url))
   }
 
+  // ── Suspended member check
+  if (isMemberRoute && user.user_metadata?.isSuspended === true) {
+    const loginUrl = request.nextUrl.clone()
+    loginUrl.pathname = '/login'
+    loginUrl.searchParams.set('error', 'suspended')
+    return NextResponse.redirect(loginUrl)
+  }
+
   return supabaseResponse
 }
 
