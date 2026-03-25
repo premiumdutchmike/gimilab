@@ -5,11 +5,12 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { bookTeeTime, cancelBooking } from '@/lib/booking/book-tee-time'
 import { db } from '@/lib/db'
-import { teeTimeSlots, courses, bookings } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { teeTimeSlots, courses, bookings, partners, users } from '@/lib/db/schema'
+import { eq, and, gte, lt, count } from 'drizzle-orm'
 import { sendEmail } from '@/lib/email'
 import BookingConfirmation from '@/emails/booking-confirmation'
 import BookingCancellation from '@/emails/booking-cancellation'
+import PartnerBookingNotification from '@/emails/partner-booking-notification'
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('en-US', {
@@ -30,6 +31,7 @@ async function getSlotAndCourse(slotId: string) {
       startTime: teeTimeSlots.startTime,
       courseName: courses.name,
       courseAddress: courses.address,
+      courseId: courses.id,
     })
     .from(teeTimeSlots)
     .innerJoin(courses, eq(teeTimeSlots.courseId, courses.id))
@@ -124,6 +126,54 @@ export async function confirmBooking(
         qrCode: result.booking.qrCode ?? result.booking.id.slice(0, 8).toUpperCase(),
       }),
     })
+  })
+
+  // Notify partner — fire and forget
+  getSlotAndCourse(slotId).then(async (slot) => {
+    if (!slot) return
+    try {
+      const [course] = await db.select().from(courses).where(eq(courses.id, slot.courseId))
+      if (!course) return
+      const [partner] = await db.select().from(partners).where(eq(partners.id, course.partnerId))
+      if (!partner) return
+      const [partnerUser] = await db.select().from(users).where(eq(users.id, partner.userId))
+      if (!partnerUser?.email) return
+
+      const payoutRate = parseFloat(course.payoutRate ?? '0.85')
+      const earnings = (result.booking.creditCost * payoutRate).toFixed(2)
+
+      // Count today's bookings for this course
+      const today = new Date().toISOString().split('T')[0]
+      const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0]
+      const [todayCount] = await db
+        .select({ count: count() })
+        .from(bookings)
+        .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
+        .where(and(
+          eq(teeTimeSlots.courseId, course.id),
+          eq(bookings.status, 'CONFIRMED'),
+          gte(teeTimeSlots.date, today),
+          lt(teeTimeSlots.date, tomorrow),
+        ))
+
+      sendEmail({
+        to: partnerUser.email,
+        subject: `New booking at ${course.name} — ${formatDate(slot.date)} at ${formatTime(slot.startTime)}`,
+        react: PartnerBookingNotification({
+          partnerName: partner.businessName ?? '',
+          memberName: user.user_metadata?.full_name ?? 'A member',
+          courseName: course.name ?? '',
+          date: formatDate(slot.date),
+          time: formatTime(slot.startTime),
+          players,
+          creditCost: result.booking.creditCost,
+          partnerEarnings: `$${earnings}`,
+          totalBookingsToday: todayCount?.count ?? 1,
+        }),
+      })
+    } catch (err) {
+      console.error('[booking] partner notification failed:', err)
+    }
   })
 
   return { success: true }

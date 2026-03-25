@@ -69,7 +69,7 @@ The partner portal does not exist yet. Demo courses and tee time blocks will be 
 **BookingDialog (shadcn Dialog):**
 - Slot details: course, date/time, holes
 - Credit cost prominently displayed
-- User's current balance shown ("Your balance: 150 credits → 65 after booking")
+- User's current balance shown ("Your balance: 170 credits → 65 after booking")
 - "Confirm Booking" button — calls `bookSlot(slotId)` Server Action
 - Error states: "Not enough credits" / "Slot no longer available" (shown inline)
 - On success: dialog closes, redirect to `/rounds`
@@ -307,5 +307,5 @@ Note: `generateSlotsForDays()` uses a hardcoded 10-minute interval — no `inter
 8. Confirm booking → redirected to `/rounds`
 9. `/rounds` shows booking in Upcoming tab with QR code
 10. Cancel booking >24h out → dialog shows full refund, confirm → booking moves to Past, credits refunded
-11. `/credits` shows correct ledger: SUBSCRIPTION_GRANT (+150), BOOKING_DEBIT (−X), BOOKING_REFUND (+X)
+11. `/credits` shows correct ledger: SUBSCRIPTION_GRANT (+170), BOOKING_DEBIT (−X), BOOKING_REFUND (+X)
 12. Dashboard credit balance updates after booking + cancellation

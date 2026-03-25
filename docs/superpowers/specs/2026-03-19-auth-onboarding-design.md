@@ -18,8 +18,8 @@ This is the first sub-project in the OneGolf build sequence. Nothing else works 
 | Tier | Price | Credits/mo | Rollover |
 |------|-------|-----------|----------|
 | Casual | $99/mo | 100 | None — credits expire on billing date |
-| Core | $149/mo | 150 | 10% of unused credits roll over (1 month cap) |
-| Heavy | $199/mo | 210 | 15% of unused credits roll over (1 month cap) |
+| Core | $149/mo | 170 | 10% of unused credits roll over (1 month cap) |
+| Heavy | $199/mo | 250 | 15% of unused credits roll over (1 month cap) |
 
 **Rollover is tier-based.** Casual credits expire on billing date — never imply otherwise. Core and Heavy members roll over a percentage of unused credits for one additional month; after that they expire. Surface rollover as a benefit on Core/Heavy tier displays only.
 
@@ -46,7 +46,7 @@ This is the first sub-project in the OneGolf build sequence. Nothing else works 
 **Layout:** Stacked vertical rows — one row per tier. Each row shows:
 - Tier name (Casual / Core / Heavy)
 - Monthly price ($99 / $149 / $199)
-- Credits per month (100 / 150 / 210)
+- Credits per month (100 / 170 / 250)
 - "Most Popular" badge on Core
 
 **Interaction:** Clicking any row navigates to `/signup?plan=<tier>` with the chosen tier in the query param.
@@ -296,11 +296,11 @@ All use shadcn/ui primitives (Button, Input, Label, Card).
 ## Verification
 
 1. Run `npm run dev`
-2. Navigate to `/pricing` — see 3 stacked tier rows with correct credits (100 / 150 / 210)
+2. Navigate to `/pricing` — see 3 stacked tier rows with correct credits (100 / 170 / 250)
 3. Click "Core" → lands on `/signup?plan=core`
 4. Sign up with email → redirected to Stripe Checkout (test mode)
 5. Use Stripe test card `4242 4242 4242 4242` → completes checkout
-6. Redirected to `/welcome` — shows 150 credits (Core tier)
+6. Redirected to `/welcome` — shows 170 credits (Core tier)
 7. Click "Start Booking" → lands on `/dashboard`
 8. Navigate back to `/welcome` → immediately redirected to `/dashboard` (welcomed cookie set)
 9. Sign out, navigate to `/login`, sign in → lands on `/dashboard`

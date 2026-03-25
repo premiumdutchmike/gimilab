@@ -1347,7 +1347,7 @@ export default async function WelcomePage() {
         userId={user.id}
         firstName={firstName}
         tierName={tierName}
-        expectedCredits={tier?.monthlyCredits ?? 150}
+        expectedCredits={tier?.monthlyCredits ?? 170}
       />
     </main>
   )
@@ -1453,15 +1453,15 @@ npm run dev
 4. Redirected to Stripe Checkout (test mode)
 5. Enter card `4242 4242 4242 4242`, exp `12/30`, CVC `123`
 6. Click Subscribe → redirected to `/welcome`
-7. Welcome page shows credit counter (150 for Core) — may take a few seconds to appear
-8. Click "Start Booking" → lands on `/dashboard` showing 150 credits
+7. Welcome page shows credit counter (170 for Core) — may take a few seconds to appear
+8. Click "Start Booking" → lands on `/dashboard` showing 170 credits
 9. Navigate back to `/welcome` → immediately redirected to `/dashboard`
 
 - [ ] **Step 4: Verify database state**
 
 In Supabase → Table Editor:
 - `users` table: row with `stripe_customer_id`, `subscription_tier: 'core'`, `subscription_status: 'active'`
-- `credit_ledger` table: exactly one row with `type: 'SUBSCRIPTION_GRANT'`, `amount: 150`, `reference_id: 'in_xxx'`
+- `credit_ledger` table: exactly one row with `type: 'SUBSCRIPTION_GRANT'`, `amount: 170`, `reference_id: 'in_xxx'`
 - Supabase Auth → Users: `user_metadata.role: 'member'`
 
 - [ ] **Step 5: Test login flow**

@@ -202,7 +202,7 @@ Three rows, each `border-bottom: 1px solid #111`, `padding: 16px 0`:
 ```
 grid-template-columns: 2fr 1fr 1fr 1fr
 
-Row 1: "MONTHLY CREDITS"    100    150    210
+Row 1: "MONTHLY CREDITS"    100    170    250
 Row 2: "BOOKING FEE"        —      —      —
 Row 3: "COURSES"            All    All    All
 ```
@@ -272,7 +272,7 @@ npm run dev
 Navigate to `http://localhost:3000/pricing`:
 - Black background, no rounded corners anywhere
 - Three tier blocks visible: Casual ($99), Core ($149, white border, RECOMMENDED label), Heavy ($199)
-- Credit counts in large mono type (100 / 150 / 210)
+- Credit counts in large mono type (100 / 170 / 250)
 - Core CTA button is filled white/black; others are outlined
 - Feature comparison renders with 3 rows, Core column header is white
 - Clicking `[JOIN CASUAL →]` navigates to `/signup?plan=casual` (same for core, heavy)

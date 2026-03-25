@@ -72,8 +72,8 @@ export default async function CourseDetailPage({
 
   if (!course) notFound()
 
-  const creditLabel = course.baseCreditCost <= 85 ? '1 Credit / Round' : '2 Credits / Round'
-  const creditShort = course.baseCreditCost <= 85 ? '1 credit' : '2 credits'
+  const creditLabel = `${course.baseCreditCost} Credits / Round`
+  const creditShort = `${course.baseCreditCost} credits`
 
   // Related courses (3 others, excluding current)
   const related = FALLBACK_COURSES.filter(c => c.slug !== slug).slice(0, 3)
@@ -113,7 +113,7 @@ export default async function CourseDetailPage({
         <div className="cd-hero-overlay" />
         <div className="cd-hero-content">
           <div>
-            <div className="cd-hero-eyebrow">{course.address} · {course.type} Course</div>
+            <div className="cd-hero-eyebrow">{course.address} · Public Course</div>
             <h1 className="cd-hero-title">{course.name}</h1>
             <div className="cd-hero-location">
               <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -159,7 +159,7 @@ export default async function CourseDetailPage({
             <div className="cd-stat-box">
               <div className="cd-stat-label">Credit Cost</div>
               <div className="cd-stat-value" style={{ color: '#BF7B2E' }}>
-                {course.baseCreditCost <= 85 ? '1' : '2'}
+                {course.baseCreditCost}
               </div>
               <div className="cd-stat-sub">per round</div>
             </div>
@@ -170,7 +170,7 @@ export default async function CourseDetailPage({
             </div>
             <div className="cd-stat-box">
               <div className="cd-stat-label">Type</div>
-              <div className="cd-stat-value" style={{ fontSize: 16, marginTop: 4 }}>{course.type}</div>
+              <div className="cd-stat-value" style={{ fontSize: 16, marginTop: 4 }}>Public</div>
               <div className="cd-stat-sub">Course</div>
             </div>
             <div className="cd-stat-box">
@@ -283,12 +283,12 @@ export default async function CourseDetailPage({
                 )}
                 <div className="cd-related-overlay" />
                 <span className="cd-related-credit">
-                  {r.baseCreditCost <= 85 ? '1 Credit' : '2 Credits'}
+                  {r.baseCreditCost} Credits
                 </span>
               </div>
               <div className="cd-related-body">
                 <div className="cd-related-name">{r.name}</div>
-                <div className="cd-related-loc">{r.address} · {r.type} · {r.holes} Holes</div>
+                <div className="cd-related-loc">{r.address} · {r.holes} Holes</div>
                 <span className="cd-related-btn">View Course</span>
               </div>
             </Link>

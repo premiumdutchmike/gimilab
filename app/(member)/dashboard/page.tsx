@@ -223,7 +223,7 @@ export default async function DashboardPage() {
                 <div className="action-title">Book a Tee Time</div>
                 <div className="action-desc">Browse available tee times and book with your credits.</div>
               </div>
-              <span className="action-badge">1–2 cr.</span>
+              <span className="action-badge">Save 10%+</span>
             </Link>
             <Link href="/courses" className="action-card">
               <div>

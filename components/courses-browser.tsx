@@ -20,7 +20,7 @@ const ARROW_ICON = (
 )
 
 type SortKey = 'featured' | 'credit-asc' | 'name-asc'
-type TypeFilter = 'All' | 'Public' | 'Semi-Private' | 'Resort'
+type RadiusFilter = 'all' | '10' | '25' | '50'
 
 export default function CoursesBrowser({
   courses,
@@ -32,8 +32,7 @@ export default function CoursesBrowser({
   balance?: number
 }) {
   const [search, setSearch] = useState('')
-  const [region, setRegion] = useState('All Regions')
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('All')
+  const [radius, setRadius] = useState<RadiusFilter>('all')
   const [sort, setSort] = useState<SortKey>('featured')
 
   const filtered = useMemo(() => {
@@ -44,21 +43,16 @@ export default function CoursesBrowser({
       list = list.filter(c => c.name.toLowerCase().includes(q) || c.address.toLowerCase().includes(q))
     }
 
-    if (region !== 'All Regions') {
-      list = list.filter(c => c.address.toLowerCase().includes(region.split(',')[0].toLowerCase()))
-    }
-
-    if (typeFilter !== 'All') {
-      list = list.filter(c => c.type === typeFilter)
-    }
+    // Radius filtering will be distance-based once we have lat/lng on courses
+    // For now it filters by proximity labels if available
 
     if (sort === 'credit-asc') list.sort((a, b) => a.baseCreditCost - b.baseCreditCost)
     if (sort === 'name-asc') list.sort((a, b) => a.name.localeCompare(b.name))
 
     return list
-  }, [courses, search, region, typeFilter, sort])
+  }, [courses, search, radius, sort])
 
-  const creditLabel = (cost: number) => cost <= 85 ? '1 Credit' : '2 Credits'
+  const creditLabel = (cost: number) => `${cost} Credits`
 
   return (
     <>
@@ -109,17 +103,17 @@ export default function CoursesBrowser({
       <div className="cb-tier-strip">
         <div className="cb-tier-inner">
           <div className="cb-tier-item">
-            <div className="cb-tier-num">12</div>
+            <div className="cb-tier-num">{courses.length}</div>
             <div>
               <div className="cb-tier-label">Member Courses</div>
-              <div className="cb-tier-sub">Across Southern California</div>
+              <div className="cb-tier-sub">Greater Philadelphia Area</div>
             </div>
           </div>
           <div className="cb-tier-item">
-            <div className="cb-tier-num">1–2</div>
+            <div className="cb-tier-num">10%+</div>
             <div>
-              <div className="cb-tier-label">Credits Per Round</div>
-              <div className="cb-tier-sub">No green fees ever</div>
+              <div className="cb-tier-label">Savings Per Round</div>
+              <div className="cb-tier-sub">vs. public green fees</div>
             </div>
           </div>
           <div className="cb-tier-item">
@@ -141,22 +135,18 @@ export default function CoursesBrowser({
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
-        <select className="cb-select" value={region} onChange={e => setRegion(e.target.value)}>
-          <option>All Regions</option>
-          <option>San Diego, CA</option>
-          <option>Los Angeles, CA</option>
-          <option>Phoenix, AZ</option>
-          <option>Las Vegas, NV</option>
-        </select>
-        {(['All', 'Public', 'Semi-Private', 'Resort'] as TypeFilter[]).map(t => (
-          <button
-            key={t}
-            className={`cb-tag${typeFilter === t ? ' active' : ''}`}
-            onClick={() => setTypeFilter(t)}
-          >
-            {t}
-          </button>
-        ))}
+        <div className="cb-radius-group">
+          <span className="cb-radius-label">Distance</span>
+          {([['all', 'All'], ['10', '10 mi'], ['25', '25 mi'], ['50', '50 mi']] as const).map(([val, label]) => (
+            <button
+              key={val}
+              className={`cb-tag${radius === val ? ' active' : ''}`}
+              onClick={() => setRadius(val as RadiusFilter)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Results Bar */}
@@ -194,7 +184,6 @@ export default function CoursesBrowser({
                 )}
                 <div className="cb-photo-overlay" />
                 <span className="cb-credit-badge">{creditLabel(course.baseCreditCost)}</span>
-                <span className="cb-type-badge">{course.type}</span>
               </div>
               <div className="cb-card-body">
                 <div className="cb-card-name">{course.name}</div>
@@ -276,8 +265,8 @@ export default function CoursesBrowser({
         .cb-search { flex: 1; min-width: 220px; background: #FFFFFF; border: 1px solid rgba(12,12,11,0.15); border-radius: 2px; padding: 11px 16px 11px 40px; font-family: 'Inter', sans-serif; font-size: 13px; color: #0C0C0B; outline: none; transition: border-color 0.15s; background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 20 20' fill='none' stroke='%23847C72' stroke-width='1.8' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='9' cy='9' r='6'/%3E%3Cline x1='14' y1='14' x2='18' y2='18'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 14px center; }
         .cb-search::placeholder { color: #847C72; }
         .cb-search:focus { border-color: #BF7B2E; }
-        .cb-select { background: #FFFFFF; border: 1px solid rgba(12,12,11,0.15); border-radius: 2px; padding: 11px 14px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; color: #847C72; outline: none; cursor: pointer; min-width: 140px; }
-        .cb-select:focus { border-color: #BF7B2E; color: #0C0C0B; }
+        .cb-radius-group { display: flex; align-items: center; gap: 6px; }
+        .cb-radius-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #847C72; margin-right: 4px; font-family: 'Inter', sans-serif; }
         .cb-tag { background: transparent; border: 1px solid rgba(12,12,11,0.15); border-radius: 2px; padding: 10px 16px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #847C72; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .cb-tag:hover, .cb-tag.active { border-color: #BF7B2E; color: #BF7B2E; background: rgba(191,123,46,0.10); }
 

@@ -524,7 +524,7 @@ Checklist:
 - [ ] Three tier blocks visible: Casual ($99), Core ($149), Heavy ($199)
 - [ ] Core block has white border (`border: 1px solid #fff`), others have `#222`
 - [ ] Core block shows `RECOMMENDED` label in header row
-- [ ] Credit counts in large mono type: 100 / 150 / 210
+- [ ] Credit counts in large mono type: 100 / 170 / 250
 - [ ] Core CTA button is filled white with black text; Casual and Heavy are outlined
 - [ ] Button labels read `JOIN CASUAL →`, `JOIN CORE →`, `JOIN HEAVY →`
 - [ ] Clicking any CTA navigates to `/signup?plan=[id]`

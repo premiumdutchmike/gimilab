@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { db } from '@/lib/db'
-import { courses, partners, bookings, teeTimeSlots, teeTimeBlocks } from '@/lib/db/schema'
+import { courses, partners, bookings, teeTimeSlots, teeTimeBlocks, users } from '@/lib/db/schema'
 import { sql } from 'drizzle-orm'
 import { eq, and } from 'drizzle-orm'
 import { getPartnerByUserId, getPartnerCourse } from '@/lib/partner/queries'
@@ -163,10 +163,17 @@ export async function checkInBooking(
   const partner = await getPartnerByUserId(user.id)
   if (!partner) return { error: 'Partner account not found.' }
 
-  const normalized = code.trim().toLowerCase()
+  // Support both full UUID (from QR scan: gimmelab://checkin/UUID) and 8-char manual code
+  let normalized = code.trim().toLowerCase()
+  // Strip gimmelab://checkin/ prefix if present
+  const prefixMatch = normalized.match(/gimmelab:\/\/checkin\/(.+)/)
+  if (prefixMatch) normalized = prefixMatch[1]
+
   if (normalized.length < 8) return { error: 'Code must be at least 8 characters.' }
 
-  // Look up booking by first 8 chars of qr_code (case-insensitive)
+  // Look up booking — try exact UUID match first, then first-8-chars fallback
+  const isFullUuid = normalized.length >= 32
+
   const [row] = await db
     .select({
       bookingId: bookings.id,
@@ -177,12 +184,18 @@ export async function checkInBooking(
       partnerId: partners.id,
       slotDate: teeTimeSlots.date,
       slotStartTime: teeTimeSlots.startTime,
+      memberName: users.fullName,
     })
     .from(bookings)
     .innerJoin(courses, eq(bookings.courseId, courses.id))
     .innerJoin(partners, eq(courses.partnerId, partners.id))
     .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
-    .where(sql`LOWER(LEFT(${bookings.qrCode}, 8)) = ${normalized.slice(0, 8)}`)
+    .innerJoin(users, eq(bookings.userId, users.id))
+    .where(
+      isFullUuid
+        ? sql`LOWER(${bookings.qrCode}) = ${normalized}`
+        : sql`LOWER(LEFT(${bookings.qrCode}, 8)) = ${normalized.slice(0, 8)}`
+    )
     .limit(1)
 
   if (!row) return { error: 'Check-in code not found.' }
@@ -191,9 +204,10 @@ export async function checkInBooking(
   if (row.status === 'COMPLETED') return { error: 'Already checked in.' }
   if (row.status !== 'CONFIRMED') return { error: 'Booking is not in a confirmable state.' }
 
+  const now = new Date()
   await db
     .update(bookings)
-    .set({ status: 'COMPLETED', updatedAt: new Date() })
+    .set({ status: 'COMPLETED', checkedInAt: now, updatedAt: now })
     .where(eq(bookings.id, row.bookingId))
 
   revalidatePath('/partner/checkin')
@@ -205,7 +219,7 @@ export async function checkInBooking(
     weekday: 'short', month: 'short', day: 'numeric',
   })
 
-  return { booking: { memberName: '', courseName: row.courseName, date, time, players: 1 } }
+  return { booking: { memberName: row.memberName ?? 'Member', courseName: row.courseName, date, time, players: 1 } }
 }
 
 export async function updateCourse(

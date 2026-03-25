@@ -11,6 +11,26 @@
     {
       "path": "/api/cron/generate-slots",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/send-reminders",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron/send-reviews",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/send-expiry-warnings",
+      "schedule": "0 14 25-28 * *"
+    },
+    {
+      "path": "/api/cron/send-payout-summaries",
+      "schedule": "0 8 1 * *"
+    },
+    {
+      "path": "/api/cron/send-credit-summaries",
+      "schedule": "0 14 1,15 * *"
     }
   ]
 }

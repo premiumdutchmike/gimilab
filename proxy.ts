@@ -40,6 +40,7 @@ export async function proxy(request: NextRequest) {
     || pathname.startsWith('/welcome')
     || pathname.startsWith('/api/')
     || pathname.startsWith('/courses') // course listing + detail are public (auth state handled in page)
+    || pathname.startsWith('/partner/apply') // partner apply + signup are public
 
   // ── Unauthenticated: redirect to login ──────────────────────────────────
   if (!user && !isPublicPath) {
@@ -74,7 +75,8 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/partner/analytics') ||
     pathname.startsWith('/partner/profile') ||
     pathname.startsWith('/partner/settings') ||
-    pathname.startsWith('/partner/course')
+    pathname.startsWith('/partner/course') ||
+    pathname.startsWith('/partner/onboarding')
 
   // ── Admin routes (/admin/*)
   const isAdminRoute = pathname.startsWith('/admin')

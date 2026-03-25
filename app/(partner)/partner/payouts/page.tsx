@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { getPartnerByUserId, getPartnerPayoutSummary, getPartnerPayoutTransfers } from '@/lib/partner/queries'
+import { getPartnerByUserId, getPartnerPayoutSummary, getPartnerPayoutTransfers, getPartnerCourse } from '@/lib/partner/queries'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Payouts — Gimmelab Partner' }
@@ -27,12 +27,15 @@ export default async function PartnerPayoutsPage() {
   const partner = await getPartnerByUserId(user.id)
   if (!partner) redirect('/partner/dashboard')
 
-  const [summary, transfers] = await Promise.all([
+  const [summary, transfers, course] = await Promise.all([
     getPartnerPayoutSummary(partner.id),
     getPartnerPayoutTransfers(partner.id),
+    getPartnerCourse(partner.id),
   ])
 
   const isConnected = partner.stripeConnectStatus === 'active'
+  const payoutPct = course?.payoutRate ? Math.round(Number(course.payoutRate) * 100) : 85
+  const payoutPerCredit = course?.payoutRate ? `$${Number(course.payoutRate).toFixed(2)}` : '$0.85'
 
   return (
     <div style={{ padding: '32px 28px', maxWidth: 1200, margin: '0 auto' }}>
@@ -46,7 +49,7 @@ export default async function PartnerPayoutsPage() {
         {[
           { label: 'Pending balance',    value: formatCents(summary.pendingCents),  note: `${summary.pendingCount} bookings` },
           { label: 'Total paid out',     value: formatCents(summary.totalPaidCents), note: `${transfers.filter(t => t.status === 'COMPLETED').length} transfers` },
-          { label: 'Payout rate',        value: '70%', note: 'of credit value per booking' },
+          { label: 'Payout rate',        value: `${payoutPct}%`, note: 'of credit value per booking' },
         ].map(({ label, value, note }) => (
           <div key={label} style={{ background: '#141414', border: '1px solid #1f1f1f', padding: '18px 20px' }}>
             <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 8 }}>
@@ -85,7 +88,7 @@ export default async function PartnerPayoutsPage() {
       }}>
         <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
           <span style={{ color: '#38bdf8', fontWeight: 700 }}>How payouts work: </span>
-          Each booking earns you 70% of the credit value ($0.70 per credit). Payouts are processed by Gimmelab admin — typically weekly. Your pending balance grows as new bookings come in.
+          Each booking earns you {payoutPct}% of the credit value ({payoutPerCredit} per credit). Payouts are processed by Gimmelab admin — typically monthly. Your pending balance grows as new bookings come in.
         </p>
       </div>
 

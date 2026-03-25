@@ -48,8 +48,8 @@ Resend + React Email → transactional email
 | Tier | Price | Credits/mo | Rollover |
 |------|-------|-----------|----------|
 | Casual | $99/mo | 100 | None — credits expire on billing date |
-| Core | $149/mo | 150 | 10% of unused credits roll over — 1-month cap, then expire |
-| Heavy | $199/mo | 210 | 15% of unused credits roll over — 1-month cap, then expire |
+| Core | $149/mo | 170 | 10% of unused credits roll over — 1-month cap, then expire |
+| Heavy | $199/mo | 250 | 15% of unused credits roll over — 1-month cap, then expire |
 
 **Rollover is tier-based.** Casual has no rollover. Core and Heavy roll over a percentage of unused credits for one additional month only — after that they expire. Rollover is processed by the nightly cron at billing date.
 

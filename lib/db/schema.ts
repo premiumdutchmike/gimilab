@@ -53,6 +53,10 @@ export const partners = pgTable('partners', {
   status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'suspended'
   approvedAt: timestamp('approved_at', { withTimezone: true }),
   approvedBy: uuid('approved_by'), // admin user id
+  onboardingComplete:     boolean('onboarding_complete').default(false).notNull(),
+  stripeConnectAccountId: text('stripe_connect_account_id'),
+  tierVerifiedAt:         timestamp('tier_verified_at', { withTimezone: true }),
+  verificationStatus:     text('verification_status').default('pending'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
@@ -89,6 +93,8 @@ export const courses = pgTable('courses', {
   avgRating: decimal('avg_rating', { precision: 3, scale: 2 }),
   status: text('status').default('pending').notNull(), // 'pending' | 'active' | 'suspended'
   payoutRate: decimal('payout_rate', { precision: 4, scale: 3 }), // e.g. 0.65
+  rackRateCents:     integer('rack_rate_cents'),    // partner's walk-up price (self-reported)
+  gimmelabRateCents: integer('gimmelab_rate_cents'), // our price (must be ≥10% off rack)
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
@@ -138,6 +144,8 @@ export const bookings = pgTable('bookings', {
   qrCode: text('qr_code'), // unique check-in code
   payoutStatus: text('payout_status').default('PENDING'), // 'PENDING' | 'PROCESSED' | 'HELD'
   payoutAmountCents: integer('payout_amount_cents'), // actual $ paid to course
+  partnerEarningsCents: integer('partner_earnings_cents'), // snapshotted at booking time
+  checkedInAt: timestamp('checked_in_at', { withTimezone: true }), // set when partner scans QR
   payoutTransferId: uuid('payout_transfer_id').references(() => payoutTransfers.id),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
@@ -167,6 +175,15 @@ export const ratings = pgTable('ratings', {
   aiSummary: text('ai_summary'), // AI-generated insight
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+})
+
+// ─── Verification Queue ──────────────────────────────────────────────────────
+export const verificationQueue = pgTable('verification_queue', {
+  id:        uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  courseId:  uuid('course_id').references(() => courses.id).notNull(),
+  reason:    text('reason').notNull(), // 'gimmelab_rate_above_cap' | 'rack_rate_discrepancy' | 'low_rack_rate'
+  status:    text('status').default('open').notNull(), // 'open' | 'resolved'
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 // ─── Relations ───────────────────────────────────────────────────────────────
@@ -225,6 +242,10 @@ export const ratingsRelations = relations(ratings, ({ one }) => ({
   course: one(courses, { fields: [ratings.courseId], references: [courses.id] }),
 }))
 
+export const verificationQueueRelations = relations(verificationQueue, ({ one }) => ({
+  course: one(courses, { fields: [verificationQueue.courseId], references: [courses.id] }),
+}))
+
 // ─── TypeScript Types ─────────────────────────────────────────────────────────
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
@@ -245,6 +266,9 @@ export type NewRating = typeof ratings.$inferInsert
 export type PayoutTransfer = typeof payoutTransfers.$inferSelect
 export type NewPayoutTransfer = typeof payoutTransfers.$inferInsert
 export type SubscriptionTier = typeof subscriptionTiers.$inferSelect
+export type VerificationQueue = typeof verificationQueue.$inferSelect
+export type NewVerificationQueue = typeof verificationQueue.$inferInsert
+export type VerificationStatus = 'pending' | 'verified' | 'flagged'
 
 export type LedgerEntryType =
   | 'SUBSCRIPTION_GRANT'

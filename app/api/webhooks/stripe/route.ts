@@ -6,6 +6,7 @@ import { users, creditLedger, partners } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { sendEmail } from '@/lib/email'
 import Welcome from '@/emails/welcome'
+import PaymentFailed from '@/emails/payment-failed'
 
 // Stripe requires the raw body for signature verification
 export const runtime = 'nodejs'
@@ -223,13 +224,35 @@ export async function POST(request: NextRequest) {
         await handleInvoicePaid(event.data.object as Stripe.Invoice)
         break
       case 'invoice.payment_failed': {
-        // Update subscription status to past_due via customer ID
         const failedInvoice = event.data.object as Stripe.Invoice
         const customerId = failedInvoice.customer as string
-        await db
-          .update(users)
-          .set({ subscriptionStatus: 'past_due', updatedAt: new Date() })
+        const [failedUser] = await db
+          .select()
+          .from(users)
           .where(eq(users.stripeCustomerId, customerId))
+
+        if (failedUser) {
+          await db
+            .update(users)
+            .set({ subscriptionStatus: 'past_due', updatedAt: new Date() })
+            .where(eq(users.id, failedUser.id))
+
+          // Payment failed email — fire and forget
+          if (failedUser.email) {
+            const retryDate = new Date()
+            retryDate.setDate(retryDate.getDate() + 3)
+            sendEmail({
+              to: failedUser.email,
+              subject: 'Action needed — your Gimmelab payment failed',
+              react: PaymentFailed({
+                memberName: failedUser.fullName ?? failedUser.email,
+                tier: failedUser.subscriptionTier ? `${failedUser.subscriptionTier.charAt(0).toUpperCase()}${failedUser.subscriptionTier.slice(1)}` : 'Your',
+                amount: `$${((failedInvoice.amount_due ?? 0) / 100).toFixed(2)}`,
+                retryDate: retryDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+              }),
+            })
+          }
+        }
         break
       }
       case 'customer.subscription.updated':
