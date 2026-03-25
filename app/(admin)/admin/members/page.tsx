@@ -82,12 +82,12 @@ export default async function AdminMembersPage() {
                 padding: '13px 20px', alignItems: 'center',
                 borderBottom: i < members.length - 1 ? '1px solid #f0f0f0' : 'none',
               }}>
-                <div>
+                <a href={`/admin/members/${m.id}`} style={{ textDecoration: 'none' }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#111', marginBottom: 2 }}>
                     {m.fullName ?? '—'}
                   </div>
                   <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)' }}>{m.email}</div>
-                </div>
+                </a>
                 <span style={{ fontSize: 12, fontWeight: 700, color: tierColor, textTransform: 'capitalize' }}>
                   {m.subscriptionTier ?? 'No plan'}
                 </span>
