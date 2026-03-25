@@ -321,6 +321,7 @@ export const getMemberLedger = cache(async function getMemberLedger(userId: stri
     .from(creditLedger)
     .where(eq(creditLedger.userId, userId))
     .orderBy(desc(creditLedger.createdAt))
+    .limit(500)
 })
 
 export const getMemberBookings = cache(async function getMemberBookings(userId: string) {

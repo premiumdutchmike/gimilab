@@ -1,5 +1,5 @@
 // app/(admin)/admin/members/[id]/page.tsx
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getMemberDetail, getMemberLedger, getMemberBookings } from '@/lib/admin/queries'
 import { setMemberSuspended } from '@/actions/admin/suspend-member'
@@ -13,7 +13,8 @@ export const dynamic = 'force-dynamic'
 function fmtDate(d: string | Date) {
   return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
-function fmtTime(t: string) {
+function fmtTime(t: string | null | undefined) {
+  if (!t) return '—'
   const [h, m] = t.split(':')
   const hour = parseInt(h)
   return `${hour % 12 || 12}:${m} ${hour < 12 ? 'AM' : 'PM'}`
@@ -52,12 +53,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 async function handleChangeTier(stripeSubscriptionId: string, fd: FormData) {
   'use server'
   const tier = fd.get('tier') as 'casual' | 'core' | 'heavy'
-  await changeSubscriptionTier(stripeSubscriptionId, tier)
+  const result = await changeSubscriptionTier(stripeSubscriptionId, tier)
+  if (result.error) throw new Error(result.error)
 }
 
 async function handleCancelSubscription(stripeSubscriptionId: string) {
   'use server'
-  await cancelSubscription(stripeSubscriptionId)
+  const result = await cancelSubscription(stripeSubscriptionId)
+  if (result.error) throw new Error(result.error)
 }
 
 export default async function MemberDetailPage({
@@ -65,20 +68,13 @@ export default async function MemberDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ section?: string; action?: string }>
+  searchParams: Promise<{ section?: string }>
 }) {
   const { id } = await params
-  const { section = 'overview', action } = await searchParams
+  const { section = 'overview' } = await searchParams
 
   const member = await getMemberDetail(id)
   if (!member) notFound()
-
-  // Handle suspend/activate — redirect immediately to clear the `action` param,
-  // preventing the mutation from re-firing on page reload.
-  if (action === 'suspend' || action === 'activate') {
-    await setMemberSuspended(id, action === 'suspend')
-    redirect(`/admin/members/${id}?section=overview`)
-  }
 
   const [ledger, bookings] = await Promise.all([
     section === 'credits' || section === 'overview' ? getMemberLedger(id) : Promise.resolve([]),
@@ -106,6 +102,11 @@ export default async function MemberDetailPage({
     ? handleCancelSubscription.bind(null, member.stripeSubscriptionId)
     : null
 
+  async function handleSuspend() {
+    'use server'
+    await setMemberSuspended(id, !(member.isSuspended ?? false))
+  }
+
   return (
     <div style={{ padding: '32px 28px', maxWidth: 1200, margin: '0 auto' }}>
       <Link href="/admin/members" style={{ fontSize: 12, color: 'rgba(0,0,0,0.4)', textDecoration: 'none', display: 'block', marginBottom: 16 }}>
@@ -126,7 +127,7 @@ export default async function MemberDetailPage({
 
       {/* Sidebar + content */}
       <div style={{ display: 'flex', background: '#fff', border: '1px solid #e8e8e8', minHeight: 500 }}>
-        <MemberSidebar memberId={id} currentSection={section} isSuspended={member.isSuspended ?? false} />
+        <MemberSidebar memberId={id} currentSection={section} isSuspended={member.isSuspended ?? false} suspendAction={handleSuspend} />
 
         <div style={{ flex: 1, padding: '28px 32px' }}>
 
