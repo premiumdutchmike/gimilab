@@ -1,0 +1,147 @@
+'use client'
+
+import { useState, useTransition } from 'react'
+import { discoverCourses, addProspects } from '@/actions/outreach'
+import type { PlaceResult } from '@/lib/outreach/places'
+
+export default function DiscoverForm() {
+  const [location, setLocation] = useState('')
+  const [radius, setRadius] = useState(30)
+  const [results, setResults] = useState<PlaceResult[]>([])
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [error, setError] = useState<string | null>(null)
+  const [addedMsg, setAddedMsg] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
+
+  function handleSearch() {
+    if (!location.trim()) return
+    setError(null)
+    setResults([])
+    setSelected(new Set())
+    setAddedMsg(null)
+
+    startTransition(async () => {
+      const res = await discoverCourses(location.trim(), radius)
+      if (res.error) { setError(res.error); return }
+      setResults(res.results)
+    })
+  }
+
+  function toggleSelect(id: string) {
+    setSelected(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  function selectAll() {
+    setSelected(new Set(results.map(r => r.googlePlaceId)))
+  }
+
+  function handleAdd() {
+    const toAdd = results.filter(r => selected.has(r.googlePlaceId))
+    if (toAdd.length === 0) return
+
+    startTransition(async () => {
+      const res = await addProspects(toAdd)
+      if (res.error) { setError(res.error); return }
+      setAddedMsg(`Added ${res.added} course${res.added === 1 ? '' : 's'}${res.skipped > 0 ? ` (${res.skipped} already existed)` : ''}.`)
+      setSelected(new Set())
+    })
+  }
+
+  return (
+    <div>
+      {/* Search inputs */}
+      <div style={{ display: 'flex', gap: 12, marginBottom: 24, alignItems: 'flex-end' }}>
+        <div style={{ flex: 1 }}>
+          <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--stone)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+            Location
+          </label>
+          <input
+            type="text"
+            value={location}
+            onChange={e => setLocation(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSearch()}
+            placeholder="Wilmington, DE  or  19801"
+            style={{ width: '100%', background: 'var(--graphite)', border: '1px solid var(--divider)', color: 'var(--linen)', padding: '10px 14px', fontSize: 14, borderRadius: 2, boxSizing: 'border-box' }}
+          />
+        </div>
+        <div>
+          <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--stone)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+            Radius (miles)
+          </label>
+          <select
+            value={radius}
+            onChange={e => setRadius(Number(e.target.value))}
+            style={{ background: 'var(--graphite)', border: '1px solid var(--divider)', color: 'var(--linen)', padding: '10px 14px', fontSize: 14, borderRadius: 2 }}
+          >
+            {[10, 20, 30, 50].map(r => <option key={r} value={r}>{r} mi</option>)}
+          </select>
+        </div>
+        <button
+          onClick={handleSearch}
+          disabled={isPending || !location.trim()}
+          style={{ background: 'var(--amber)', color: 'var(--off-white)', border: 'none', padding: '10px 20px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', borderRadius: 2, cursor: isPending ? 'wait' : 'pointer', opacity: !location.trim() ? 0.5 : 1 }}
+        >
+          {isPending ? 'Searching...' : 'Find Courses'}
+        </button>
+      </div>
+
+      {error && (
+        <p style={{ color: '#dc2626', fontSize: 13, marginBottom: 16 }}>{error}</p>
+      )}
+
+      {addedMsg && (
+        <p style={{ color: 'var(--amber)', fontSize: 13, marginBottom: 16 }}>{addedMsg}</p>
+      )}
+
+      {/* Results */}
+      {results.length > 0 && (
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <span style={{ fontSize: 13, color: 'var(--stone)' }}>
+              {results.length} course{results.length === 1 ? '' : 's'} found — {selected.size} selected
+            </span>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={selectAll} style={{ fontSize: 12, color: 'var(--amber)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                Select all
+              </button>
+              <button
+                onClick={handleAdd}
+                disabled={selected.size === 0 || isPending}
+                style={{ background: 'var(--amber)', color: 'var(--off-white)', border: 'none', padding: '6px 14px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', borderRadius: 2, cursor: selected.size === 0 ? 'not-allowed' : 'pointer', opacity: selected.size === 0 ? 0.4 : 1 }}
+              >
+                Add Selected ({selected.size})
+              </button>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {results.map(r => (
+              <label
+                key={r.googlePlaceId}
+                style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: selected.has(r.googlePlaceId) ? 'var(--amber-dim)' : 'var(--graphite)', border: `1px solid ${selected.has(r.googlePlaceId) ? 'var(--amber)' : 'var(--divider)'}`, borderRadius: 2, cursor: 'pointer' }}
+              >
+                <input
+                  type="checkbox"
+                  checked={selected.has(r.googlePlaceId)}
+                  onChange={() => toggleSelect(r.googlePlaceId)}
+                  style={{ accentColor: 'var(--amber)', width: 16, height: 16 }}
+                />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--linen)' }}>{r.courseName}</div>
+                  <div style={{ fontSize: 12, color: 'var(--stone)', marginTop: 2 }}>{r.formattedAddress}</div>
+                </div>
+                {r.websiteUrl && (
+                  <span style={{ fontSize: 11, color: 'var(--stone)' }}>has website</span>
+                )}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
