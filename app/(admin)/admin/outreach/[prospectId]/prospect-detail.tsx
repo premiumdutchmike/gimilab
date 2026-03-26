@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { updateProspect } from '@/actions/outreach'
+import { updateProspect, approveAndSendEmail, skipEmail } from '@/actions/outreach'
 
 type Prospect = {
   id: string
@@ -26,6 +26,7 @@ type EmailRow = {
   id: string
   touchNumber: number
   subject: string
+  body: string
   status: string
   sentAt: Date | null
   openedAt: Date | null
@@ -42,6 +43,94 @@ const EMAIL_STATUS_COLOR: Record<string, string> = {
   approved: '#a855f7',
   sent:     '#22c55e',
   bounced:  '#dc2626',
+}
+
+function EmailCard({ email, onRefresh }: { email: EmailRow; onRefresh: () => void }) {
+  const [expanded, setExpanded] = useState(false)
+  const [subject, setSubject] = useState(email.subject)
+  const [body, setBody] = useState(email.body)
+  const [error, setError] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
+
+  const isSent = email.status === 'sent' || email.status === 'bounced'
+
+  function handleApprove() {
+    startTransition(async () => {
+      const res = await approveAndSendEmail(email.id, { subject, body })
+      if (res.error) { setError(res.error); return }
+      onRefresh()
+    })
+  }
+
+  function handleSkip() {
+    startTransition(async () => {
+      await skipEmail(email.id)
+      onRefresh()
+    })
+  }
+
+  return (
+    <div style={{ border: `1px solid ${expanded ? '#a855f7' : '#e8e8e8'}`, borderRadius: 2, overflow: 'hidden' }}>
+      {/* Row header — always visible, click to expand */}
+      <div
+        onClick={() => !isSent && setExpanded(e => !e)}
+        style={{ display: 'grid', gridTemplateColumns: '70px 1fr 80px 130px 130px 28px', alignItems: 'center', gap: 12, padding: '10px 14px', background: expanded ? 'rgba(168,85,247,0.04)' : '#f5f5f5', cursor: isSent ? 'default' : 'pointer' }}
+      >
+        <span style={{ fontSize: 11, fontWeight: 700, color: '#888', textTransform: 'uppercase' }}>Touch {email.touchNumber}</span>
+        <span style={{ fontSize: 13, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{subject}</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: EMAIL_STATUS_COLOR[email.status] ?? '#888', textTransform: 'uppercase' }}>{email.status}</span>
+        <span style={{ fontSize: 12, color: '#888' }}>
+          {email.sentAt ? `Sent ${new Date(email.sentAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : `Sched. ${new Date(email.scheduledSendAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
+        </span>
+        <span style={{ fontSize: 12, color: '#888' }}>
+          {email.openedAt ? `Opened ${new Date(email.openedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : '—'}
+        </span>
+        {!isSent && (
+          <span style={{ fontSize: 14, color: '#aaa', textAlign: 'center', userSelect: 'none' }}>{expanded ? '▲' : '▼'}</span>
+        )}
+      </div>
+
+      {/* Expanded editor */}
+      {expanded && !isSent && (
+        <div style={{ padding: '16px 14px', borderTop: '1px solid #e8e8e8', background: '#fff' }}>
+          <input
+            value={subject}
+            onChange={e => setSubject(e.target.value)}
+            style={{ width: '100%', background: '#f5f5f5', border: '1px solid #ddd', color: '#111', padding: '8px 12px', fontSize: 14, fontWeight: 600, borderRadius: 2, marginBottom: 10, boxSizing: 'border-box' }}
+          />
+          <textarea
+            value={body}
+            onChange={e => setBody(e.target.value)}
+            rows={12}
+            style={{ width: '100%', background: '#f5f5f5', border: '1px solid #ddd', color: '#111', padding: '10px 12px', fontSize: 13, fontFamily: 'inherit', borderRadius: 2, resize: 'vertical', boxSizing: 'border-box' }}
+          />
+          {error && <p style={{ color: '#dc2626', fontSize: 13, margin: '8px 0 0' }}>{error}</p>}
+          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <button
+              onClick={handleApprove}
+              disabled={isPending}
+              style={{ background: '#16a34a', color: '#fff', border: 'none', padding: '8px 18px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', borderRadius: 2, cursor: isPending ? 'wait' : 'pointer', opacity: isPending ? 0.7 : 1 }}
+            >
+              {isPending ? 'Sending...' : 'Approve & Send'}
+            </button>
+            <button
+              onClick={handleSkip}
+              disabled={isPending}
+              style={{ background: '#fff', color: '#888', border: '1px solid #ddd', padding: '8px 14px', fontSize: 11, fontWeight: 600, borderRadius: 2, cursor: 'pointer' }}
+            >
+              Skip (delay 1 day)
+            </button>
+            <button
+              onClick={() => setExpanded(false)}
+              style={{ marginLeft: 'auto', background: 'none', color: '#aaa', border: 'none', fontSize: 12, cursor: 'pointer' }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function ProspectDetail({
@@ -193,17 +282,7 @@ export default function ProspectDetail({
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {emails.map(e => (
-              <div key={e.id} style={{ display: 'grid', gridTemplateColumns: '70px 1fr 80px 120px 120px', alignItems: 'center', gap: 12, padding: '10px 14px', background: '#f5f5f5', borderRadius: 2 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#888', textTransform: 'uppercase' }}>Touch {e.touchNumber}</span>
-                <span style={{ fontSize: 13, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.subject}</span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: EMAIL_STATUS_COLOR[e.status] ?? '#888', textTransform: 'uppercase' }}>{e.status}</span>
-                <span style={{ fontSize: 12, color: '#888' }}>
-                  {e.sentAt ? `Sent ${new Date(e.sentAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : `Sched. ${new Date(e.scheduledSendAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
-                </span>
-                <span style={{ fontSize: 12, color: '#888' }}>
-                  {e.openedAt ? `Opened ${new Date(e.openedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : '—'}
-                </span>
-              </div>
+              <EmailCard key={e.id} email={e} onRefresh={() => window.location.reload()} />
             ))}
           </div>
         )}

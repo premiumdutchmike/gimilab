@@ -28,6 +28,7 @@ export default async function ProspectDetailPage({ params }: { params: Promise<{
       id: outreachEmails.id,
       touchNumber: outreachEmails.touchNumber,
       subject: outreachEmails.subject,
+      body: outreachEmails.body,
       status: outreachEmails.status,
       sentAt: outreachEmails.sentAt,
       openedAt: outreachEmails.openedAt,
