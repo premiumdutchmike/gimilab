@@ -331,4 +331,21 @@ export const outreachEmails = pgTable('outreach_emails', {
   openedAt: timestamp('opened_at', { withTimezone: true }),
   resendEmailId: text('resend_email_id'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
+
+export const outreachProspectsRelations = relations(outreachProspects, ({ many }) => ({
+  emails: many(outreachEmails),
+}))
+
+export const outreachEmailsRelations = relations(outreachEmails, ({ one }) => ({
+  prospect: one(outreachProspects, {
+    fields: [outreachEmails.prospectId],
+    references: [outreachProspects.id],
+  }),
+}))
+
+export type OutreachProspect = typeof outreachProspects.$inferSelect
+export type NewOutreachProspect = typeof outreachProspects.$inferInsert
+export type OutreachEmail = typeof outreachEmails.$inferSelect
+export type NewOutreachEmail = typeof outreachEmails.$inferInsert
