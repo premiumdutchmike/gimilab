@@ -9,6 +9,7 @@ const TABS = [
   { label: 'Credits',  href: '/admin/credits' },
   { label: 'Revenue',  href: '/admin/revenue' },
   { label: 'Payouts',  href: '/admin/payouts' },
+  { label: 'Outreach', href: '/admin/outreach/discover' },
 ] as const
 
 const LOCKED: string[] = []
