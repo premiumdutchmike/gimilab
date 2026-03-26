@@ -104,6 +104,7 @@ export async function enrichProspect(
     const classification = await classifyCourse(
       prospect.courseName,
       scraped.bodyText,
+      // googleName is the same as courseName here since we set courseName from the Places API displayName on import
       prospect.courseName,
     )
 
@@ -132,6 +133,7 @@ export async function enrichProspect(
     let estimatedMonthlyEarn: number | null = null
     if (scraped.rackRateMin !== null && scraped.rackRateMax !== null) {
       const avg = (scraped.rackRateMin + scraped.rackRateMax) / 2
+      // 30 off-peak slots/month × avg rack rate × 0.85 commission (10% discount tier)
       estimatedMonthlyEarn = Math.floor(avg * 30 * 0.85)
     }
 
