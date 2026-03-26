@@ -286,3 +286,49 @@ export type SlotStatus = 'AVAILABLE' | 'BOOKED' | 'RELEASED' | 'EXPIRED'
 export type CourseStatus = 'pending' | 'active' | 'suspended'
 export type PartnerStatus = 'pending' | 'approved' | 'suspended'
 export type SubscriptionTierKey = 'casual' | 'core' | 'heavy'
+
+// ─── Outreach Prospects ─────────────────────────────────────────────────────
+export const outreachProspects = pgTable('outreach_prospects', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  courseName: text('course_name').notNull(),
+  gmName: text('gm_name'),
+  email: text('email'),
+  phone: text('phone'),
+  websiteUrl: text('website_url').notNull(),
+  rackRateMin: integer('rack_rate_min'),
+  rackRateMax: integer('rack_rate_max'),
+  golfnowUrl: text('golfnow_url'),
+  estimatedMonthlyEarn: integer('estimated_monthly_earn'),
+  // 'municipal' | 'semi_private' | 'public' | 'private' | 'resort'
+  courseType: text('course_type'),
+  // '9' | '18' | '27' | '36'
+  holes: text('holes'),
+  // 'tier1' | 'tier2' | 'tier3'
+  tier: text('tier').default('tier1').notNull(),
+  // 'new' | 'enriched' | 'queued' | 'active' | 'paused' | 'bounced' | 'skipped' | 'closed'
+  status: text('status').default('new').notNull(),
+  skipReason: text('skip_reason'),
+  notes: text('notes'),
+  googlePlaceId: text('google_place_id').unique(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+})
+
+// ─── Outreach Emails ─────────────────────────────────────────────────────────
+export const outreachEmails = pgTable('outreach_emails', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  prospectId: uuid('prospect_id')
+    .references(() => outreachProspects.id, { onDelete: 'cascade' })
+    .notNull(),
+  // 1, 2, or 3
+  touchNumber: integer('touch_number').notNull(),
+  subject: text('subject').notNull(),
+  body: text('body').notNull(),
+  // 'draft' | 'approved' | 'sent' | 'bounced'
+  status: text('status').default('draft').notNull(),
+  scheduledSendAt: timestamp('scheduled_send_at', { withTimezone: true }).notNull(),
+  sentAt: timestamp('sent_at', { withTimezone: true }),
+  openedAt: timestamp('opened_at', { withTimezone: true }),
+  resendEmailId: text('resend_email_id'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+})
