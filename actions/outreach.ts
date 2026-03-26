@@ -11,8 +11,10 @@ import { scrapeCourseSite } from '@/lib/outreach/scraper'
 import { classifyCourse } from '@/lib/outreach/classifier'
 import { generateTouchEmail } from '@/lib/outreach/email-writer'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const OUTREACH_FROM = 'Dutch @ Gimmelab <outreach@gimmelab.com>'
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY)
+}
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -265,7 +267,7 @@ export async function approveAndSendEmail(
     if (!prospect?.email) return { error: 'Prospect has no email address.' }
 
     if (!process.env.RESEND_API_KEY?.startsWith('re_placeholder')) {
-      const { data, error } = await resend.emails.send({
+      const { data, error } = await getResend().emails.send({
         from: OUTREACH_FROM,
         to: prospect.email,
         subject: overrides?.subject ?? email.subject,
