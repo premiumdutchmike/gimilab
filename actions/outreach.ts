@@ -143,6 +143,7 @@ export async function enrichProspect(
       .update(outreachProspects)
       .set({
         gmName: scraped.gmName ?? prospect.gmName,
+        email: scraped.email ?? prospect.email,
         rackRateMin: scraped.rackRateMin,
         rackRateMax: scraped.rackRateMax,
         golfnowUrl: scraped.golfnowUrl,
