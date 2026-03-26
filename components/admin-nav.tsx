@@ -14,9 +14,16 @@ const TABS = [
 
 const LOCKED: string[] = []
 
+const OUTREACH_STEPS = [
+  { label: '1 · Discover',  href: '/admin/outreach/discover' },
+  { label: '2 · Prospects', href: '/admin/outreach/prospects' },
+  { label: '3 · Queue',     href: '/admin/outreach/queue' },
+]
+
 export default function AdminNav() {
   const pathname = usePathname()
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
+  const inOutreach = pathname.startsWith('/admin/outreach')
 
   return (
     <div style={{ position: 'sticky', top: 0, zIndex: 40 }}>
@@ -81,6 +88,32 @@ export default function AdminNav() {
           </span>
         ))}
       </div>
+
+      {/* Outreach sub-nav */}
+      {inOutreach && (
+        <div style={{
+          height: 36, background: '#fafafa',
+          borderBottom: '1px solid #e8e8e8',
+          display: 'flex', padding: '0 20px', gap: 4,
+        }}>
+          {OUTREACH_STEPS.map(step => {
+            const active = pathname === step.href || pathname.startsWith(step.href + '/')
+            return (
+              <Link key={step.href} href={step.href} style={{
+                height: 36, padding: '0 14px',
+                display: 'flex', alignItems: 'center',
+                fontSize: 11, fontWeight: 600, letterSpacing: '0.06em',
+                textDecoration: 'none',
+                color: active ? '#a855f7' : 'rgba(0,0,0,0.4)',
+                borderBottom: active ? '2px solid #a855f7' : '2px solid transparent',
+                flexShrink: 0, transition: 'color 0.15s',
+              }}>
+                {step.label}
+              </Link>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
