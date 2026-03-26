@@ -50,9 +50,17 @@ export default function ProspectsTable({ prospects }: { prospects: Prospect[] })
     if (ids.length === 0) return
     setMsg(null)
     startTransition(async () => {
-      for (const id of ids) await enrichProspect(id)
+      let failed = 0
+      for (const id of ids) {
+        const res = await enrichProspect(id)
+        if (res.error) failed++
+      }
       setSelected(new Set())
-      setMsg(`Enriched ${ids.length} prospect${ids.length === 1 ? '' : 's'}.`)
+      const succeeded = ids.length - failed
+      setMsg(failed > 0
+        ? `Enriched ${succeeded}, failed ${failed}.`
+        : `Enriched ${succeeded} prospect${succeeded === 1 ? '' : 's'}.`
+      )
     })
   }
 

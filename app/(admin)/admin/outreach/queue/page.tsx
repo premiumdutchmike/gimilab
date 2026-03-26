@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { outreachEmails, outreachProspects } from '@/lib/db/schema'
 import { eq, and, lte } from 'drizzle-orm'
-import QueueCard from './queue-card'
+import QueueList from './queue-list'
 
 export const dynamic = 'force-dynamic'
 export const metadata: Metadata = { title: 'Queue — Gimmelab Admin' }
@@ -42,10 +42,7 @@ export default async function QueuePage() {
             : `${emails.length} email${emails.length === 1 ? '' : 's'} ready for review.`}
         </p>
       </div>
-
-      {emails.map(email => (
-        <QueueCard key={email.id} email={email} onDone={() => {}} />
-      ))}
+      <QueueList emails={emails} />
     </div>
   )
 }

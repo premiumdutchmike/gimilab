@@ -243,6 +243,7 @@ export async function generateProspectEmails(
 
 export async function approveAndSendEmail(
   emailId: string,
+  overrides?: { subject?: string; body?: string },
 ): Promise<{ error?: string }> {
   try {
     await requireAdmin()
@@ -265,8 +266,8 @@ export async function approveAndSendEmail(
       const { data, error } = await resend.emails.send({
         from: OUTREACH_FROM,
         to: prospect.email,
-        subject: email.subject,
-        text: email.body,
+        subject: overrides?.subject ?? email.subject,
+        text: overrides?.body ?? email.body,
       })
 
       if (error) return { error: `Resend error: ${error.message}` }

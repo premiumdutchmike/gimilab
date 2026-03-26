@@ -22,7 +22,7 @@ export default function QueueCard({ email, onDone }: { email: QueueEmail; onDone
 
   function handleApprove() {
     startTransition(async () => {
-      const res = await approveAndSendEmail(email.id)
+      const res = await approveAndSendEmail(email.id, { subject, body })
       if (res.error) { setError(res.error); return }
       onDone()
     })
