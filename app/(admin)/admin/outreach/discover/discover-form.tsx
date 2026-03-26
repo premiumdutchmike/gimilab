@@ -11,6 +11,7 @@ export default function DiscoverForm() {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [error, setError] = useState<string | null>(null)
   const [addedMsg, setAddedMsg] = useState<string | null>(null)
+  const [searched, setSearched] = useState(false)
   const [isPending, startTransition] = useTransition()
 
   function handleSearch() {
@@ -19,9 +20,11 @@ export default function DiscoverForm() {
     setResults([])
     setSelected(new Set())
     setAddedMsg(null)
+    setSearched(false)
 
     startTransition(async () => {
       const res = await discoverCourses(location.trim(), radius)
+      setSearched(true)
       if (res.error) { setError(res.error); return }
       setResults(res.results)
     })
@@ -85,7 +88,7 @@ export default function DiscoverForm() {
           disabled={isPending || !location.trim()}
           style={{ background: 'var(--amber)', color: 'var(--off-white)', border: 'none', padding: '10px 20px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', borderRadius: 2, cursor: isPending ? 'wait' : 'pointer', opacity: !location.trim() ? 0.5 : 1 }}
         >
-          {isPending ? 'Searching...' : 'Find Courses'}
+          {isPending ? 'Searching...' : searched && !error ? `Found ${results.length}` : 'Find Courses'}
         </button>
       </div>
 
@@ -95,6 +98,12 @@ export default function DiscoverForm() {
 
       {addedMsg && (
         <p style={{ color: 'var(--amber)', fontSize: 13, marginBottom: 16 }}>{addedMsg}</p>
+      )}
+
+      {searched && !isPending && results.length === 0 && !error && (
+        <p style={{ color: 'rgba(0,0,0,0.45)', fontSize: 13, marginBottom: 16 }}>
+          No golf courses found. Try a larger radius or different location.
+        </p>
       )}
 
       {/* Results */}

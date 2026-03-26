@@ -69,7 +69,10 @@ export async function searchGolfCourses(
       body: JSON.stringify(body),
     })
 
-    const data = await res.json() as { places?: RawPlace[]; nextPageToken?: string }
+    const data = await res.json() as { places?: RawPlace[]; nextPageToken?: string; error?: { message?: string; status?: string } }
+    if (!res.ok || data.error) {
+      throw new Error(data.error?.message ?? `Places API error ${res.status}`)
+    }
     pageToken = data.nextPageToken
 
     for (const p of data.places ?? []) {
