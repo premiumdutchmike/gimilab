@@ -33,10 +33,10 @@ export default async function QueuePage() {
   return (
     <div style={{ padding: '32px 28px', maxWidth: 780, margin: '0 auto' }}>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 900, color: 'var(--linen)', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 6 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 900, color: '#111', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 6 }}>
           Approval Queue
         </h1>
-        <p style={{ fontSize: 14, color: 'var(--stone)' }}>
+        <p style={{ fontSize: 14, color: '#888' }}>
           {emails.length === 0
             ? 'No emails ready — check back tomorrow or generate new ones.'
             : `${emails.length} email${emails.length === 1 ? '' : 's'} ready for review.`}

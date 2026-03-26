@@ -8,10 +8,10 @@ export default function OutreachDiscoverPage() {
   return (
     <div style={{ padding: '32px 28px', maxWidth: 900, margin: '0 auto' }}>
       <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 900, color: 'var(--linen)', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 8 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 900, color: '#111', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 8 }}>
           Discover Courses
         </h1>
-        <p style={{ fontSize: 14, color: 'var(--stone)' }}>
+        <p style={{ fontSize: 14, color: '#888' }}>
           Enter a location and radius to find golf courses via Google Places. Select the ones you want to prospect and add them to your list.
         </p>
       </div>

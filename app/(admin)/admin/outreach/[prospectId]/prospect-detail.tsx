@@ -86,14 +86,14 @@ export default function ProspectDetail({
     })
   }
 
-  const inputStyle = { width: '100%', background: 'var(--midnight)', border: '1px solid var(--divider)', color: 'var(--linen)', padding: '8px 12px', fontSize: 14, borderRadius: 2, boxSizing: 'border-box' as const }
-  const labelStyle = { display: 'block' as const, fontSize: 11, fontWeight: 600, color: 'var(--stone)', textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 5 }
+  const inputStyle = { width: '100%', background: '#f5f5f5', border: '1px solid #e8e8e8', color: '#111', padding: '8px 12px', fontSize: 14, borderRadius: 2, boxSizing: 'border-box' as const }
+  const labelStyle = { display: 'block' as const, fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 5 }
 
   return (
     <div>
       {/* Enrichment data */}
-      <div style={{ background: 'var(--graphite)', border: '1px solid var(--divider)', borderRadius: 2, padding: 24, marginBottom: 24 }}>
-        <h2 style={{ fontSize: 13, fontWeight: 700, color: 'var(--stone)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20, marginTop: 0 }}>
+      <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 2, padding: 24, marginBottom: 24 }}>
+        <h2 style={{ fontSize: 13, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20, marginTop: 0 }}>
           Enrichment Data
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
@@ -144,7 +144,7 @@ export default function ProspectDetail({
           ].map(({ label, value }) => (
             <div key={label}>
               <div style={labelStyle}>{label}</div>
-              <div style={{ fontSize: 14, color: 'var(--linen)' }}>{value}</div>
+              <div style={{ fontSize: 14, color: '#111' }}>{value}</div>
             </div>
           ))}
         </div>
@@ -169,14 +169,14 @@ export default function ProspectDetail({
           <button
             onClick={handleSave}
             disabled={isPending}
-            style={{ background: 'var(--amber)', color: 'var(--off-white)', border: 'none', padding: '8px 20px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', borderRadius: 2, cursor: 'pointer' }}
+            style={{ background: '#a855f7', color: '#fff', border: 'none', padding: '8px 20px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', borderRadius: 2, cursor: 'pointer' }}
           >
             {saved ? 'Saved' : isPending ? 'Saving...' : 'Save Changes'}
           </button>
           <button
             onClick={handleMarkReplied}
             disabled={isPending}
-            style={{ background: 'transparent', color: 'var(--linen)', border: '1px solid var(--divider)', padding: '8px 16px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', borderRadius: 2, cursor: 'pointer' }}
+            style={{ background: 'transparent', color: '#111', border: '1px solid #e8e8e8', padding: '8px 16px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', borderRadius: 2, cursor: 'pointer' }}
           >
             Mark as Replied
           </button>
@@ -184,23 +184,23 @@ export default function ProspectDetail({
       </div>
 
       {/* Email history */}
-      <div style={{ background: 'var(--graphite)', border: '1px solid var(--divider)', borderRadius: 2, padding: 24 }}>
-        <h2 style={{ fontSize: 13, fontWeight: 700, color: 'var(--stone)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20, marginTop: 0 }}>
+      <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 2, padding: 24 }}>
+        <h2 style={{ fontSize: 13, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20, marginTop: 0 }}>
           Email Sequence
         </h2>
         {emails.length === 0 ? (
-          <p style={{ fontSize: 14, color: 'var(--stone)' }}>No emails generated yet.</p>
+          <p style={{ fontSize: 14, color: '#888' }}>No emails generated yet.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {emails.map(e => (
-              <div key={e.id} style={{ display: 'grid', gridTemplateColumns: '70px 1fr 80px 120px 120px', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'var(--midnight)', borderRadius: 2 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--stone)', textTransform: 'uppercase' }}>Touch {e.touchNumber}</span>
-                <span style={{ fontSize: 13, color: 'var(--linen)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.subject}</span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: EMAIL_STATUS_COLOR[e.status] ?? 'var(--stone)', textTransform: 'uppercase' }}>{e.status}</span>
-                <span style={{ fontSize: 12, color: 'var(--stone)' }}>
+              <div key={e.id} style={{ display: 'grid', gridTemplateColumns: '70px 1fr 80px 120px 120px', alignItems: 'center', gap: 12, padding: '10px 14px', background: '#f5f5f5', borderRadius: 2 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#888', textTransform: 'uppercase' }}>Touch {e.touchNumber}</span>
+                <span style={{ fontSize: 13, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.subject}</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: EMAIL_STATUS_COLOR[e.status] ?? '#888', textTransform: 'uppercase' }}>{e.status}</span>
+                <span style={{ fontSize: 12, color: '#888' }}>
                   {e.sentAt ? `Sent ${new Date(e.sentAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : `Sched. ${new Date(e.scheduledSendAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
                 </span>
-                <span style={{ fontSize: 12, color: 'var(--stone)' }}>
+                <span style={{ fontSize: 12, color: '#888' }}>
                   {e.openedAt ? `Opened ${new Date(e.openedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : '—'}
                 </span>
               </div>

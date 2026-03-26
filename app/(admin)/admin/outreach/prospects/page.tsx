@@ -29,14 +29,14 @@ export default async function ProspectsPage() {
     <div style={{ padding: '32px 28px', maxWidth: 1100, margin: '0 auto' }}>
       <div style={{ marginBottom: 28, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 900, color: 'var(--linen)', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 6 }}>
+          <h1 style={{ fontSize: 26, fontWeight: 900, color: '#111', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 6 }}>
             Prospects
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--stone)' }}>
+          <p style={{ fontSize: 14, color: '#888' }}>
             {prospects.length} total · Select to enrich or generate emails
           </p>
         </div>
-        <a href="/admin/outreach/discover" style={{ background: 'var(--amber)', color: 'var(--off-white)', textDecoration: 'none', padding: '8px 16px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', borderRadius: 2 }}>
+        <a href="/admin/outreach/discover" style={{ background: '#a855f7', color: '#fff', textDecoration: 'none', padding: '8px 16px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', borderRadius: 2 }}>
           + Discover
         </a>
       </div>

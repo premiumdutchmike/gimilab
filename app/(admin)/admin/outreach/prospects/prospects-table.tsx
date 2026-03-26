@@ -82,56 +82,56 @@ export default function ProspectsTable({ prospects }: { prospects: Prospect[] })
         <select
           value={statusFilter}
           onChange={e => setStatusFilter(e.target.value)}
-          style={{ background: 'var(--graphite)', border: '1px solid var(--divider)', color: 'var(--linen)', padding: '7px 12px', fontSize: 13, borderRadius: 2 }}
+          style={{ background: '#fff', border: '1px solid #e8e8e8', color: '#111', padding: '7px 12px', fontSize: 13, borderRadius: 2 }}
         >
           {['all','new','enriched','queued','active','bounced','skipped','closed'].map(s => (
             <option key={s} value={s}>{s === 'all' ? 'All statuses' : s}</option>
           ))}
         </select>
-        <span style={{ fontSize: 13, color: 'var(--stone)', marginLeft: 4 }}>
+        <span style={{ fontSize: 13, color: '#888', marginLeft: 4 }}>
           {selected.size > 0 ? `${selected.size} selected` : `${filtered.length} prospects`}
         </span>
         {selected.size > 0 && (
           <>
-            <button onClick={handleEnrich} disabled={isPending} style={{ marginLeft: 'auto', background: 'var(--graphite)', color: 'var(--linen)', border: '1px solid var(--divider)', padding: '7px 14px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', borderRadius: 2, cursor: 'pointer' }}>
+            <button onClick={handleEnrich} disabled={isPending} style={{ marginLeft: 'auto', background: '#fff', color: '#111', border: '1px solid #e8e8e8', padding: '7px 14px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', borderRadius: 2, cursor: 'pointer' }}>
               {isPending ? 'Working...' : 'Enrich'}
             </button>
-            <button onClick={handleGenerate} disabled={isPending} style={{ background: 'var(--amber)', color: 'var(--off-white)', border: 'none', padding: '7px 14px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', borderRadius: 2, cursor: 'pointer' }}>
+            <button onClick={handleGenerate} disabled={isPending} style={{ background: '#a855f7', color: '#fff', border: 'none', padding: '7px 14px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', borderRadius: 2, cursor: 'pointer' }}>
               Generate Emails
             </button>
           </>
         )}
       </div>
 
-      {msg && <p style={{ fontSize: 13, color: 'var(--amber)', marginBottom: 14 }}>{msg}</p>}
+      {msg && <p style={{ fontSize: 13, color: '#a855f7', marginBottom: 14 }}>{msg}</p>}
 
       {/* Table */}
-      <div style={{ border: '1px solid var(--divider)', borderRadius: 2, overflow: 'hidden' }}>
+      <div style={{ border: '1px solid #e8e8e8', borderRadius: 2, overflow: 'hidden' }}>
         {filtered.map((p, i) => (
           <div
             key={p.id}
-            style={{ display: 'grid', gridTemplateColumns: '32px 1fr 80px 60px 60px 100px 80px', alignItems: 'center', gap: 12, padding: '12px 16px', background: selected.has(p.id) ? 'var(--amber-dim)' : i % 2 === 0 ? 'var(--graphite)' : 'var(--midnight)', borderBottom: '1px solid var(--divider)', cursor: 'pointer' }}
+            style={{ display: 'grid', gridTemplateColumns: '32px 1fr 80px 60px 60px 100px 80px', alignItems: 'center', gap: 12, padding: '12px 16px', background: selected.has(p.id) ? 'rgba(168,85,247,0.08)' : i % 2 === 0 ? '#fff' : '#f5f5f5', borderBottom: '1px solid #e8e8e8', cursor: 'pointer' }}
             onClick={() => router.push(`/admin/outreach/${p.id}`)}
           >
-            <input type="checkbox" checked={selected.has(p.id)} onClick={e => e.stopPropagation()} onChange={() => toggle(p.id)} style={{ accentColor: 'var(--amber)' }} />
+            <input type="checkbox" checked={selected.has(p.id)} onClick={e => e.stopPropagation()} onChange={() => toggle(p.id)} style={{ accentColor: '#a855f7' }} />
             <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--linen)' }}>{p.courseName}</div>
-              <div style={{ fontSize: 11, color: 'var(--stone)', marginTop: 2 }}>{p.gmName ?? '—'} {p.email ? `· ${p.email}` : ''}</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#111' }}>{p.courseName}</div>
+              <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>{p.gmName ?? '—'} {p.email ? `· ${p.email}` : ''}</div>
             </div>
-            <span style={{ fontSize: 11, fontWeight: 600, color: STATUS_COLOR[p.status] ?? 'var(--stone)', textTransform: 'uppercase' }}>{p.status}</span>
-            <span style={{ fontSize: 12, color: 'var(--stone)' }}>{p.holes ? `${p.holes}h` : '—'}</span>
-            <span style={{ fontSize: 12, color: 'var(--stone)' }}>{TIER_LABEL[p.tier] ?? p.tier}</span>
-            <span style={{ fontSize: 13, color: 'var(--linen)' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: STATUS_COLOR[p.status] ?? '#888', textTransform: 'uppercase' }}>{p.status}</span>
+            <span style={{ fontSize: 12, color: '#888' }}>{p.holes ? `${p.holes}h` : '—'}</span>
+            <span style={{ fontSize: 12, color: '#888' }}>{TIER_LABEL[p.tier] ?? p.tier}</span>
+            <span style={{ fontSize: 13, color: '#111' }}>
               {p.rackRateMin !== null ? `$${p.rackRateMin}–$${p.rackRateMax}` : '—'}
             </span>
-            <span style={{ fontSize: 13, color: 'var(--amber)', fontWeight: 600 }}>
+            <span style={{ fontSize: 13, color: '#a855f7', fontWeight: 600 }}>
               {p.estimatedMonthlyEarn !== null ? `$${p.estimatedMonthlyEarn.toLocaleString()}` : '—'}
             </span>
           </div>
         ))}
         {filtered.length === 0 && (
-          <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--stone)', fontSize: 14 }}>
-            No prospects yet. <a href="/admin/outreach/discover" style={{ color: 'var(--amber)' }}>Discover courses</a> to get started.
+          <div style={{ padding: '32px 16px', textAlign: 'center', color: '#888', fontSize: 14 }}>
+            No prospects yet. <a href="/admin/outreach/discover" style={{ color: '#a855f7' }}>Discover courses</a> to get started.
           </div>
         )}
       </div>
