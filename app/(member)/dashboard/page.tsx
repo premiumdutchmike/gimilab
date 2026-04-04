@@ -233,12 +233,12 @@ export default async function DashboardPage() {
           font-family: 'Inter', sans-serif;
         }
         .lab-greeting {
-          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, sans-serif;
-          font-weight: 800;
-          font-size: 52px;
-          letter-spacing: -0.045em;
+          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-weight: 900;
+          font-size: 44px;
+          letter-spacing: -0.035em;
           color: #0C0C0B;
-          line-height: 1;
+          line-height: 1.1;
           margin: 0;
         }
 
@@ -246,7 +246,7 @@ export default async function DashboardPage() {
         .lab-stats {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          padding: 0 48px 80px;
+          padding: 0 48px 96px;
         }
         .lab-stat-label {
           font-size: 10px;
@@ -258,13 +258,13 @@ export default async function DashboardPage() {
           font-family: 'Inter', sans-serif;
         }
         .lab-stat-value {
-          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, sans-serif;
-          font-weight: 800;
-          font-size: 80px;
-          letter-spacing: -0.05em;
+          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-weight: 900;
+          font-size: 96px;
+          letter-spacing: -0.055em;
           color: #0C0C0B;
-          line-height: 0.9;
-          margin-bottom: 10px;
+          line-height: 0.85;
+          margin-bottom: 12px;
         }
         .lab-stat-value.lab-amber { color: #BF7B2E; }
         .lab-stat-sub {
@@ -403,14 +403,14 @@ export default async function DashboardPage() {
           .lab-hero { padding: 56px 32px 40px; }
           .lab-greeting { font-size: 42px; }
           .lab-stats { grid-template-columns: repeat(2, 1fr); gap: 40px 0; padding: 0 32px 56px; }
-          .lab-stat-value { font-size: 60px; }
+          .lab-stat-value { font-size: 72px; }
           .lab-lower { padding: 32px 32px 48px; }
         }
         @media (max-width: 640px) {
           .lab-hero { padding: 40px 24px 28px; }
-          .lab-greeting { font-size: 36px; }
+          .lab-greeting { font-size: 32px; }
           .lab-stats { grid-template-columns: repeat(2, 1fr); gap: 32px 0; padding: 0 24px 40px; }
-          .lab-stat-value { font-size: 48px; }
+          .lab-stat-value { font-size: 56px; }
           .lab-lower { padding: 24px 24px 40px; gap: 32px; }
           .lab-activity-main { flex-direction: column; gap: 2px; }
         }
