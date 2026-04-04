@@ -8,9 +8,11 @@ export const metadata: Metadata = { title: 'Courses — Gimmelab Admin' }
 
 const STATUS_STYLE: Record<string, { label: string; color: string; bg: string }> = {
   pending:   { label: 'Pending',   color: '#d97706', bg: 'rgba(217,119,6,0.08)' },
-  active:    { label: 'Active',    color: '#16a34a', bg: 'rgba(22,163,74,0.08)' },
+  active:    { label: 'Active',    color: '#BF7B2E', bg: 'rgba(191,123,46,0.08)' },
   suspended: { label: 'Suspended', color: '#dc2626', bg: 'rgba(220,38,38,0.08)' },
 }
+
+const GEIST = "var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif"
 
 function formatDate(d: Date) {
   return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -22,10 +24,10 @@ export default async function AdminCoursesPage() {
   const rest    = courses.filter(c => c.courseStatus !== 'pending')
 
   return (
-    <div style={{ padding: '32px 28px', maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ padding: '32px 28px 48px' }}>
 
       <div style={{ marginBottom: 28, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-        <h1 style={{ fontSize: 26, fontWeight: 900, color: '#111', letterSpacing: '-0.03em', lineHeight: 1 }}>
+        <h1 style={{ fontFamily: GEIST, fontSize: 28, fontWeight: 800, color: '#111', letterSpacing: '-0.03em', lineHeight: 1 }}>
           Courses
         </h1>
         {pending.length > 0 && (
@@ -70,7 +72,7 @@ export default async function AdminCoursesPage() {
                 </a>
                 <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)' }}>{c.businessName}</span>
                 <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)' }}>{c.holes}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#a855f7' }}>{c.baseCreditCost} cr</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#BF7B2E' }}>{c.baseCreditCost} cr</span>
                 <CourseActions courseId={c.courseId} />
               </div>
             ))}
@@ -110,7 +112,7 @@ export default async function AdminCoursesPage() {
                   </a>
                   <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)' }}>{c.businessName}</span>
                   <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)' }}>{c.holes}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#a855f7' }}>{c.baseCreditCost} cr</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#BF7B2E' }}>{c.baseCreditCost} cr</span>
                   <span style={{
                     display: 'inline-block', fontSize: 10, fontWeight: 700,
                     letterSpacing: '0.06em', textTransform: 'uppercase',
