@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 import CarouselArrows from '@/components/carousel-arrows'
+import PuttAnimations from '@/components/putt-animations'
 
 export const metadata = {
   title: 'gimmelab — One membership. Every course.',
@@ -54,37 +55,55 @@ export default async function HomePage() {
   return (
     <>
       {/* ── HERO ── */}
-      <section className="hero">
-        <Image
-          src="/imagery/ec840ae06489fb0b720fce0607e3ffcd.jpg"
-          alt="Golf course at golden hour"
-          fill
-          priority
-          className="hero-img"
-          sizes="100vw"
-        />
+      <section className="hero" id="hero-section">
         <div className="hero-overlay" />
-        <div className="hero-word">GIMMELAB</div>
-        <div className="hero-content">
-          <div className="hero-left">
-            <div className="label hero-eyebrow">Credit-based tee times</div>
-            <h1 className="hl hero-headline">Golf,<br />on your<br /><em>terms.</em></h1>
-            <p className="hero-sub">Book any course with monthly credits. No phone calls, no rate anxiety, no blackout dates.</p>
-            <div className="hero-actions">
-              <Link href="/signup" className="btn-hero-coral">Get started →</Link>
-              <Link href="/pricing" className="btn-hero-outline">See plans</Link>
-            </div>
-          </div>
-          <div className="hero-card">
-            <div className="hero-card-label">Now available</div>
-            <div className="hero-card-course">Westchase Golf Club</div>
-            <div className="hero-card-meta">Tampa Bay · Sat 8:30am · 4 spots</div>
-            <div className="hero-card-creds">
-              <span className="hero-card-creds-label">Cost</span>
-              <span className="hero-card-creds-val">85 credits</span>
-            </div>
+        <svg className="putt-canvas" viewBox="0 0 1440 760" preserveAspectRatio="xMidYMid slice">
+          <path className="putt-path" id="pl1" d="M 80,740 C 160,640 280,560 420,480 C 560,400 680,360 820,300 C 940,248 1060,200 1180,160" />
+          <path className="putt-path" id="pl2" d="M 300,760 C 360,700 420,650 500,590 C 590,524 690,480 800,440 C 900,404 1020,370 1120,330" />
+          <path className="putt-path" id="pl3" d="M 550,760 C 590,710 630,668 680,620 C 740,562 810,520 880,480 C 950,440 1030,406 1120,370" />
+          <path className="putt-path" id="pl4" d="M 920,740 C 940,700 960,666 990,630 C 1030,582 1080,548 1130,514 C 1180,480 1250,450 1340,426" />
+          <path className="putt-path" id="pl5" d="M 160,760 C 220,706 290,658 380,606 C 480,548 590,504 720,462 C 840,422 980,390 1140,356" />
+        </svg>
+        <div className="hero-watermark">GIMMELAB</div>
+
+        <div className="hero-left">
+          <div className="hero-label">Credit-based tee times</div>
+          <h1 className="hero-title">
+            Golf,<br />
+            <span className="thin">on your</span><br />
+            <span className="red">terms.</span>
+          </h1>
+          <p className="hero-body">Book any course with monthly credits. No phone calls, no rate anxiety, no blackout dates.</p>
+          <div className="hero-actions">
+            <Link href="/signup" className="btn-primary">Get started →</Link>
+            <Link href="/pricing" className="btn-outline">See plans</Link>
           </div>
         </div>
+
+        <div className="hero-right">
+          <div className="booking-card">
+            <div className="bc-toprow">
+              <div className="bc-now">Now available</div>
+              <div className="bc-badge">Open today</div>
+            </div>
+            <div className="bc-course">Westchase Golf Club</div>
+            <div className="bc-meta">Tampa Bay · Sat 8:30am · 4 spots</div>
+            <div className="bc-divider" />
+            <div className="bc-bottom">
+              <div>
+                <div className="bc-cost-label">Cost</div>
+                <div className="bc-credits">85<span className="bc-credits-unit">credits</span></div>
+              </div>
+              <Link href="/signup" className="bc-book-btn">Book tee time →</Link>
+            </div>
+          </div>
+          <div className="hero-pills">
+            <div className="hero-pill">50+ courses</div>
+            <div className="hero-pill">QR checkout</div>
+            <div className="hero-pill">Live availability</div>
+          </div>
+        </div>
+        <PuttAnimations />
       </section>
 
       {/* ── HOW IT WORKS ── */}
@@ -500,96 +519,224 @@ export default async function HomePage() {
         }
         a { text-decoration: none; }
 
-        /* ── HERO ── */
+        /* ── HERO (redesign) ── */
         .hero {
+          display: grid;
+          grid-template-columns: 55fr 45fr;
+          gap: 48px;
+          padding: 160px 64px 80px;
+          min-height: 100vh;
+          align-items: center;
           position: relative;
-          width: 100%;
-          height: 100vh;
-          min-height: 500px;
           overflow: hidden;
-          display: flex;
-          align-items: flex-end;
-        }
-        .hero-img {
-          object-fit: cover;
-          object-position: center 35%;
+          background-image: url('/imagery/hero.jpeg');
+          background-size: cover;
+          background-position: right 20% center;
+          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
         }
         .hero-overlay {
-          position: absolute; inset: 0;
-          background: linear-gradient(to right, rgba(12,12,11,0.78) 0%, rgba(12,12,11,0.4) 55%, rgba(12,12,11,0.12) 100%);
-        }
-        .hero-word {
           position: absolute;
-          top: 50%; left: 50%; transform: translate(-50%, -50%);
-          font-size: clamp(100px, 18vw, 240px);
-          font-weight: 700; letter-spacing: -0.06em;
-          color: rgba(255,255,255,0.07);
-          white-space: nowrap; pointer-events: none; user-select: none;
-          z-index: 1; line-height: 1;
+          inset: 0;
+          background: linear-gradient(
+            105deg,
+            rgba(13,11,9,0.92) 0%,
+            rgba(13,11,9,0.78) 45%,
+            rgba(13,11,9,0.40) 75%,
+            rgba(13,11,9,0.20) 100%
+          );
+          z-index: 0;
+        }
+        .putt-canvas {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
+          pointer-events: none;
+          overflow: visible;
+        }
+        .putt-path {
+          fill: none;
+          stroke: #7DEBA0;
+          stroke-width: 1.6;
+          stroke-linecap: round;
+          filter: drop-shadow(0 0 5px rgba(100,230,140,0.55));
+        }
+        .hero-watermark {
+          position: absolute;
+          right: -4%;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: clamp(100px, 16vw, 220px);
+          font-weight: 700;
+          letter-spacing: -0.06em;
+          color: transparent;
+          -webkit-text-stroke: 1px rgba(255,255,255,0.06);
+          user-select: none;
+          pointer-events: none;
+          z-index: 2;
+          white-space: nowrap;
           font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
         }
-        .hero-content {
-          position: relative; z-index: 2;
-          padding: 0 56px 72px; width: 100%;
-          display: flex; align-items: flex-end; justify-content: space-between; gap: 40px;
-        }
-        .hero-left { max-width: 600px; }
-        .hero-eyebrow {
-          display: inline-block;
-          color: #E8402A; background: rgba(232,64,42,0.15);
-          border: 1px solid rgba(232,64,42,0.3); border-radius: 4px;
-          padding: 4px 12px; margin-bottom: 20px;
-        }
-        .hero-headline {
-          font-size: clamp(44px, 7vw, 88px);
+        .hero-left { position: relative; z-index: 3; }
+        .hero-label {
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 10px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
           color: #fff;
-          line-height: 0.97;
-          letter-spacing: -0.04em;
-          margin-bottom: 24px;
-        }
-        .hero-headline em { font-style: normal; color: #E8402A; }
-        .hero-sub {
-          font-size: 17px; line-height: 1.65;
-          color: rgba(255,255,255,0.6); max-width: 400px;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 7px 14px;
+          border: 1px solid rgba(255,255,255,0.3);
+          border-radius: 5px;
           margin-bottom: 36px;
+          background: rgba(255,255,255,0.06);
         }
-        .hero-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-        .btn-hero-coral {
-          display: inline-block;
-          font-size: 14px; font-weight: 700;
-          color: #fff; background: #E8402A;
-          border: none; border-radius: 999px;
-          padding: 14px 32px; cursor: pointer; transition: opacity 0.2s;
+        .hero-label::before {
+          content: '';
+          width: 6px;
+          height: 6px;
+          background: #C84B2A;
+          border-radius: 50%;
+        }
+        h1.hero-title {
+          font-size: clamp(44px, 5.5vw, 76px);
+          font-weight: 700;
+          line-height: 0.92;
+          letter-spacing: -0.045em;
+          margin-bottom: 36px;
+          color: #fff;
           font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
         }
-        .btn-hero-coral:hover { opacity: 0.85; }
-        .btn-hero-outline {
-          display: inline-block;
-          font-size: 14px; font-weight: 500;
+        .hero-title .thin { font-weight: 300; color: #fff; }
+        .hero-title .red  { color: #fff; }
+        .hero-body {
+          font-size: 16px;
+          font-weight: 400;
+          color: rgba(255,255,255,0.85);
+          line-height: 1.65;
+          max-width: 420px;
+          margin-bottom: 44px;
+        }
+        .hero-actions { display: flex; gap: 14px; align-items: center; }
+        .btn-primary {
+          background: #C84B2A;
+          color: #fff;
+          padding: 15px 30px;
+          border-radius: 9px;
+          font-size: 14px;
+          font-weight: 600;
+          text-decoration: none;
+          letter-spacing: 0.01em;
+          transition: opacity 0.18s;
+        }
+        .btn-primary:hover { opacity: 0.82; }
+        .btn-outline {
           color: rgba(255,255,255,0.8);
-          background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25);
-          border-radius: 999px; padding: 13px 28px; cursor: pointer; transition: background 0.2s;
+          padding: 14px 28px;
+          border-radius: 9px;
+          font-size: 14px;
+          font-weight: 500;
+          text-decoration: none;
+          border: 1.5px solid rgba(255,255,255,0.25);
+          transition: border-color 0.15s, color 0.15s;
+        }
+        .btn-outline:hover { border-color: rgba(255,255,255,0.6); color: #fff; }
+
+        /* Hero booking card */
+        .hero-right { position: relative; z-index: 3; }
+        .booking-card {
+          background: #1C1A17;
+          border-radius: 18px;
+          padding: 36px;
+          color: #fff;
+          max-width: 400px;
+          margin-left: auto;
+        }
+        .bc-toprow {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 28px;
+        }
+        .bc-now {
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 9px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #C4893A;
+        }
+        .bc-badge {
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 9px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          background: #C84B2A;
+          color: #fff;
+          padding: 5px 10px;
+          border-radius: 5px;
+        }
+        .bc-course {
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: -0.03em;
+          margin-bottom: 6px;
+        }
+        .bc-meta { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 28px; }
+        .bc-divider { height: 1px; background: rgba(255,255,255,0.09); margin: 0 0 28px; }
+        .bc-bottom { display: flex; justify-content: space-between; align-items: center; }
+        .bc-cost-label {
+          font-size: 11px;
+          color: rgba(255,255,255,0.4);
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          margin-bottom: 4px;
+        }
+        .bc-credits {
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 38px;
+          font-weight: 700;
+          line-height: 1;
+        }
+        .bc-credits-unit {
+          font-size: 14px;
+          font-weight: 400;
+          color: rgba(255,255,255,0.4);
           font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          margin-left: 4px;
         }
-        .btn-hero-outline:hover { background: rgba(255,255,255,0.18); }
-        .hero-card {
-          background: rgba(14,14,13,0.72); backdrop-filter: blur(16px);
-          border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
-          padding: 20px 24px; min-width: 220px; flex-shrink: 0;
+        .bc-book-btn {
+          background: #C84B2A;
+          color: #fff;
+          padding: 14px 22px;
+          border-radius: 10px;
+          font-size: 13px;
+          font-weight: 600;
+          text-decoration: none;
+          letter-spacing: 0.03em;
+          transition: opacity 0.18s;
         }
-        .hero-card-label {
-          font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
-          text-transform: uppercase; color: #E8402A; margin-bottom: 10px;
-          font-family: 'Inter', sans-serif;
+        .bc-book-btn:hover { opacity: 0.85; }
+        .hero-pills {
+          display: flex;
+          gap: 10px;
+          margin-top: 16px;
+          justify-content: flex-end;
         }
-        .hero-card-course { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
-        .hero-card-meta { font-size: 12px; color: rgba(255,255,255,0.45); margin-bottom: 16px; font-family: 'Inter', sans-serif; }
-        .hero-card-creds {
-          display: flex; align-items: center; justify-content: space-between;
-          background: rgba(255,255,255,0.07); border-radius: 8px; padding: 10px 14px;
+        .hero-pill {
+          background: rgba(255,255,255,0.10);
+          border: 1px solid rgba(255,255,255,0.18);
+          border-radius: 100px;
+          padding: 7px 16px;
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 10px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.65);
+          backdrop-filter: blur(6px);
         }
-        .hero-card-creds-label { font-size: 11px; color: rgba(255,255,255,0.4); font-family: 'Inter', sans-serif; }
-        .hero-card-creds-val { font-size: 18px; font-weight: 700; color: #fff; }
 
         /* ── HOW IT WORKS ── */
         .how-section { background: var(--midnight); }
@@ -1006,8 +1153,9 @@ export default async function HomePage() {
 
         /* ── RESPONSIVE ── */
         @media (max-width: 1024px) {
-          .hero-content { padding: 40px 36px; }
-          .hero-course-tag { right: 28px; }
+          .hero { grid-template-columns: 1fr; padding: 140px 32px 60px; gap: 40px; }
+          .booking-card { margin-left: 0; max-width: 100%; }
+          .hero-pills { justify-content: flex-start; flex-wrap: wrap; }
           .how-grid { grid-template-columns: 1fr; }
           .how-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
           .courses-section, .comparison-section, .pricing-section, .voice-section, footer { padding-left: 28px; padding-right: 28px; }
@@ -1027,8 +1175,8 @@ export default async function HomePage() {
           .stats-quote-attr { text-align: left; white-space: normal; }
         }
         @media (max-width: 640px) {
-          .hero-content { padding: 32px 24px; }
-          .hero-course-tag { display: none; }
+          .hero { padding: 120px 20px 48px; }
+          .booking-card { padding: 24px; }
           .comparison-table { grid-template-columns: 1fr; }
           .comp-col { border-right: none; border-bottom: 1px solid var(--smoke); }
           .course-card { flex: 0 0 calc(100% - 16px); }
