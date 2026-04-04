@@ -8,15 +8,15 @@ export const metadata: Metadata = { title: 'Credits — Gimmelab Admin' }
 
 const TIER_COLOR: Record<string, string> = {
   casual: '#0ea5e9',
-  core:   '#a855f7',
-  heavy:  '#16a34a',
+  core:   '#BF7B2E',
+  heavy:  '#BF7B2E',
 }
 
 export default async function AdminCreditsPage() {
   const members = await getAdminMembersWithCredits()
 
   return (
-    <div style={{ padding: '32px 28px', maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ padding: '32px 28px 48px' }}>
 
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 26, fontWeight: 900, color: '#111', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 6 }}>
@@ -63,7 +63,7 @@ export default async function AdminCreditsPage() {
                 <span style={{ fontSize: 12, fontWeight: 700, color: tierColor, textTransform: 'capitalize' }}>
                   {m.subscriptionTier ?? 'No plan'}
                 </span>
-                <span style={{ fontSize: 11, color: m.subscriptionStatus === 'active' ? '#16a34a' : 'rgba(0,0,0,0.3)', textTransform: 'capitalize' }}>
+                <span style={{ fontSize: 11, color: m.subscriptionStatus === 'active' ? '#BF7B2E' : 'rgba(0,0,0,0.3)', textTransform: 'capitalize' }}>
                   {m.subscriptionStatus ?? '—'}
                 </span>
                 <span style={{

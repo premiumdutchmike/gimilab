@@ -21,27 +21,27 @@ function fmtTime(t: string | null | undefined) {
 }
 
 const LEDGER_COLOR: Record<string, string> = {
-  SUBSCRIPTION_GRANT: '#16a34a',
-  ROLLOVER_GRANT:     '#16a34a',
-  BONUS_GRANT:        '#16a34a',
-  TOP_UP_PURCHASE:    '#16a34a',
+  SUBSCRIPTION_GRANT: '#BF7B2E',
+  ROLLOVER_GRANT:     '#BF7B2E',
+  BONUS_GRANT:        '#BF7B2E',
+  TOP_UP_PURCHASE:    '#BF7B2E',
   BOOKING_DEBIT:      '#111',
-  BOOKING_REFUND:     '#0ea5e9',
+  BOOKING_REFUND:     '#847C72',
   ADMIN_ADJUSTMENT:   '#d97706',
   CREDIT_EXPIRY:      'rgba(0,0,0,0.3)',
 }
 
 const BOOKING_STATUS_COLOR: Record<string, string> = {
-  CONFIRMED:  '#16a34a',
-  COMPLETED:  '#0ea5e9',
+  CONFIRMED:  '#BF7B2E',
+  COMPLETED:  '#847C72',
   CANCELLED:  'rgba(0,0,0,0.3)',
   NO_SHOW:    '#dc2626',
 }
 
 const TIER_COLOR: Record<string, string> = {
-  casual: '#0ea5e9',
-  core:   '#a855f7',
-  heavy:  '#16a34a',
+  casual: '#847C72',
+  core:   '#BF7B2E',
+  heavy:  '#BF7B2E',
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -108,7 +108,7 @@ export default async function MemberDetailPage({
   }
 
   return (
-    <div style={{ padding: '32px 28px', maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ padding: '32px 28px 48px' }}>
       <Link href="/admin/members" style={{ fontSize: 12, color: 'rgba(0,0,0,0.4)', textDecoration: 'none', display: 'block', marginBottom: 16 }}>
         ← Members
       </Link>
@@ -119,10 +119,10 @@ export default async function MemberDetailPage({
 
       {/* Stats */}
       <div style={{ display: 'flex', gap: 2, marginBottom: 24 }}>
-        {statBox('Credits', String(member.creditBalance), '#16a34a')}
+        {statBox('Credits', String(member.creditBalance), '#BF7B2E')}
         {statBox('Plan', member.subscriptionTier?.toUpperCase() ?? 'None', tierColor)}
         {statBox('Total Rounds', String(member.totalRounds))}
-        {statBox('Status', member.isSuspended ? 'SUSPENDED' : (member.subscriptionStatus?.toUpperCase() ?? '—'), member.isSuspended ? '#dc2626' : '#16a34a')}
+        {statBox('Status', member.isSuspended ? 'SUSPENDED' : (member.subscriptionStatus?.toUpperCase() ?? '—'), member.isSuspended ? '#dc2626' : '#BF7B2E')}
       </div>
 
       {/* Sidebar + content */}
@@ -146,7 +146,7 @@ export default async function MemberDetailPage({
                   <div key={e.id} style={{ display: 'flex', gap: 16, padding: '10px 0', borderBottom: '1px solid #f5f5f5', alignItems: 'center' }}>
                     <span style={{ fontSize: 11, color: 'rgba(0,0,0,0.3)', minWidth: 70 }}>{fmtDate(e.createdAt)}</span>
                     <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: LEDGER_COLOR[e.type] ?? '#111', minWidth: 140 }}>{e.type.replace(/_/g, ' ')}</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: e.amount > 0 ? '#16a34a' : '#dc2626', minWidth: 50 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: e.amount > 0 ? '#BF7B2E' : '#dc2626', minWidth: 50 }}>
                       {e.amount > 0 ? '+' : ''}{e.amount}cr
                     </span>
                     {e.notes && <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.4)' }}>{e.notes}</span>}
@@ -173,7 +173,7 @@ export default async function MemberDetailPage({
                       <div key={e.id} style={{ display: 'grid', gridTemplateColumns: '100px 1fr 60px 80px 100px', padding: '9px 16px', alignItems: 'center', borderBottom: i < ledger.length - 1 ? '1px solid #f5f5f5' : 'none' }}>
                         <span style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)' }}>{fmtDate(e.createdAt)}</span>
                         <span style={{ fontSize: 11, fontWeight: 700, color: LEDGER_COLOR[e.type] ?? '#111' }}>{e.type.replace(/_/g, ' ')}</span>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: e.amount > 0 ? '#16a34a' : '#dc2626' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: e.amount > 0 ? '#BF7B2E' : '#dc2626' }}>
                           {e.amount > 0 ? '+' : ''}{e.amount}
                         </span>
                         <span style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -209,7 +209,7 @@ export default async function MemberDetailPage({
                     <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)' }}>{fmtDate(b.date)}</span>
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#111' }}>{b.courseName}</span>
                     <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)' }}>{fmtTime(b.startTime)}</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#a855f7' }}>{b.creditCost}cr</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#BF7B2E' }}>{b.creditCost}cr</span>
                     <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: BOOKING_STATUS_COLOR[b.status] ?? '#111' }}>{b.status}</span>
                     <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)' }}>{b.ratingScore ? `${b.ratingScore}/5` : '—'}</span>
                   </div>

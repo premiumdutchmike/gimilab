@@ -23,8 +23,8 @@ function fmtTime(t: string | null | undefined) {
 }
 
 const BOOKING_STATUS_COLOR: Record<string, string> = {
-  CONFIRMED:  '#16a34a',
-  COMPLETED:  '#0ea5e9',
+  CONFIRMED:  '#BF7B2E',
+  COMPLETED:  '#847C72',
   CANCELLED:  'rgba(0,0,0,0.3)',
   NO_SHOW:    '#dc2626',
 }
@@ -65,7 +65,7 @@ export default async function CourseDetailPage({
   )
 
   return (
-    <div style={{ padding: '32px 28px', maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ padding: '32px 28px 48px' }}>
       {/* Back link */}
       <Link href="/admin/courses" style={{ fontSize: 12, color: 'rgba(0,0,0,0.4)', textDecoration: 'none', display: 'block', marginBottom: 16 }}>
         ← Courses
@@ -77,9 +77,9 @@ export default async function CourseDetailPage({
       {/* Stats */}
       <div style={{ display: 'flex', gap: 2, marginBottom: 24 }}>
         {statBox('Total Bookings', String(course.totalBookings))}
-        {statBox('Partner Earnings', fmtCents(Number(course.totalEarningsCents)), '#16a34a')}
+        {statBox('Partner Earnings', fmtCents(Number(course.totalEarningsCents)), '#BF7B2E')}
         {statBox('Payout Rate', course.payoutRate ? `${Math.round(Number(course.payoutRate) * 100)}%` : '—')}
-        {statBox('Status', course.courseStatus.toUpperCase(), course.courseStatus === 'active' ? '#16a34a' : course.courseStatus === 'pending' ? '#d97706' : '#dc2626')}
+        {statBox('Status', course.courseStatus.toUpperCase(), course.courseStatus === 'active' ? '#BF7B2E' : course.courseStatus === 'pending' ? '#d97706' : '#dc2626')}
       </div>
 
       {/* Sidebar + content */}
@@ -143,7 +143,7 @@ export default async function CourseDetailPage({
                       <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)' }}>{b.memberEmail}</div>
                     </div>
                     <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)' }}>{fmtTime(b.startTime)}</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#a855f7' }}>{b.creditCost}cr</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#BF7B2E' }}>{b.creditCost}cr</span>
                     <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: BOOKING_STATUS_COLOR[b.status] ?? '#111' }}>{b.status}</span>
                     <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)' }}>{b.payoutStatus}</span>
                   </div>
@@ -162,7 +162,7 @@ export default async function CourseDetailPage({
               <p style={{ fontSize: 12, color: 'rgba(0,0,0,0.4)', marginBottom: 24 }}>Showing all transfers for partner: {course.businessName}</p>
               <div style={{ background: 'rgba(22,163,74,0.06)', border: '1px solid rgba(22,163,74,0.15)', borderRadius: 2, padding: '16px 20px', marginBottom: 24 }}>
                 <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.4)', marginBottom: 4 }}>Pending (this course)</p>
-                <p style={{ fontSize: 28, fontWeight: 900, color: '#16a34a', letterSpacing: '-0.03em' }}>{fmtCents(payouts.pendingCents)}</p>
+                <p style={{ fontSize: 28, fontWeight: 900, color: '#BF7B2E', letterSpacing: '-0.03em' }}>{fmtCents(payouts.pendingCents)}</p>
               </div>
               <div style={{ border: '1px solid #e8e8e8' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '130px 120px 80px 120px 1fr', padding: '8px 16px', background: '#fafafa', borderBottom: '1px solid #e8e8e8' }}>
@@ -175,7 +175,7 @@ export default async function CourseDetailPage({
                     <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)' }}>{fmtDate(t.createdAt)}</span>
                     <span style={{ fontSize: 13, fontWeight: 700, color: '#111' }}>{fmtCents(t.amountCents)}</span>
                     <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)' }}>{t.bookingCount}</span>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: t.status === 'COMPLETED' ? '#16a34a' : t.status === 'FAILED' ? '#dc2626' : '#d97706' }}>{t.status}</span>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: t.status === 'COMPLETED' ? '#BF7B2E' : t.status === 'FAILED' ? '#dc2626' : '#d97706' }}>{t.status}</span>
                     <span style={{ fontSize: 11, color: 'rgba(0,0,0,0.3)', fontFamily: 'monospace' }}>{t.stripeTransferId ?? '—'}</span>
                   </div>
                 ))}
