@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 import CarouselArrows from '@/components/carousel-arrows'
 import PuttAnimations from '@/components/putt-animations'
+import HeroScrollEffect from '@/components/hero-scroll-effect'
 
 export const metadata = {
   title: 'gimmelab — One membership. Every course.',
@@ -69,9 +70,8 @@ export default async function HomePage() {
         <div className="hero-left">
           <div className="hero-label">Credit-based tee times</div>
           <h1 className="hero-title">
-            Golf,<br />
-            <span className="thin">on your</span><br />
-            <span className="red">terms.</span>
+            <span className="thin">its time to</span><br />
+            reprice golf
           </h1>
           <p className="hero-body">Book any course with monthly credits. No phone calls, no rate anxiety, no blackout dates.</p>
           <div className="hero-actions">
@@ -82,6 +82,10 @@ export default async function HomePage() {
 
         <div className="hero-right">
           <div className="booking-card">
+            <div
+              className="bc-thumb"
+              style={{ backgroundImage: "url('/imagery/course-4.png')" }}
+            />
             <div className="bc-toprow">
               <div className="bc-now">Now available</div>
               <div className="bc-badge">Open today</div>
@@ -104,6 +108,7 @@ export default async function HomePage() {
           </div>
         </div>
         <PuttAnimations />
+        <HeroScrollEffect />
       </section>
 
       {/* ── HOW IT WORKS ── */}
@@ -604,13 +609,19 @@ export default async function HomePage() {
           border-radius: 50%;
         }
         h1.hero-title {
-          font-size: clamp(44px, 5.5vw, 76px);
+          font-size: clamp(48px, 6.2vw, 92px);
           font-weight: 700;
           line-height: 0.92;
           letter-spacing: -0.045em;
           margin-bottom: 36px;
           color: #fff;
           font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          transform: scale(var(--hero-scale, 1));
+          filter: blur(var(--hero-blur, 0px));
+          opacity: var(--hero-opacity, 1);
+          transform-origin: left center;
+          transition: transform 0.05s linear, filter 0.05s linear, opacity 0.05s linear;
+          will-change: transform, filter, opacity;
         }
         .hero-title .thin { font-weight: 300; color: #fff; }
         .hero-title .red  { color: #fff; }
@@ -660,10 +671,34 @@ export default async function HomePage() {
         .booking-card {
           background: rgba(244,240,234,0.97);
           border-radius: 14px;
-          padding: 28px 28px 24px;
-          width: 320px;
+          padding: 0 0 24px;
+          width: 340px;
           box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+          overflow: hidden;
         }
+        .bc-thumb {
+          width: 100%;
+          height: 160px;
+          background-size: cover;
+          background-position: center;
+          border-radius: 14px 14px 0 0;
+          position: relative;
+        }
+        .bc-thumb::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(244,240,234,0.4) 100%);
+        }
+        .booking-card > .bc-toprow,
+        .booking-card > .bc-course,
+        .booking-card > .bc-meta,
+        .booking-card > .bc-divider,
+        .booking-card > .bc-bottom {
+          padding-left: 28px;
+          padding-right: 28px;
+        }
+        .booking-card > .bc-toprow { margin-top: 20px; }
         .bc-toprow {
           display: flex;
           align-items: center;
