@@ -504,7 +504,7 @@ export default async function HomePage() {
         .hero {
           position: relative;
           width: 100%;
-          height: calc(100vh - 58px - 36px);
+          height: 100vh;
           min-height: 500px;
           overflow: hidden;
           display: flex;
