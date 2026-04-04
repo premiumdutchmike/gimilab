@@ -25,6 +25,8 @@ function getLedgerLabel(entry: { type: string; notes: string | null; referenceId
       return { title: 'Bonus credits', sub: entry.notes ?? '' }
     case 'CREDIT_EXPIRY':
       return { title: 'Credits expired', sub: 'Expiry event' }
+    case 'ROLLOVER_GRANT':
+      return { title: 'Credits rolled over', sub: 'Rollover from prior month' }
     default:
       return { title: 'Credit event', sub: entry.type }
   }
@@ -36,10 +38,9 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login')
 
-  const today = new Date().toISOString().split('T')[0]
-  const firstOfMonth = new Date()
-  firstOfMonth.setDate(1)
-  firstOfMonth.setHours(0, 0, 0, 0)
+  const now = new Date()
+  const today = now.toISOString().split('T')[0]
+  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
   const firstOfMonthStr = firstOfMonth.toISOString().split('T')[0]
 
   const [dbUser, balance, monthRoundsResult, coursesVisitedResult, nextTeeTimeResult, recentLedger] = await Promise.all([
@@ -60,11 +61,12 @@ export default async function DashboardPage() {
     db
       .select({ count: countDistinct(bookings.courseId) })
       .from(bookings)
+      .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
       .where(
         and(
           eq(bookings.userId, user.id),
           sql`${bookings.status} IN ('CONFIRMED', 'BOOKED', 'COMPLETED')`,
-          gte(bookings.createdAt, firstOfMonth)
+          gte(teeTimeSlots.date, firstOfMonthStr)
         )
       )
       .then(r => r[0]),
@@ -88,7 +90,14 @@ export default async function DashboardPage() {
       .limit(1)
       .then(r => r[0] ?? null),
     db
-      .select()
+      .select({
+        id: creditLedger.id,
+        type: creditLedger.type,
+        notes: creditLedger.notes,
+        referenceId: creditLedger.referenceId,
+        amount: creditLedger.amount,
+        createdAt: creditLedger.createdAt,
+      })
       .from(creditLedger)
       .where(eq(creditLedger.userId, user.id))
       .orderBy(desc(creditLedger.createdAt))
@@ -101,15 +110,14 @@ export default async function DashboardPage() {
   const roundsThisMonth = monthRoundsResult?.count ?? 0
   const coursesVisited = coursesVisitedResult?.count ?? 0
 
-  const hour = new Date().getHours()
+  const hour = now.getHours()
   const timeOfDay = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening'
   const greeting = `Good ${timeOfDay}, ${firstName}.`
 
-  const formattedDate = new Date().toLocaleDateString('en-US', {
+  const formattedDate = now.toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
   }).toUpperCase()
 
-  const now = new Date()
   const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1)
   const creditResetLabel = `resets ${nextMonth.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
 
