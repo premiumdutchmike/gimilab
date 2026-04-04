@@ -139,7 +139,7 @@ export default async function DashboardPage() {
 
   return (
     <>
-      {/* ── Hero zone ── */}
+      {/* ── Hero ── */}
       <FadeIn>
         <div className="lab-hero">
           <div className="lab-date">{formattedDate}</div>
@@ -147,18 +147,18 @@ export default async function DashboardPage() {
         </div>
       </FadeIn>
 
-      {/* ── Stats strip ── */}
+      {/* ── Stats ── */}
       <div className="lab-stats">
         {[
-          { label: 'Credits', value: String(balance), amber: true, sm: false, sub: [`/ ${tierMax}`, creditResetLabel] },
-          { label: 'Rounds', value: String(roundsThisMonth), amber: false, sm: false, sub: ['this month'] },
-          { label: 'Courses', value: String(coursesVisited), amber: false, sm: false, sub: ['visited'] },
-          { label: 'Next Tee Time', value: nextTeeCountdown, amber: true, sm: true, sub: [nextTeeDetails, nextTeeCourse].filter(Boolean) },
+          { label: 'Credits', value: String(balance), amber: true, sub: [`/ ${tierMax}`, creditResetLabel] },
+          { label: 'Rounds', value: String(roundsThisMonth), amber: false, sub: ['this month'] },
+          { label: 'Courses', value: String(coursesVisited), amber: false, sub: ['visited'] },
+          { label: 'Next Tee Time', value: nextTeeCountdown, amber: true, sub: [nextTeeDetails, nextTeeCourse].filter(Boolean) },
         ].map((stat, i) => (
           <FadeIn key={stat.label} delay={0.1 + i * 0.1}>
             <div className="lab-stat">
               <div className="lab-stat-label">{stat.label}</div>
-              <div className={`lab-stat-value${stat.amber ? ' lab-amber' : ''}${stat.sm ? ' lab-stat-sm' : ''}`}>
+              <div className={`lab-stat-value${stat.amber ? ' lab-amber' : ''}`}>
                 {stat.value}
               </div>
               {stat.sub.map((s, j) => (
@@ -169,16 +169,13 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* ── Divider ── */}
-      <div className="lab-divider" />
-
-      {/* ── Activity feed ── */}
-      <div className="lab-section">
-        <div className="lab-section-hd">
-          <span className="lab-section-title">Recent Activity</span>
-          <Link href="/rounds" className="lab-section-link">View all →</Link>
-        </div>
-        <div className="lab-activity-card">
+      {/* ── Secondary data ── */}
+      <div className="lab-lower">
+        <div className="lab-lower-left">
+          <div className="lab-section-hd">
+            <span className="lab-section-title">Recent Activity</span>
+            <Link href="/rounds" className="lab-section-link">View all →</Link>
+          </div>
           {recentLedger.length === 0 ? (
             <div className="lab-activity-empty">No activity yet.</div>
           ) : (
@@ -187,165 +184,235 @@ export default async function DashboardPage() {
               const { title, sub } = getLedgerLabel({ type: entry.type, notes: entry.notes, referenceId: entry.referenceId })
               const dateLabel = new Date(entry.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
               return (
-                <FadeIn key={entry.id} delay={0.05 * i}>
-                  <div>
-                    {i > 0 && <div className="lab-activity-divider" />}
-                    <div className="lab-activity-row">
-                      <div className="lab-activity-main">
-                        <div className="lab-activity-title">{title}</div>
-                        <div className="lab-activity-sub">{sub}</div>
-                      </div>
-                      <div className={`lab-activity-amount ${isCredit ? 'lab-amt-credit' : 'lab-amt-debit'}`}>
-                        {isCredit ? '+' : ''}{entry.amount} cr.
-                      </div>
-                      <div className="lab-activity-date">{dateLabel}</div>
-                    </div>
+                <div key={entry.id} className="lab-activity-row">
+                  <div className="lab-activity-main">
+                    <span className="lab-activity-title">{title}</span>
+                    <span className="lab-activity-sub">{sub}</span>
                   </div>
-                </FadeIn>
+                  <span className={`lab-activity-amount ${isCredit ? 'lab-amt-credit' : 'lab-amt-debit'}`}>
+                    {isCredit ? '+' : ''}{entry.amount}
+                  </span>
+                  <span className="lab-activity-date">{dateLabel}</span>
+                </div>
               )
             })
           )}
         </div>
-      </div>
 
-      {/* ── AI Search ── */}
-      <div className="lab-section">
-        <div className="lab-section-hd">
-          <span className="lab-section-title">Find a Tee Time</span>
-          <span className="lab-ai-badge">Beta</span>
-        </div>
-        <div className="lab-search-row">
+        <div className="lab-lower-right">
+          <div className="lab-section-hd">
+            <span className="lab-section-title">Find a Tee Time</span>
+            <span className="lab-ai-badge">AI</span>
+          </div>
           <input
             className="lab-search-input"
             type="text"
-            placeholder={'e.g. "Saturday morning at Torrey Pines, 2 players"'}
+            placeholder='"Saturday morning, 2 players"'
             readOnly
           />
-          <button className="lab-search-btn">
-            <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <circle cx="9" cy="9" r="6" />
-              <line x1="14" y1="14" x2="18" y2="18" />
-            </svg>
-            Search
-          </button>
-        </div>
-        <div className="lab-search-hints">
-          <span className="lab-hint-chip">Tomorrow, 8am</span>
-          <span className="lab-hint-chip">Within 20 miles</span>
-          <span className="lab-hint-chip">2 players</span>
-          <span className="lab-hint-chip">Weekday morning</span>
+          <div className="lab-search-hints">
+            <span className="lab-hint-chip">Tomorrow, 8am</span>
+            <span className="lab-hint-chip">Within 20 miles</span>
+            <span className="lab-hint-chip">2 players</span>
+          </div>
         </div>
       </div>
 
       <style>{`
-        /* Hero */
-        .lab-hero { padding: 80px 36px 48px; }
+        /* ── Hero ── */
+        .lab-hero {
+          padding: 100px 48px 64px;
+        }
         .lab-date {
-          font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
-          text-transform: uppercase; color: #847C72; margin-bottom: 12px;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: #847C72;
+          margin-bottom: 16px;
           font-family: 'Inter', sans-serif;
         }
         .lab-greeting {
           font-family: var(--font-nunito), 'Nunito', sans-serif;
-          font-weight: 900; font-size: 48px; letter-spacing: -0.025em;
-          color: #F4EEE3; line-height: 1.05; margin: 0;
+          font-weight: 900;
+          font-size: 56px;
+          letter-spacing: -0.03em;
+          color: #F4EEE3;
+          line-height: 1;
+          margin: 0;
         }
 
-        /* Stats */
-        .lab-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; padding: 0 36px 48px; }
-        .lab-stat { display: flex; flex-direction: column; }
+        /* ── Stats ── */
+        .lab-stats {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          padding: 0 48px 72px;
+        }
         .lab-stat-label {
-          font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
-          text-transform: uppercase; color: #847C72; margin-bottom: 8px;
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #847C72;
+          margin-bottom: 12px;
           font-family: 'Inter', sans-serif;
         }
         .lab-stat-value {
           font-family: var(--font-nunito), 'Nunito', sans-serif;
-          font-weight: 900; font-size: 64px; letter-spacing: -0.03em;
-          color: #F4EEE3; line-height: 1; margin-bottom: 6px;
+          font-weight: 900;
+          font-size: 72px;
+          letter-spacing: -0.04em;
+          color: #F4EEE3;
+          line-height: 1;
+          margin-bottom: 8px;
         }
         .lab-stat-value.lab-amber { color: #BF7B2E; }
-        .lab-stat-value.lab-stat-sm { font-size: 48px; }
-        .lab-stat-sub { font-size: 12px; color: #847C72; font-family: 'Inter', sans-serif; line-height: 1.5; }
+        .lab-stat-sub {
+          font-size: 12px;
+          color: #847C72;
+          font-family: 'Inter', sans-serif;
+          line-height: 1.6;
+        }
 
-        /* Divider */
-        .lab-divider { height: 1px; background: rgba(229,221,211,0.06); margin: 0 36px; }
-
-        /* Sections */
-        .lab-section { padding: 28px 36px 0; }
-        .lab-section-hd { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+        /* ── Lower section ── */
+        .lab-lower {
+          display: grid;
+          grid-template-columns: 1fr 320px;
+          gap: 48px;
+          padding: 0 48px 64px;
+          border-top: 1px solid rgba(244,238,227,0.06);
+          padding-top: 48px;
+        }
+        .lab-section-hd {
+          display: flex;
+          align-items: baseline;
+          justify-content: space-between;
+          margin-bottom: 20px;
+        }
         .lab-section-title {
-          font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
-          text-transform: uppercase; color: #847C72; font-family: 'Inter', sans-serif;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #847C72;
+          font-family: 'Inter', sans-serif;
         }
         .lab-section-link {
-          font-size: 11px; font-weight: 600; color: #847C72;
-          text-decoration: none; transition: color 0.15s; font-family: 'Inter', sans-serif;
+          font-size: 11px;
+          font-weight: 500;
+          color: #847C72;
+          text-decoration: none;
+          transition: color 0.15s;
+          font-family: 'Inter', sans-serif;
         }
         .lab-section-link:hover { color: #BF7B2E; }
 
-        /* Activity */
-        .lab-activity-card { background: #1E1D1B; border: 1px solid rgba(244,238,227,0.06); }
+        /* ── Activity ── */
         .lab-activity-row {
-          display: flex; align-items: center; gap: 14px;
-          padding: 14px 18px; transition: background 0.12s;
+          display: flex;
+          align-items: baseline;
+          gap: 16px;
+          padding: 10px 0;
+          border-bottom: 1px solid rgba(244,238,227,0.04);
         }
-        .lab-activity-row:hover { background: rgba(244,238,227,0.03); }
-        .lab-activity-main { flex: 1; }
-        .lab-activity-title { font-size: 13px; font-weight: 600; color: #F4EEE3; margin-bottom: 2px; font-family: 'Inter', sans-serif; }
-        .lab-activity-sub { font-size: 11px; color: #847C72; font-family: 'Inter', sans-serif; }
-        .lab-activity-amount { font-size: 13px; font-weight: 700; font-family: var(--font-geist-mono), 'Geist Mono', monospace; }
+        .lab-activity-row:last-child { border-bottom: none; }
+        .lab-activity-main {
+          flex: 1;
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+        }
+        .lab-activity-title {
+          font-size: 13px;
+          font-weight: 600;
+          color: #F4EEE3;
+          font-family: 'Inter', sans-serif;
+        }
+        .lab-activity-sub {
+          font-size: 11px;
+          color: #847C72;
+          font-family: 'Inter', sans-serif;
+        }
+        .lab-activity-amount {
+          font-size: 14px;
+          font-weight: 700;
+          font-family: var(--font-geist-mono), 'Geist Mono', monospace;
+          letter-spacing: -0.02em;
+        }
         .lab-amt-credit { color: #BF7B2E; }
         .lab-amt-debit { color: #847C72; }
-        .lab-activity-date { font-size: 11px; color: #847C72; width: 56px; text-align: right; flex-shrink: 0; font-family: 'Inter', sans-serif; }
-        .lab-activity-divider { height: 1px; background: rgba(244,238,227,0.06); margin: 0 18px; }
-        .lab-activity-empty { padding: 20px 18px; font-size: 13px; color: #847C72; text-align: center; font-family: 'Inter', sans-serif; }
-
-        /* AI Search */
-        .lab-ai-badge {
-          font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: #BF7B2E;
-          background: rgba(191,123,46,0.10); border: 1px solid rgba(191,123,46,0.18);
-          border-radius: 2px; padding: 2px 7px; text-transform: uppercase; font-family: 'Inter', sans-serif;
+        .lab-activity-date {
+          font-size: 11px;
+          color: #847C72;
+          width: 52px;
+          text-align: right;
+          flex-shrink: 0;
+          font-family: 'Inter', sans-serif;
         }
-        .lab-search-row { display: flex; gap: 8px; }
+        .lab-activity-empty {
+          font-size: 13px;
+          color: #847C72;
+          font-family: 'Inter', sans-serif;
+        }
+
+        /* ── Search ── */
+        .lab-ai-badge {
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: 0.06em;
+          color: #BF7B2E;
+          font-family: 'Inter', sans-serif;
+        }
         .lab-search-input {
-          flex: 1; background: #1E1D1B; border: 1px solid rgba(229,221,211,0.06);
-          border-radius: 2px; padding: 12px 16px; font-family: 'Inter', sans-serif;
-          font-size: 13px; color: #F4EEE3; outline: none;
+          width: 100%;
+          background: rgba(244,238,227,0.04);
+          border: 1px solid rgba(244,238,227,0.06);
+          border-radius: 2px;
+          padding: 12px 14px;
+          font-family: 'Inter', sans-serif;
+          font-size: 13px;
+          color: #F4EEE3;
+          outline: none;
         }
         .lab-search-input::placeholder { color: #847C72; }
-        .lab-search-btn {
-          background: #BF7B2E; border: none; border-radius: 2px; padding: 0 20px;
-          font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700;
-          letter-spacing: 0.08em; color: #0C0C0B; text-transform: uppercase;
-          cursor: pointer; display: flex; align-items: center; gap: 7px; transition: background 0.15s;
+        .lab-search-input:focus { border-color: rgba(191,123,46,0.3); }
+        .lab-search-hints {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-top: 10px;
         }
-        .lab-search-btn:hover { background: #d48c37; }
-        .lab-search-hints { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; padding-bottom: 48px; }
         .lab-hint-chip {
-          font-size: 10px; font-weight: 500; color: #847C72; background: #1E1D1B;
-          border: 1px solid rgba(244,238,227,0.08); border-radius: 2px;
-          padding: 1px 6px; font-family: 'Inter', sans-serif;
+          font-size: 10px;
+          font-weight: 500;
+          color: #847C72;
+          font-family: 'Inter', sans-serif;
+          cursor: pointer;
+          transition: color 0.15s;
         }
+        .lab-hint-chip:hover { color: #F4EEE3; }
+        .lab-hint-chip::after { content: ' ·'; color: rgba(132,124,114,0.4); }
+        .lab-hint-chip:last-child::after { content: ''; }
 
-        /* Responsive */
+        /* ── Responsive ── */
+        @media (max-width: 1100px) {
+          .lab-lower { grid-template-columns: 1fr; }
+          .lab-lower-right { max-width: 400px; }
+        }
         @media (max-width: 900px) {
-          .lab-hero { padding: 40px 24px 32px; }
-          .lab-greeting { font-size: 36px; }
-          .lab-stats { grid-template-columns: repeat(2, 1fr); gap: 32px; padding: 0 24px 32px; }
-          .lab-stat-value { font-size: 48px; }
-          .lab-stat-value.lab-stat-sm { font-size: 40px; }
-          .lab-divider { margin: 0 24px; }
-          .lab-section { padding: 20px 24px 0; }
+          .lab-hero { padding: 64px 32px 48px; }
+          .lab-greeting { font-size: 42px; }
+          .lab-stats { grid-template-columns: repeat(2, 1fr); gap: 40px 0; padding: 0 32px 56px; }
+          .lab-stat-value { font-size: 56px; }
+          .lab-lower { padding: 40px 32px 48px; }
         }
         @media (max-width: 640px) {
-          .lab-hero { padding: 32px 20px 24px; }
-          .lab-greeting { font-size: 32px; }
-          .lab-stats { grid-template-columns: repeat(2, 1fr); gap: 24px; padding: 0 20px 24px; }
+          .lab-hero { padding: 48px 24px 32px; }
+          .lab-greeting { font-size: 36px; }
+          .lab-stats { grid-template-columns: repeat(2, 1fr); gap: 32px 0; padding: 0 24px 40px; }
           .lab-stat-value { font-size: 48px; }
-          .lab-stat-value.lab-stat-sm { font-size: 36px; }
-          .lab-divider { margin: 0 20px; }
-          .lab-section { padding: 16px 20px 0; }
+          .lab-lower { padding: 32px 24px 40px; gap: 32px; }
+          .lab-activity-main { flex-direction: column; gap: 2px; }
         }
       `}</style>
     </>
