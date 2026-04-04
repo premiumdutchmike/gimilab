@@ -114,7 +114,7 @@ Date sits above greeting. Period at the end of greeting, no exclamation mark, no
 - Sub-text line 2: `resets May 1` in Stone
 
 **Next Tee Time specifics:**
-- Value is a countdown: `2d 14h` in Amber (computed client-side for live update, or server-rendered as static)
+- Value is a countdown: `2d 14h` in Amber. Server-rendered on page load (no client-side timer — CLAUDE.md says default to Server Components, and a live countdown adds complexity for minimal value)
 - Sub-text line 1: `Sat 8:20 AM` — the actual date/time
 - Sub-text line 2: course name in Stone
 - If no upcoming booking: value is `--`, sub-text is `No rounds booked`
