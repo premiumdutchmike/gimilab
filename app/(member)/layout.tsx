@@ -53,7 +53,7 @@ export default async function MemberLayout({
   const creditResetLabel = getCreditResetLabel()
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FDFAF6', display: 'flex' }}>
+    <div style={{ minHeight: '100vh', background: '#0C0C0B', display: 'flex' }}>
       <MemberSidebar
         fullName={fullName}
         email={email}
