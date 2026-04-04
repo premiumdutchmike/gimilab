@@ -88,17 +88,17 @@ export default async function AdminDashboardPage() {
           </div>
           {recentMembers.map(m => {
             const tierMax = m.subscriptionTier === 'heavy' ? 210 : m.subscriptionTier === 'core' ? 150 : 100
-            const tierColor = m.subscriptionTier === 'core' ? '#BF7B2E' : '#F4EEE3'
+            const tierColor = m.subscriptionTier === 'core' ? '#BF7B2E' : '#111'
             const statusColor = m.subscriptionStatus === 'active' ? '#BF7B2E' : m.subscriptionStatus === 'past_due' ? '#d97706' : '#847C72'
             const joined = new Date(m.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
             return (
               <a key={m.id} href={`/admin/members/${m.id}`} className="adm-table-row">
-                <span style={{ flex: 1, fontWeight: 600, color: '#F4EEE3' }}>{m.fullName ?? '\u2014'}</span>
+                <span style={{ flex: 1, fontWeight: 600, color: '#111' }}>{m.fullName ?? '\u2014'}</span>
                 <span style={{ width: 70, color: tierColor, textTransform: 'capitalize' }}>{m.subscriptionTier ?? '\u2014'}</span>
                 <span style={{ width: 90 }}>{Number(m.balance)} / {tierMax}</span>
                 <span style={{ width: 60 }}>{Number(m.totalRounds)}</span>
                 <span style={{ width: 50 }}><span className="adm-dot" style={{ background: statusColor }} /></span>
-                <span style={{ width: 70, textAlign: 'right', color: '#847C72' }}>{joined}</span>
+                <span style={{ width: 70, textAlign: 'right', color: 'rgba(0,0,0,0.4)' }}>{joined}</span>
               </a>
             )
           })}
@@ -117,7 +117,7 @@ export default async function AdminDashboardPage() {
           <div>
             <div className="adm-card-hd">Activity</div>
             {recentBookings.length === 0 ? (
-              <div style={{ color: '#847C72', fontSize: 13 }}>No recent bookings.</div>
+              <div style={{ color: 'rgba(0,0,0,0.4)', fontSize: 13 }}>No recent bookings.</div>
             ) : (
               recentBookings.map(b => {
                 const name = b.memberName?.split(' ')[0] ?? 'Member'
@@ -146,12 +146,12 @@ export default async function AdminDashboardPage() {
             const count = dashStats.tierMap[tier] ?? 0
             const pct = dashStats.activeMembers > 0 ? Math.round((count / dashStats.activeMembers) * 100) : 0
             const price = tier === 'casual' ? '$99/mo' : tier === 'core' ? '$149/mo' : '$199/mo'
-            const color = tier === 'core' ? '#BF7B2E' : '#F4EEE3'
+            const color = tier === 'core' ? '#BF7B2E' : '#111'
             return (
               <div key={tier} className="adm-tier-row">
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 600, color, textTransform: 'capitalize' }}>{tier}</div>
-                  <div style={{ fontSize: 11, color: '#847C72' }}>{pct}% &middot; {price}</div>
+                  <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)' }}>{pct}% &middot; {price}</div>
                 </div>
                 <div className="adm-tier-num">{count}</div>
               </div>
@@ -189,11 +189,7 @@ export default async function AdminDashboardPage() {
 
       <style>{`
         .adm-wrap {
-          background: #0C0C0B;
-          min-height: 100vh;
-          padding: 32px 36px 48px;
-          max-width: 1280px;
-          margin: 0 auto;
+          padding: 32px 28px 48px;
           font-family: 'Inter', sans-serif;
         }
         .adm-greeting {
@@ -201,7 +197,7 @@ export default async function AdminDashboardPage() {
           font-weight: 800;
           font-size: 28px;
           letter-spacing: -0.03em;
-          color: #F4EEE3;
+          color: #111;
           margin-bottom: 28px;
         }
 
@@ -209,50 +205,50 @@ export default async function AdminDashboardPage() {
         .adm-stats-card {
           display: grid;
           grid-template-columns: repeat(5, 1fr);
-          background: #1E1D1B;
-          border: 1px solid rgba(244,238,227,0.06);
+          background: #fff;
+          border: 1px solid #e8e8e8;
           margin-bottom: 32px;
         }
         .adm-stat-cell {
           padding: 24px 24px;
-          border-right: 1px solid rgba(244,238,227,0.06);
+          border-right: 1px solid #e8e8e8;
         }
         .adm-stat-cell:last-child { border-right: none; }
         .adm-stat-label {
-          font-size: 10px;
-          font-weight: 600;
-          letter-spacing: 0.1em;
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: 0.12em;
           text-transform: uppercase;
-          color: #847C72;
+          color: rgba(0,0,0,0.4);
           margin-bottom: 12px;
         }
         .adm-stat-value {
           font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
           font-weight: 900;
-          font-size: 56px;
+          font-size: 48px;
           letter-spacing: -0.04em;
-          color: #F4EEE3;
+          color: #111;
           line-height: 0.9;
           margin-bottom: 8px;
         }
         .adm-stat-value.adm-amber { color: #BF7B2E; }
         .adm-stat-delta {
-          font-size: 12px;
-          color: #847C72;
+          font-size: 11px;
+          color: rgba(0,0,0,0.35);
         }
 
         /* Cards */
         .adm-card {
-          background: #1E1D1B;
-          border: 1px solid rgba(244,238,227,0.06);
+          background: #fff;
+          border: 1px solid #e8e8e8;
           padding: 24px;
         }
         .adm-card-hd {
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 700;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.12em;
           text-transform: uppercase;
-          color: #847C72;
+          color: rgba(0,0,0,0.4);
           margin-bottom: 16px;
         }
 
@@ -269,25 +265,25 @@ export default async function AdminDashboardPage() {
           display: flex;
           align-items: center;
           padding: 0 0 10px;
-          border-bottom: 1px solid rgba(244,238,227,0.06);
+          border-bottom: 1px solid #e8e8e8;
           margin-bottom: 4px;
-          font-size: 10px;
-          font-weight: 600;
-          letter-spacing: 0.08em;
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: 0.12em;
           text-transform: uppercase;
-          color: #847C72;
+          color: rgba(0,0,0,0.35);
         }
         .adm-table-row {
           display: flex;
           align-items: center;
           padding: 10px 0;
-          border-bottom: 1px solid rgba(244,238,227,0.04);
+          border-bottom: 1px solid #f0f0f0;
           font-size: 13px;
-          color: #F4EEE3;
+          color: #111;
           text-decoration: none;
           transition: background 0.1s;
         }
-        .adm-table-row:hover { background: rgba(244,238,227,0.02); }
+        .adm-table-row:hover { background: #fafafa; }
         .adm-table-row:last-child { border-bottom: none; }
 
         /* Dot */
@@ -306,7 +302,7 @@ export default async function AdminDashboardPage() {
           font-weight: 900;
           font-size: 48px;
           letter-spacing: -0.04em;
-          color: #F4EEE3;
+          color: #111;
           line-height: 1;
           margin-bottom: 8px;
         }
@@ -327,13 +323,13 @@ export default async function AdminDashboardPage() {
         }
         .adm-activity-text {
           font-size: 13px;
-          color: #F4EEE3;
+          color: #111;
           font-weight: 500;
           line-height: 1.4;
         }
         .adm-activity-time {
           font-size: 11px;
-          color: #847C72;
+          color: rgba(0,0,0,0.4);
           margin-top: 2px;
         }
 
@@ -348,7 +344,7 @@ export default async function AdminDashboardPage() {
           align-items: center;
           justify-content: space-between;
           padding: 12px 0;
-          border-bottom: 1px solid rgba(244,238,227,0.04);
+          border-bottom: 1px solid #f0f0f0;
         }
         .adm-tier-row:last-child { border-bottom: none; }
         .adm-tier-num {
@@ -356,7 +352,7 @@ export default async function AdminDashboardPage() {
           font-weight: 900;
           font-size: 36px;
           letter-spacing: -0.04em;
-          color: #F4EEE3;
+          color: #111;
           line-height: 1;
         }
         .adm-health-row {
@@ -364,9 +360,9 @@ export default async function AdminDashboardPage() {
           align-items: baseline;
           justify-content: space-between;
           padding: 10px 0;
-          border-bottom: 1px solid rgba(244,238,227,0.04);
+          border-bottom: 1px solid #f0f0f0;
           font-size: 13px;
-          color: #F4EEE3;
+          color: #111;
         }
         .adm-health-row:last-child { border-bottom: none; }
         .adm-health-val {
@@ -374,7 +370,7 @@ export default async function AdminDashboardPage() {
           font-weight: 900;
           font-size: 28px;
           letter-spacing: -0.04em;
-          color: #F4EEE3;
+          color: #111;
           line-height: 1;
         }
         .adm-course-row {
@@ -382,9 +378,9 @@ export default async function AdminDashboardPage() {
           align-items: baseline;
           justify-content: space-between;
           padding: 10px 0;
-          border-bottom: 1px solid rgba(244,238,227,0.04);
+          border-bottom: 1px solid #f0f0f0;
           font-size: 13px;
-          color: #F4EEE3;
+          color: #111;
         }
         .adm-course-row:last-child { border-bottom: none; }
         .adm-course-num {
@@ -392,7 +388,7 @@ export default async function AdminDashboardPage() {
           font-weight: 900;
           font-size: 20px;
           letter-spacing: -0.03em;
-          color: #F4EEE3;
+          color: #111;
         }
 
         @media (max-width: 1100px) {
