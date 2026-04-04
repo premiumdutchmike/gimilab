@@ -7,6 +7,7 @@ import CarouselArrows from '@/components/carousel-arrows'
 import PuttAnimations from '@/components/putt-animations'
 import HeroScrollEffect from '@/components/hero-scroll-effect'
 import AnimatedButton from '@/components/animated-button'
+import SavingsCalculator from '@/components/savings-calculator'
 
 export const metadata = {
   title: 'gimmelab — One membership. Every course.',
@@ -283,54 +284,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── COMPARISON ── */}
-      <section className="comparison-section">
-        <div className="comparison-headline">
-          <span className="label">The math</span>
-          <h2 className="hl">Play more. <span>Spend less.</span></h2>
-          <p className="comparison-sub">Here&apos;s what a typical golfer playing twice a month actually spends.</p>
-        </div>
-        <div className="cmp-table">
-          <div className="cmp-table-head">
-            <span>Line item</span>
-            <span>Without Gimmelab</span>
-            <span style={{ color: 'var(--amber)' }}>With Gimmelab</span>
-          </div>
-          <div className="cmp-table-row">
-            <span className="cmp-row-label">Green fees (avg $135/round)</span>
-            <span className="cmp-row-val">$3,240 / yr</span>
-            <span className="cmp-row-good">Included</span>
-          </div>
-          <div className="cmp-table-row">
-            <span className="cmp-row-label">Booking fees</span>
-            <span className="cmp-row-val">$4–8 per round</span>
-            <span className="cmp-row-good">$0</span>
-          </div>
-          <div className="cmp-table-row">
-            <span className="cmp-row-label">Phone calls to pro shop</span>
-            <span className="cmp-row-val">Endless</span>
-            <span className="cmp-row-good">Zero</span>
-          </div>
-          <div className="cmp-table-row">
-            <span className="cmp-row-label">Annual membership cost</span>
-            <span className="cmp-row-val">—</span>
-            <span className="cmp-row-good">$1,788 / yr</span>
-          </div>
-          <div className="cmp-table-row cmp-table-total">
-            <span className="cmp-row-label" style={{ fontWeight: 700 }}>Total yearly spend</span>
-            <span className="cmp-row-val" style={{ fontWeight: 700, color: 'var(--midnight)', fontSize: 17 }}>$3,240+</span>
-            <span className="cmp-row-good" style={{ fontSize: 18 }}>$1,788</span>
-          </div>
-        </div>
-        <div className="comparison-savings">
-          <div className="savings-left">
-            <span className="label">You save</span>
-            <div className="savings-amount">$1,452 / year</div>
-            <div className="savings-note">That&apos;s a new driver. New irons. Both.</div>
-          </div>
-          <Link href="/signup" className="btn-savings">Start saving today →</Link>
-        </div>
-      </section>
+      {/* ── SAVINGS CALCULATOR ── */}
+      <SavingsCalculator />
 
       {/* ── EDITORIAL PHOTO STRIP ── */}
       <section className="editorial">
