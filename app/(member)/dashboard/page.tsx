@@ -6,6 +6,7 @@ import { and, eq, gte, count, countDistinct, desc, sql, asc } from 'drizzle-orm'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { TIER_CREDITS } from '@/lib/stripe/client'
+import { FadeIn } from '@/components/lab-animate'
 
 export const metadata = { title: 'Dashboard — gimmelab' }
 
@@ -139,35 +140,33 @@ export default async function DashboardPage() {
   return (
     <>
       {/* ── Hero zone ── */}
-      <div className="lab-hero">
-        <div className="lab-date">{formattedDate}</div>
-        <h1 className="lab-greeting">{greeting}</h1>
-      </div>
+      <FadeIn>
+        <div className="lab-hero">
+          <div className="lab-date">{formattedDate}</div>
+          <h1 className="lab-greeting">{greeting}</h1>
+        </div>
+      </FadeIn>
 
       {/* ── Stats strip ── */}
       <div className="lab-stats">
-        <div className="lab-stat">
-          <div className="lab-stat-label">Credits</div>
-          <div className="lab-stat-value lab-amber">{balance}</div>
-          <div className="lab-stat-sub">/ {tierMax}</div>
-          <div className="lab-stat-sub">{creditResetLabel}</div>
-        </div>
-        <div className="lab-stat">
-          <div className="lab-stat-label">Rounds</div>
-          <div className="lab-stat-value">{roundsThisMonth}</div>
-          <div className="lab-stat-sub">this month</div>
-        </div>
-        <div className="lab-stat">
-          <div className="lab-stat-label">Courses</div>
-          <div className="lab-stat-value">{coursesVisited}</div>
-          <div className="lab-stat-sub">visited</div>
-        </div>
-        <div className="lab-stat">
-          <div className="lab-stat-label">Next Tee Time</div>
-          <div className="lab-stat-value lab-amber lab-stat-sm">{nextTeeCountdown}</div>
-          <div className="lab-stat-sub">{nextTeeDetails}</div>
-          {nextTeeCourse && <div className="lab-stat-sub">{nextTeeCourse}</div>}
-        </div>
+        {[
+          { label: 'Credits', value: String(balance), amber: true, sm: false, sub: [`/ ${tierMax}`, creditResetLabel] },
+          { label: 'Rounds', value: String(roundsThisMonth), amber: false, sm: false, sub: ['this month'] },
+          { label: 'Courses', value: String(coursesVisited), amber: false, sm: false, sub: ['visited'] },
+          { label: 'Next Tee Time', value: nextTeeCountdown, amber: true, sm: true, sub: [nextTeeDetails, nextTeeCourse].filter(Boolean) },
+        ].map((stat, i) => (
+          <FadeIn key={stat.label} delay={0.1 + i * 0.1}>
+            <div className="lab-stat">
+              <div className="lab-stat-label">{stat.label}</div>
+              <div className={`lab-stat-value${stat.amber ? ' lab-amber' : ''}${stat.sm ? ' lab-stat-sm' : ''}`}>
+                {stat.value}
+              </div>
+              {stat.sub.map((s, j) => (
+                <div key={j} className="lab-stat-sub">{s}</div>
+              ))}
+            </div>
+          </FadeIn>
+        ))}
       </div>
 
       {/* ── Divider ── */}
@@ -183,24 +182,26 @@ export default async function DashboardPage() {
           {recentLedger.length === 0 ? (
             <div className="lab-activity-empty">No activity yet.</div>
           ) : (
-            recentLedger.map((entry, idx) => {
+            recentLedger.map((entry, i) => {
               const isCredit = entry.amount > 0
               const { title, sub } = getLedgerLabel({ type: entry.type, notes: entry.notes, referenceId: entry.referenceId })
               const dateLabel = new Date(entry.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
               return (
-                <div key={entry.id}>
-                  {idx > 0 && <div className="lab-activity-divider" />}
-                  <div className="lab-activity-row">
-                    <div className="lab-activity-main">
-                      <div className="lab-activity-title">{title}</div>
-                      <div className="lab-activity-sub">{sub}</div>
+                <FadeIn key={entry.id} delay={0.05 * i}>
+                  <div>
+                    {i > 0 && <div className="lab-activity-divider" />}
+                    <div className="lab-activity-row">
+                      <div className="lab-activity-main">
+                        <div className="lab-activity-title">{title}</div>
+                        <div className="lab-activity-sub">{sub}</div>
+                      </div>
+                      <div className={`lab-activity-amount ${isCredit ? 'lab-amt-credit' : 'lab-amt-debit'}`}>
+                        {isCredit ? '+' : ''}{entry.amount} cr.
+                      </div>
+                      <div className="lab-activity-date">{dateLabel}</div>
                     </div>
-                    <div className={`lab-activity-amount ${isCredit ? 'lab-amt-credit' : 'lab-amt-debit'}`}>
-                      {isCredit ? '+' : ''}{entry.amount} cr.
-                    </div>
-                    <div className="lab-activity-date">{dateLabel}</div>
                   </div>
-                </div>
+                </FadeIn>
               )
             })
           )}
