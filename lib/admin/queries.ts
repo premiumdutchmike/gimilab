@@ -347,3 +347,219 @@ export const getMemberBookings = cache(async function getMemberBookings(userId: 
     .where(eq(bookings.userId, userId))
     .orderBy(desc(bookings.createdAt))
 })
+
+export const getAdminDashboardStats = cache(async function getAdminDashboardStats() {
+  const now = new Date()
+  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+  const firstOfPriorMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1)
+
+  const [
+    tierCounts,
+    roundsThisMonth,
+    roundsPriorMonth,
+    expiredCredits,
+    grantedCredits,
+    activeCourses,
+    pendingCourses,
+    membersThisMonth,
+  ] = await Promise.all([
+    // Tier breakdown for MRR
+    db.select({
+      tier: users.subscriptionTier,
+      count: sql<number>`COUNT(*)`,
+    }).from(users)
+      .where(eq(users.subscriptionStatus, 'active'))
+      .groupBy(users.subscriptionTier),
+
+    // Rounds this month
+    db.select({ count: sql<number>`COUNT(*)` }).from(bookings)
+      .where(and(
+        inArray(bookings.status, ['CONFIRMED', 'BOOKED', 'COMPLETED']),
+        sql`${bookings.createdAt} >= ${firstOfMonth}`,
+      )).then(r => Number(r[0]?.count ?? 0)),
+
+    // Rounds prior month
+    db.select({ count: sql<number>`COUNT(*)` }).from(bookings)
+      .where(and(
+        inArray(bookings.status, ['CONFIRMED', 'BOOKED', 'COMPLETED']),
+        sql`${bookings.createdAt} >= ${firstOfPriorMonth}`,
+        sql`${bookings.createdAt} < ${firstOfMonth}`,
+      )).then(r => Number(r[0]?.count ?? 0)),
+
+    // Expired credits (3 months)
+    db.select({ total: sql<number>`COALESCE(ABS(SUM(${creditLedger.amount})), 0)` })
+      .from(creditLedger)
+      .where(and(
+        eq(creditLedger.type, 'CREDIT_EXPIRY'),
+        sql`${creditLedger.createdAt} >= ${threeMonthsAgo}`,
+      )).then(r => Number(r[0]?.total ?? 0)),
+
+    // Granted credits (3 months)
+    db.select({ total: sql<number>`COALESCE(SUM(${creditLedger.amount}), 0)` })
+      .from(creditLedger)
+      .where(and(
+        eq(creditLedger.type, 'SUBSCRIPTION_GRANT'),
+        sql`${creditLedger.createdAt} >= ${threeMonthsAgo}`,
+      )).then(r => Number(r[0]?.total ?? 0)),
+
+    // Active courses
+    db.select({ count: sql<number>`COUNT(*)` }).from(courses)
+      .where(eq(courses.status, 'active'))
+      .then(r => Number(r[0]?.count ?? 0)),
+
+    // Pending courses
+    db.select({ count: sql<number>`COUNT(*)` }).from(courses)
+      .where(eq(courses.status, 'pending'))
+      .then(r => Number(r[0]?.count ?? 0)),
+
+    // New members this month
+    db.select({ count: sql<number>`COUNT(*)` }).from(users)
+      .where(sql`${users.createdAt} >= ${firstOfMonth}`)
+      .then(r => Number(r[0]?.count ?? 0)),
+  ])
+
+  // Compute MRR from tier counts
+  const tierMap: Record<string, number> = {}
+  for (const row of tierCounts) {
+    if (row.tier) tierMap[row.tier] = Number(row.count)
+  }
+  const totalActive = Object.values(tierMap).reduce((a, b) => a + b, 0)
+  const mrrCents = (tierMap['casual'] ?? 0) * 9900 + (tierMap['core'] ?? 0) * 14900 + (tierMap['heavy'] ?? 0) * 19900
+
+  return {
+    activeMembers: totalActive,
+    newMembersThisMonth: membersThisMonth,
+    mrrCents,
+    roundsThisMonth,
+    roundsPriorMonth,
+    expiredCredits,
+    grantedCredits,
+    activeCourses,
+    pendingCourses,
+    tierMap,
+  }
+})
+
+export const getRecentMembersWithStats = cache(async function getRecentMembersWithStats(limit = 7) {
+  return db
+    .select({
+      id: users.id,
+      fullName: users.fullName,
+      subscriptionTier: users.subscriptionTier,
+      subscriptionStatus: users.subscriptionStatus,
+      createdAt: users.createdAt,
+      balance: sql<number>`COALESCE(SUM(CASE WHEN (${creditLedger.expiresAt} IS NULL OR ${creditLedger.expiresAt} > NOW()) THEN ${creditLedger.amount} ELSE 0 END), 0)`,
+      totalRounds: sql<number>`COUNT(DISTINCT CASE WHEN ${bookings.status} IN ('CONFIRMED','COMPLETED') THEN ${bookings.id} END)`,
+    })
+    .from(users)
+    .leftJoin(creditLedger, eq(creditLedger.userId, users.id))
+    .leftJoin(bookings, eq(bookings.userId, users.id))
+    .groupBy(users.id, users.fullName, users.subscriptionTier, users.subscriptionStatus, users.createdAt)
+    .orderBy(desc(users.createdAt))
+    .limit(limit)
+})
+
+export const getRecentBookingsActivity = cache(async function getRecentBookingsActivity(limit = 5) {
+  return db
+    .select({
+      bookingId: bookings.id,
+      memberName: users.fullName,
+      courseName: courses.name,
+      startTime: teeTimeSlots.startTime,
+      date: teeTimeSlots.date,
+      createdAt: bookings.createdAt,
+    })
+    .from(bookings)
+    .innerJoin(users, eq(bookings.userId, users.id))
+    .innerJoin(courses, eq(bookings.courseId, courses.id))
+    .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
+    .where(inArray(bookings.status, ['CONFIRMED', 'BOOKED', 'COMPLETED']))
+    .orderBy(desc(bookings.createdAt))
+    .limit(limit)
+})
+
+export const getCreditHealthStats = cache(async function getCreditHealthStats() {
+  const now = new Date()
+  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+  const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1)
+
+  const [debitsThisMonth, grantsThisMonth, expiredThreeMonths, grantedThreeMonths, rolloverLive, activeMembers, roundsThisMonth] = await Promise.all([
+    // Credits debited this month
+    db.select({ total: sql<number>`COALESCE(ABS(SUM(${creditLedger.amount})), 0)` })
+      .from(creditLedger)
+      .where(and(
+        eq(creditLedger.type, 'BOOKING_DEBIT'),
+        sql`${creditLedger.createdAt} >= ${firstOfMonth}`,
+      )).then(r => Number(r[0]?.total ?? 0)),
+
+    // Credits granted this month
+    db.select({ total: sql<number>`COALESCE(SUM(${creditLedger.amount}), 0)` })
+      .from(creditLedger)
+      .where(and(
+        eq(creditLedger.type, 'SUBSCRIPTION_GRANT'),
+        sql`${creditLedger.createdAt} >= ${firstOfMonth}`,
+      )).then(r => Number(r[0]?.total ?? 0)),
+
+    // Expired (3 months)
+    db.select({ total: sql<number>`COALESCE(ABS(SUM(${creditLedger.amount})), 0)` })
+      .from(creditLedger)
+      .where(and(
+        eq(creditLedger.type, 'CREDIT_EXPIRY'),
+        sql`${creditLedger.createdAt} >= ${threeMonthsAgo}`,
+      )).then(r => Number(r[0]?.total ?? 0)),
+
+    // Granted (3 months)
+    db.select({ total: sql<number>`COALESCE(SUM(${creditLedger.amount}), 0)` })
+      .from(creditLedger)
+      .where(and(
+        eq(creditLedger.type, 'SUBSCRIPTION_GRANT'),
+        sql`${creditLedger.createdAt} >= ${threeMonthsAgo}`,
+      )).then(r => Number(r[0]?.total ?? 0)),
+
+    // Live rollover credits
+    db.select({ total: sql<number>`COALESCE(SUM(${creditLedger.amount}), 0)` })
+      .from(creditLedger)
+      .where(and(
+        eq(creditLedger.type, 'ROLLOVER_GRANT'),
+        or(isNull(creditLedger.expiresAt), gt(creditLedger.expiresAt, new Date())),
+      )).then(r => Number(r[0]?.total ?? 0)),
+
+    // Active members
+    db.select({ count: sql<number>`COUNT(*)` }).from(users)
+      .where(eq(users.subscriptionStatus, 'active'))
+      .then(r => Number(r[0]?.count ?? 0)),
+
+    // Rounds this month
+    db.select({ count: sql<number>`COUNT(*)` }).from(bookings)
+      .where(and(
+        inArray(bookings.status, ['CONFIRMED', 'BOOKED', 'COMPLETED']),
+        sql`${bookings.createdAt} >= ${firstOfMonth}`,
+      )).then(r => Number(r[0]?.count ?? 0)),
+  ])
+
+  return {
+    avgCreditsUsedPct: grantsThisMonth > 0 ? Math.round((debitsThisMonth / grantsThisMonth) * 100) : 0,
+    breakageRatePct: grantedThreeMonths > 0 ? Math.round((expiredThreeMonths / grantedThreeMonths) * 1000) / 10 : 0,
+    rolloverLive,
+    avgRoundsPerMember: activeMembers > 0 ? Math.round((roundsThisMonth / activeMembers) * 10) / 10 : 0,
+  }
+})
+
+export const getTopCourses = cache(async function getTopCourses(limit = 5) {
+  return db
+    .select({
+      courseId: courses.id,
+      courseName: courses.name,
+      totalBookings: sql<number>`COUNT(${bookings.id})`,
+    })
+    .from(courses)
+    .leftJoin(bookings, and(
+      eq(bookings.courseId, courses.id),
+      inArray(bookings.status, ['CONFIRMED', 'COMPLETED']),
+    ))
+    .where(eq(courses.status, 'active'))
+    .groupBy(courses.id, courses.name)
+    .orderBy(sql`COUNT(${bookings.id}) DESC`)
+    .limit(limit)
+})
