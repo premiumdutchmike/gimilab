@@ -117,129 +117,129 @@ export default function MemberSidebar({ fullName, email, tier, credits, creditRe
       </aside>
 
       <style>{`
-        .member-sidebar {
-          width: 228px;
-          flex-shrink: 0;
-          background: #fff;
-          border-right: 1px solid rgba(12,12,11,0.09);
-          display: flex;
-          flex-direction: column;
-          position: fixed;
-          top: 0;
-          left: 0;
-          height: 100vh;
-          z-index: 100;
-          font-family: 'Inter', sans-serif;
-        }
-        .sidebar-top {
-          padding: 26px 24px 22px;
-          border-bottom: 1px solid rgba(12,12,11,0.09);
-          flex-shrink: 0;
-        }
-        .sidebar-wordmark {
-          font-family: var(--font-nunito), 'Nunito', sans-serif;
-          font-weight: 900;
-          font-size: 26px;
-          letter-spacing: -0.02em;
-          color: #0C0C0B;
-          text-decoration: none;
-          display: block;
-          line-height: 1;
-        }
-        .sidebar-nav {
-          flex: 1;
-          padding: 18px 0;
-          overflow-y: auto;
-        }
-        .sidebar-link {
-          display: flex;
-          align-items: center;
-          gap: 11px;
-          padding: 10px 24px;
-          font-size: 12px;
-          font-weight: 600;
-          letter-spacing: 0.05em;
-          color: #847C72;
-          text-decoration: none;
-          text-transform: uppercase;
-          transition: color 0.15s, background 0.15s;
-          position: relative;
-        }
-        .sidebar-link:hover { color: #0C0C0B; background: #FDFAF6; }
-        .sidebar-link.active { color: #0C0C0B; }
-        .sidebar-link.active::before {
-          content: '';
-          position: absolute;
-          left: 0;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 2px;
-          height: 18px;
-          background: #BF7B2E;
-          border-radius: 0 1px 1px 0;
-        }
-        .sidebar-link-icon {
-          width: 15px;
-          height: 15px;
-          flex-shrink: 0;
-          opacity: 0.5;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .sidebar-link.active .sidebar-link-icon { opacity: 1; }
-        .sidebar-bottom {
-          padding: 18px 24px;
-          border-top: 1px solid rgba(12,12,11,0.09);
-          flex-shrink: 0;
-        }
-        .tier-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          background: rgba(191,123,46,0.10);
-          border: 1px solid rgba(191,123,46,0.22);
-          border-radius: 2px;
-          padding: 4px 9px;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          color: #BF7B2E;
-          text-transform: uppercase;
-          margin-bottom: 12px;
-        }
-        .member-name {
-          font-size: 13px;
-          font-weight: 700;
-          color: #0C0C0B;
-          margin-bottom: 1px;
-        }
-        .member-email {
-          font-size: 11px;
-          color: #847C72;
-          margin-bottom: 12px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .signout-btn {
-          background: none;
-          border: none;
-          cursor: pointer;
-          font-size: 11px;
-          font-weight: 600;
-          letter-spacing: 0.06em;
-          color: #847C72;
-          text-transform: uppercase;
-          font-family: 'Inter', sans-serif;
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          padding: 0;
-          transition: color 0.15s;
-        }
-        .signout-btn:hover { color: #0C0C0B; }
-      `}</style>
+  .member-sidebar {
+    width: 228px;
+    flex-shrink: 0;
+    background: #0C0C0B;
+    border-right: 1px solid rgba(244,238,227,0.07);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 100;
+    font-family: 'Inter', sans-serif;
+  }
+  .sidebar-top {
+    padding: 26px 24px 22px;
+    border-bottom: 1px solid rgba(244,238,227,0.07);
+    flex-shrink: 0;
+  }
+  .sidebar-wordmark {
+    font-family: var(--font-nunito), 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    letter-spacing: -0.02em;
+    color: #F4EEE3;
+    text-decoration: none;
+    display: block;
+    line-height: 1;
+  }
+  .sidebar-nav {
+    flex: 1;
+    padding: 18px 0;
+    overflow-y: auto;
+  }
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 24px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #847C72;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.15s, background 0.15s;
+    position: relative;
+  }
+  .sidebar-link:hover { color: #F4EEE3; background: #1E1D1B; }
+  .sidebar-link.active { color: #F4EEE3; }
+  .sidebar-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 18px;
+    background: #BF7B2E;
+    border-radius: 0 1px 1px 0;
+  }
+  .sidebar-link-icon {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    opacity: 0.5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sidebar-link.active .sidebar-link-icon { opacity: 1; }
+  .sidebar-bottom {
+    padding: 18px 24px;
+    border-top: 1px solid rgba(244,238,227,0.07);
+    flex-shrink: 0;
+  }
+  .tier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(191,123,46,0.10);
+    border: 1px solid rgba(191,123,46,0.22);
+    border-radius: 2px;
+    padding: 4px 9px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #BF7B2E;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .member-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #F4EEE3;
+    margin-bottom: 1px;
+  }
+  .member-email {
+    font-size: 11px;
+    color: #847C72;
+    margin-bottom: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .signout-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: #847C72;
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    transition: color 0.15s;
+  }
+  .signout-btn:hover { color: #F4EEE3; }
+`}</style>
     </>
   )
 }
