@@ -350,9 +350,9 @@ export const getMemberBookings = cache(async function getMemberBookings(userId: 
 
 export const getAdminDashboardStats = cache(async function getAdminDashboardStats() {
   const now = new Date()
-  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-  const firstOfPriorMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-  const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1)
+  const firstOfMonthISO = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+  const firstOfPriorMonthISO = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()
+  const threeMonthsAgoISO = new Date(now.getFullYear(), now.getMonth() - 3, 1).toISOString()
 
   const [
     tierCounts,
@@ -376,15 +376,15 @@ export const getAdminDashboardStats = cache(async function getAdminDashboardStat
     db.select({ count: sql<number>`COUNT(*)` }).from(bookings)
       .where(and(
         inArray(bookings.status, ['CONFIRMED', 'BOOKED', 'COMPLETED']),
-        sql`${bookings.createdAt} >= ${firstOfMonth}`,
+        sql`${bookings.createdAt} >= ${firstOfMonthISO}`,
       )).then(r => Number(r[0]?.count ?? 0)),
 
     // Rounds prior month
     db.select({ count: sql<number>`COUNT(*)` }).from(bookings)
       .where(and(
         inArray(bookings.status, ['CONFIRMED', 'BOOKED', 'COMPLETED']),
-        sql`${bookings.createdAt} >= ${firstOfPriorMonth}`,
-        sql`${bookings.createdAt} < ${firstOfMonth}`,
+        sql`${bookings.createdAt} >= ${firstOfPriorMonthISO}`,
+        sql`${bookings.createdAt} < ${firstOfMonthISO}`,
       )).then(r => Number(r[0]?.count ?? 0)),
 
     // Expired credits (3 months)
@@ -392,7 +392,7 @@ export const getAdminDashboardStats = cache(async function getAdminDashboardStat
       .from(creditLedger)
       .where(and(
         eq(creditLedger.type, 'CREDIT_EXPIRY'),
-        sql`${creditLedger.createdAt} >= ${threeMonthsAgo}`,
+        sql`${creditLedger.createdAt} >= ${threeMonthsAgoISO}`,
       )).then(r => Number(r[0]?.total ?? 0)),
 
     // Granted credits (3 months)
@@ -400,7 +400,7 @@ export const getAdminDashboardStats = cache(async function getAdminDashboardStat
       .from(creditLedger)
       .where(and(
         eq(creditLedger.type, 'SUBSCRIPTION_GRANT'),
-        sql`${creditLedger.createdAt} >= ${threeMonthsAgo}`,
+        sql`${creditLedger.createdAt} >= ${threeMonthsAgoISO}`,
       )).then(r => Number(r[0]?.total ?? 0)),
 
     // Active courses
@@ -415,7 +415,7 @@ export const getAdminDashboardStats = cache(async function getAdminDashboardStat
 
     // New members this month
     db.select({ count: sql<number>`COUNT(*)` }).from(users)
-      .where(sql`${users.createdAt} >= ${firstOfMonth}`)
+      .where(sql`${users.createdAt} >= ${firstOfMonthISO}`)
       .then(r => Number(r[0]?.count ?? 0)),
   ])
 
@@ -481,8 +481,8 @@ export const getRecentBookingsActivity = cache(async function getRecentBookingsA
 
 export const getCreditHealthStats = cache(async function getCreditHealthStats() {
   const now = new Date()
-  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-  const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1)
+  const firstOfMonthISO = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+  const threeMonthsAgoISO = new Date(now.getFullYear(), now.getMonth() - 3, 1).toISOString()
 
   const [debitsThisMonth, grantsThisMonth, expiredThreeMonths, grantedThreeMonths, rolloverLive, activeMembers, roundsThisMonth] = await Promise.all([
     // Credits debited this month
@@ -490,7 +490,7 @@ export const getCreditHealthStats = cache(async function getCreditHealthStats() 
       .from(creditLedger)
       .where(and(
         eq(creditLedger.type, 'BOOKING_DEBIT'),
-        sql`${creditLedger.createdAt} >= ${firstOfMonth}`,
+        sql`${creditLedger.createdAt} >= ${firstOfMonthISO}`,
       )).then(r => Number(r[0]?.total ?? 0)),
 
     // Credits granted this month
@@ -498,7 +498,7 @@ export const getCreditHealthStats = cache(async function getCreditHealthStats() 
       .from(creditLedger)
       .where(and(
         eq(creditLedger.type, 'SUBSCRIPTION_GRANT'),
-        sql`${creditLedger.createdAt} >= ${firstOfMonth}`,
+        sql`${creditLedger.createdAt} >= ${firstOfMonthISO}`,
       )).then(r => Number(r[0]?.total ?? 0)),
 
     // Expired (3 months)
@@ -506,7 +506,7 @@ export const getCreditHealthStats = cache(async function getCreditHealthStats() 
       .from(creditLedger)
       .where(and(
         eq(creditLedger.type, 'CREDIT_EXPIRY'),
-        sql`${creditLedger.createdAt} >= ${threeMonthsAgo}`,
+        sql`${creditLedger.createdAt} >= ${threeMonthsAgoISO}`,
       )).then(r => Number(r[0]?.total ?? 0)),
 
     // Granted (3 months)
@@ -514,7 +514,7 @@ export const getCreditHealthStats = cache(async function getCreditHealthStats() 
       .from(creditLedger)
       .where(and(
         eq(creditLedger.type, 'SUBSCRIPTION_GRANT'),
-        sql`${creditLedger.createdAt} >= ${threeMonthsAgo}`,
+        sql`${creditLedger.createdAt} >= ${threeMonthsAgoISO}`,
       )).then(r => Number(r[0]?.total ?? 0)),
 
     // Live rollover credits
@@ -534,7 +534,7 @@ export const getCreditHealthStats = cache(async function getCreditHealthStats() 
     db.select({ count: sql<number>`COUNT(*)` }).from(bookings)
       .where(and(
         inArray(bookings.status, ['CONFIRMED', 'BOOKED', 'COMPLETED']),
-        sql`${bookings.createdAt} >= ${firstOfMonth}`,
+        sql`${bookings.createdAt} >= ${firstOfMonthISO}`,
       )).then(r => Number(r[0]?.count ?? 0)),
   ])
 
