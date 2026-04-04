@@ -221,23 +221,23 @@ export default async function DashboardPage() {
       <style>{`
         /* ── Hero ── */
         .lab-hero {
-          padding: 100px 48px 64px;
+          padding: 80px 48px 56px;
         }
         .lab-date {
           font-size: 11px;
-          font-weight: 600;
-          letter-spacing: 0.14em;
+          font-weight: 500;
+          letter-spacing: 0.08em;
           text-transform: uppercase;
           color: #847C72;
-          margin-bottom: 16px;
+          margin-bottom: 14px;
           font-family: 'Inter', sans-serif;
         }
         .lab-greeting {
-          font-family: var(--font-nunito), 'Nunito', sans-serif;
-          font-weight: 900;
-          font-size: 56px;
-          letter-spacing: -0.03em;
-          color: #F4EEE3;
+          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, sans-serif;
+          font-weight: 800;
+          font-size: 52px;
+          letter-spacing: -0.045em;
+          color: #0C0C0B;
           line-height: 1;
           margin: 0;
         }
@@ -246,25 +246,25 @@ export default async function DashboardPage() {
         .lab-stats {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          padding: 0 48px 72px;
+          padding: 0 48px 80px;
         }
         .lab-stat-label {
           font-size: 10px;
-          font-weight: 600;
-          letter-spacing: 0.12em;
+          font-weight: 500;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
           color: #847C72;
-          margin-bottom: 12px;
+          margin-bottom: 10px;
           font-family: 'Inter', sans-serif;
         }
         .lab-stat-value {
-          font-family: var(--font-nunito), 'Nunito', sans-serif;
-          font-weight: 900;
-          font-size: 72px;
-          letter-spacing: -0.04em;
-          color: #F4EEE3;
-          line-height: 1;
-          margin-bottom: 8px;
+          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, sans-serif;
+          font-weight: 800;
+          font-size: 80px;
+          letter-spacing: -0.05em;
+          color: #0C0C0B;
+          line-height: 0.9;
+          margin-bottom: 10px;
         }
         .lab-stat-value.lab-amber { color: #BF7B2E; }
         .lab-stat-sub {
@@ -277,22 +277,22 @@ export default async function DashboardPage() {
         /* ── Lower section ── */
         .lab-lower {
           display: grid;
-          grid-template-columns: 1fr 320px;
-          gap: 48px;
+          grid-template-columns: 1fr 300px;
+          gap: 56px;
           padding: 0 48px 64px;
-          border-top: 1px solid rgba(244,238,227,0.06);
-          padding-top: 48px;
+          border-top: 1px solid rgba(12,12,11,0.06);
+          padding-top: 40px;
         }
         .lab-section-hd {
           display: flex;
           align-items: baseline;
           justify-content: space-between;
-          margin-bottom: 20px;
+          margin-bottom: 16px;
         }
         .lab-section-title {
           font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 0.12em;
+          font-weight: 600;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
           color: #847C72;
           font-family: 'Inter', sans-serif;
@@ -312,8 +312,8 @@ export default async function DashboardPage() {
           display: flex;
           align-items: baseline;
           gap: 16px;
-          padding: 10px 0;
-          border-bottom: 1px solid rgba(244,238,227,0.04);
+          padding: 9px 0;
+          border-bottom: 1px solid rgba(12,12,11,0.05);
         }
         .lab-activity-row:last-child { border-bottom: none; }
         .lab-activity-main {
@@ -325,7 +325,7 @@ export default async function DashboardPage() {
         .lab-activity-title {
           font-size: 13px;
           font-weight: 600;
-          color: #F4EEE3;
+          color: #0C0C0B;
           font-family: 'Inter', sans-serif;
         }
         .lab-activity-sub {
@@ -358,24 +358,24 @@ export default async function DashboardPage() {
         /* ── Search ── */
         .lab-ai-badge {
           font-size: 9px;
-          font-weight: 700;
+          font-weight: 600;
           letter-spacing: 0.06em;
           color: #BF7B2E;
           font-family: 'Inter', sans-serif;
         }
         .lab-search-input {
           width: 100%;
-          background: rgba(244,238,227,0.04);
-          border: 1px solid rgba(244,238,227,0.06);
+          background: rgba(12,12,11,0.03);
+          border: 1px solid rgba(12,12,11,0.08);
           border-radius: 2px;
           padding: 12px 14px;
           font-family: 'Inter', sans-serif;
           font-size: 13px;
-          color: #F4EEE3;
+          color: #0C0C0B;
           outline: none;
         }
         .lab-search-input::placeholder { color: #847C72; }
-        .lab-search-input:focus { border-color: rgba(191,123,46,0.3); }
+        .lab-search-input:focus { border-color: rgba(191,123,46,0.4); }
         .lab-search-hints {
           display: flex;
           flex-wrap: wrap;
@@ -390,8 +390,8 @@ export default async function DashboardPage() {
           cursor: pointer;
           transition: color 0.15s;
         }
-        .lab-hint-chip:hover { color: #F4EEE3; }
-        .lab-hint-chip::after { content: ' ·'; color: rgba(132,124,114,0.4); }
+        .lab-hint-chip:hover { color: #0C0C0B; }
+        .lab-hint-chip::after { content: ' ·'; color: rgba(12,12,11,0.2); }
         .lab-hint-chip:last-child::after { content: ''; }
 
         /* ── Responsive ── */
@@ -400,18 +400,18 @@ export default async function DashboardPage() {
           .lab-lower-right { max-width: 400px; }
         }
         @media (max-width: 900px) {
-          .lab-hero { padding: 64px 32px 48px; }
+          .lab-hero { padding: 56px 32px 40px; }
           .lab-greeting { font-size: 42px; }
           .lab-stats { grid-template-columns: repeat(2, 1fr); gap: 40px 0; padding: 0 32px 56px; }
-          .lab-stat-value { font-size: 56px; }
-          .lab-lower { padding: 40px 32px 48px; }
+          .lab-stat-value { font-size: 60px; }
+          .lab-lower { padding: 32px 32px 48px; }
         }
         @media (max-width: 640px) {
-          .lab-hero { padding: 48px 24px 32px; }
+          .lab-hero { padding: 40px 24px 28px; }
           .lab-greeting { font-size: 36px; }
           .lab-stats { grid-template-columns: repeat(2, 1fr); gap: 32px 0; padding: 0 24px 40px; }
           .lab-stat-value { font-size: 48px; }
-          .lab-lower { padding: 32px 24px 40px; gap: 32px; }
+          .lab-lower { padding: 24px 24px 40px; gap: 32px; }
           .lab-activity-main { flex-direction: column; gap: 2px; }
         }
       `}</style>
