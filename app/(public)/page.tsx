@@ -6,6 +6,7 @@ import { courses } from '@/lib/db/schema'
 import CarouselArrows from '@/components/carousel-arrows'
 import PuttAnimations from '@/components/putt-animations'
 import HeroScrollEffect from '@/components/hero-scroll-effect'
+import AnimatedButton from '@/components/animated-button'
 
 export const metadata = {
   title: 'gimmelab — One membership. Every course.',
@@ -15,11 +16,12 @@ export const metadata = {
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  let topCourses: { id: string; name: string; address: string; holes: number | null; baseCreditCost: number; photos: string[] | null }[] = []
+  let topCourses: { id: string; slug: string; name: string; address: string; holes: number | null; baseCreditCost: number; photos: string[] | null }[] = []
   try {
     topCourses = await db
       .select({
         id: courses.id,
+        slug: courses.slug,
         name: courses.name,
         address: courses.address,
         holes: courses.holes,
@@ -33,23 +35,28 @@ export default async function HomePage() {
     // DB unavailable at build time — homepage renders with fallback content
   }
 
-  // Fallback imagery for course cards when no DB courses exist
-  const fallbackCourses = [
-    { id: '1', name: 'Pebble Creek Municipal', meta: '18 holes · Par 72 · 85 credits', tag: 'Open today', img: '/imagery/course-1.jpeg' },
-    { id: '2', name: 'Ridgeline Public Golf', meta: '18 holes · Par 70 · 95 credits', tag: 'Featured', img: '/imagery/course-2.png' },
-    { id: '3', name: 'Sundown Valley Links', meta: '9/18 holes · Par 35 · 45 credits', tag: '9-hole option', img: '/imagery/course-3.jpeg' },
-    { id: '4', name: 'Westchase Golf Club', meta: '18 holes · Par 72 · 90 credits', tag: 'New', img: '/imagery/course-4.png' },
-    { id: '5', name: 'Bayou Oaks at City Park', meta: '18 holes · Par 72 · 75 credits', tag: 'Popular', img: '/imagery/course-5.png' },
-    { id: '6', name: 'Palm Harbor Golf Club', meta: '18 holes · Par 71 · 110 credits', tag: 'Top rated', img: '/imagery/course-6.jpeg' },
+  // Fallback when DB is unavailable
+  const fallbackCourses: Array<{
+    id: string; slug: string; name: string; address: string; holes: number; credits: number; img: string; featured: boolean;
+  }> = [
+    { id: '1', slug: 'walnut-lane-golf-club', name: 'Walnut Lane Golf Club', address: 'Philadelphia, PA', holes: 18, credits: 36, img: '/imagery/course-1.jpeg', featured: false },
+    { id: '2', slug: 'cobbs-creek-golf-course', name: 'Cobbs Creek Golf Course', address: 'W. Philadelphia, PA', holes: 18, credits: 45, img: '/imagery/course-2.png', featured: true },
+    { id: '3', slug: 'torresdale-frankford-cc', name: 'Torresdale-Frankford CC', address: 'NE Philadelphia, PA', holes: 18, credits: 55, img: '/imagery/course-3.jpeg', featured: false },
+    { id: '4', slug: 'westchase-golf-club', name: 'Westchase Golf Club', address: 'Tampa Bay, FL', holes: 18, credits: 90, img: '/imagery/course-4.png', featured: false },
+    { id: '5', slug: 'bayou-oaks', name: 'Bayou Oaks at City Park', address: 'New Orleans, LA', holes: 18, credits: 75, img: '/imagery/course-5.png', featured: false },
+    { id: '6', slug: 'palm-harbor-golf-club', name: 'Palm Harbor Golf Club', address: 'Palm Harbor, FL', holes: 18, credits: 110, img: '/imagery/course-6.jpeg', featured: false },
   ]
 
   const displayCourses = topCourses.length > 0
     ? topCourses.map((c, i) => ({
         id: c.id,
+        slug: c.slug,
         name: c.name,
-        meta: `${c.holes} holes · ${c.baseCreditCost} credits`,
-        tag: i === 1 ? 'Featured' : 'Open today',
-        img: (c.photos as string[])?.[0] ?? fallbackCourses[i]?.img ?? fallbackCourses[0].img,
+        address: c.address,
+        holes: c.holes ?? 18,
+        credits: c.baseCreditCost,
+        img: (c.photos as string[])?.[0] ?? fallbackCourses[i % fallbackCourses.length].img,
+        featured: i === 1,
       }))
     : fallbackCourses
 
@@ -75,8 +82,8 @@ export default async function HomePage() {
           </h1>
           <p className="hero-body">Book any course with monthly credits. No phone calls, no rate anxiety, no blackout dates.</p>
           <div className="hero-actions">
-            <Link href="/signup" className="btn-primary">Get started →</Link>
-            <Link href="/pricing" className="btn-outline">See plans</Link>
+            <AnimatedButton href="/signup" variant="primary">Get started</AnimatedButton>
+            <AnimatedButton href="/pricing" variant="ghost">See plans</AnimatedButton>
           </div>
         </div>
 
@@ -137,28 +144,43 @@ export default async function HomePage() {
       </section>
 
       {/* ── COURSES ── */}
-      <section className="courses-section" id="courses">
-        <div className="courses-header">
-          <div>
-            <div className="label" style={{ color: 'var(--amber)', marginBottom: 8 }}>Courses near you</div>
-            <h2 className="hl">Book your next round.</h2>
-          </div>
-          <div className="courses-header-right">
+      <section className="courses" id="courses">
+        <div className="courses-head">
+          <h2>Book your<br />next round.</h2>
+          <div className="courses-head-right">
             <CarouselArrows selector=".courses-carousel" />
-            <Link href="/courses" className="link-amber">See all courses →</Link>
+            <Link href="/courses" className="see-all">See all courses →</Link>
           </div>
         </div>
         <div className="courses-carousel-wrap">
-          <div className="courses-carousel">
+          <div className="courses-carousel c-grid">
             {displayCourses.map((course) => (
-              <Link key={course.id} href="/courses" className="course-card" data-card style={{ textDecoration: 'none' }}>
-                <img src={course.img} alt={course.name} />
-                <div className="course-card-grad" />
-                <div className="course-card-tag">{course.tag}</div>
-                <div className="course-card-body">
-                  <h3 className="hl course-card-title">{course.name}</h3>
-                  <div className="course-card-meta">{course.meta}</div>
-                  <div className="course-card-cta">Book tee time →</div>
+              <Link
+                key={course.id}
+                href={`/courses/${course.slug}`}
+                className={`c-card${course.featured ? ' featured' : ''}`}
+                data-card
+              >
+                <div className="c-thumb-wrap">
+                  <img className="c-thumb" src={course.img} alt={course.name} />
+                  <div className={`c-tag${course.featured ? ' featured-tag' : ''}`}>
+                    {course.featured ? 'Featured' : 'Open today'}
+                  </div>
+                </div>
+                <div className="c-body">
+                  <div className="c-name">{course.name}</div>
+                  <div className="c-meta">{course.holes} Holes · {course.address}</div>
+                  <div className="c-divider" />
+                  <div className="c-bottom-row">
+                    <div className="c-credits-block">
+                      <div className="c-credits-label">Credits</div>
+                      <div className={`c-credits-num${course.featured ? ' featured-num' : ''}`}>{course.credits}</div>
+                    </div>
+                    <div className="c-right-col">
+                      <div className="c-status"><span className="c-status-dot" />Live</div>
+                      <span className="c-cta">Book tee time →</span>
+                    </div>
+                  </div>
                 </div>
               </Link>
             ))}
@@ -828,74 +850,200 @@ export default async function HomePage() {
         .how-title { font-size: 22px; color: var(--linen); margin-bottom: 12px; }
         .how-body { font-size: 14px; line-height: 1.7; color: var(--stone); }
 
-        /* ── COURSES ── */
-        .courses-section { background: var(--off-white); padding: 72px 48px; overflow: hidden; }
-        .courses-header {
+        /* ── COURSES (redesign) ── */
+        .courses { background: #EDE8DF; padding: 96px 48px; overflow: hidden; }
+        .courses-head {
           display: flex; align-items: flex-end; justify-content: space-between;
-          margin-bottom: 36px; gap: 16px; flex-wrap: wrap;
+          margin-bottom: 48px; gap: 16px; flex-wrap: wrap;
         }
-        .courses-header .hl { font-size: clamp(26px, 3vw, 38px); color: var(--midnight); }
-        .courses-header-right { display: flex; align-items: center; gap: 20px; }
+        .courses-head h2 {
+          font-size: clamp(38px, 5vw, 60px);
+          font-weight: 700;
+          letter-spacing: -0.04em;
+          line-height: 0.95;
+          color: #131110;
+          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+        }
+        .courses-head-right { display: flex; align-items: center; gap: 20px; }
+        .see-all {
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 10px;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #4A4540;
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding-bottom: 14px;
+          border-bottom: 1px solid transparent;
+          transition: color 0.18s, border-color 0.18s;
+        }
+        .see-all:hover { color: #131110; border-color: #4A4540; }
+
         .carousel-arrows { display: flex; gap: 8px; }
         .carousel-arrow {
           width: 40px; height: 40px; border-radius: 50%;
-          border: 1.5px solid var(--smoke); background: #fff;
+          border: 1.5px solid #DDD7CC; background: transparent;
           display: flex; align-items: center; justify-content: center;
-          font-size: 16px; color: var(--midnight); cursor: pointer;
+          font-size: 16px; color: #131110; cursor: pointer;
           transition: all 0.15s; font-family: inherit;
         }
-        .carousel-arrow:hover { border-color: var(--midnight); background: var(--midnight); color: #fff; }
-        .link-amber {
-          font-size: 11px; font-weight: 700;
-          letter-spacing: 0.12em; text-transform: uppercase;
-          color: var(--amber); transition: opacity 0.15s;
-          font-family: 'Inter', sans-serif;
-        }
-        .link-amber:hover { opacity: 0.7; }
+        .carousel-arrow:hover { border-color: #131110; background: #131110; color: #EDE8DF; }
+
         .courses-carousel-wrap { position: relative; }
-        .courses-carousel {
-          display: flex; gap: 16px;
-          overflow-x: auto; scroll-snap-type: x mandatory;
+        .courses-carousel.c-grid {
+          display: flex; gap: 20px;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
           scroll-behavior: smooth;
           -webkit-overflow-scrolling: touch;
           scrollbar-width: none;
           padding-bottom: 4px;
         }
-        .courses-carousel::-webkit-scrollbar { display: none; }
-        .course-card {
-          position: relative; height: 380px; overflow: hidden; cursor: pointer;
-          flex: 0 0 calc((100% - 32px) / 3);
+        .courses-carousel.c-grid::-webkit-scrollbar { display: none; }
+
+        .c-card {
+          background: #F4F0EA;
+          border-radius: 14px;
+          overflow: hidden;
+          border: 1px solid #DDD7CC;
+          display: flex;
+          flex-direction: column;
+          transition: box-shadow 0.22s, transform 0.22s;
+          position: relative;
+          text-decoration: none;
+          flex: 0 0 calc((100% - 40px) / 3);
           scroll-snap-align: start;
-          border-radius: 8px;
+          min-width: 300px;
         }
-        .course-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; display: block; }
-        .course-card:hover img { transform: scale(1.03); }
-        .course-card-grad {
-          position: absolute; inset: 0;
-          background: linear-gradient(to top, rgba(12,12,11,0.88) 0%, transparent 55%);
-          border-radius: 8px;
+        .c-card:hover {
+          box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+          transform: translateY(-3px);
         }
-        .course-card-tag {
-          position: absolute; top: 18px; left: 18px;
-          background: var(--amber); padding: 4px 10px;
-          font-size: 9px; font-weight: 700;
-          letter-spacing: 0.16em; text-transform: uppercase;
-          color: var(--off-white); font-family: 'Inter', sans-serif;
-          border-radius: 2px;
+        .c-card.featured {
+          border-color: #C4893A;
+          box-shadow: 0 4px 24px rgba(196,137,58,0.15);
         }
-        .course-card-body { position: absolute; bottom: 0; left: 0; right: 0; padding: 24px; }
-        .course-card-title { font-size: 20px; color: var(--linen); margin-bottom: 4px; }
-        .course-card-meta {
-          font-size: 11px; font-weight: 500;
-          letter-spacing: 0.1em; text-transform: uppercase; color: var(--stone);
-          font-family: 'Inter', sans-serif;
+        .c-thumb-wrap {
+          position: relative;
+          height: 200px;
+          overflow: hidden;
+          flex-shrink: 0;
         }
-        .course-card-cta {
-          display: inline-block; margin-top: 12px;
-          font-size: 10px; font-weight: 700;
-          letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber);
-          font-family: 'Inter', sans-serif;
+        .c-thumb {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center 30%;
+          display: block;
+          transition: transform 0.4s ease;
         }
+        .c-card:hover .c-thumb { transform: scale(1.04); }
+        .c-tag {
+          position: absolute;
+          top: 14px;
+          left: 14px;
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 9px;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          padding: 5px 10px;
+          border-radius: 4px;
+          background: rgba(20,18,14,0.72);
+          color: #fff;
+          backdrop-filter: blur(6px);
+        }
+        .c-tag.featured-tag {
+          background: #C4893A;
+          color: #fff;
+        }
+        .c-body {
+          padding: 22px 22px 0;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+        .c-name {
+          font-size: 18px;
+          font-weight: 700;
+          letter-spacing: -0.025em;
+          color: #131110;
+          margin-bottom: 6px;
+          line-height: 1.1;
+          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+        }
+        .c-meta {
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 9px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #8A847C;
+          margin-bottom: 18px;
+        }
+        .c-divider {
+          height: 1px;
+          background: #DDD7CC;
+          margin-bottom: 18px;
+        }
+        .c-bottom-row {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          padding-bottom: 22px;
+        }
+        .c-credits-label {
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 9px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: #8A847C;
+          margin-bottom: 2px;
+        }
+        .c-credits-num {
+          font-size: 38px;
+          font-weight: 700;
+          letter-spacing: -0.05em;
+          color: #131110;
+          line-height: 1;
+          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+        }
+        .c-credits-num.featured-num { color: #C4893A; }
+        .c-right-col {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 10px;
+        }
+        .c-status {
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 9px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #1FC76A;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+        .c-status-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #1FC76A;
+          animation: bc-pulse 2s infinite;
+          flex-shrink: 0;
+        }
+        .c-cta {
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 9px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: #C4893A;
+          border-bottom: 1px solid #C4893A;
+          padding-bottom: 2px;
+          transition: color 0.18s, border-color 0.18s;
+        }
+        .c-card:hover .c-cta { color: #C84B2A; border-color: #C84B2A; }
 
         /* ── COMPARISON ── */
         .comparison-section { background: var(--off-white); padding: 0 48px 80px; }
@@ -1229,8 +1377,8 @@ export default async function HomePage() {
           .hero-pills { justify-content: flex-start; }
           .how-grid { grid-template-columns: 1fr; }
           .how-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
-          .courses-section, .comparison-section, .pricing-section, .voice-section, footer { padding-left: 28px; padding-right: 28px; }
-          .course-card { flex: 0 0 calc((100% - 16px) / 2); }
+          .courses, .comparison-section, .pricing-section, .voice-section, footer { padding-left: 28px; padding-right: 28px; }
+          .c-card { flex: 0 0 calc((100% - 20px) / 2); }
           .pricing-grid { grid-template-columns: 1fr; }
           .pricing-tier { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
           .editorial { grid-template-columns: 1fr 1fr; }
@@ -1251,7 +1399,7 @@ export default async function HomePage() {
           .booking-card { padding: 24px; }
           .comparison-table { grid-template-columns: 1fr; }
           .comp-col { border-right: none; border-bottom: 1px solid var(--smoke); }
-          .course-card { flex: 0 0 calc(100% - 16px); }
+          .c-card { flex: 0 0 calc(100% - 8px); min-width: 260px; }
           .editorial { grid-template-columns: 1fr; }
           .editorial-item:nth-child(3) { display: block; }
           .footer-top { grid-template-columns: 1fr; }
