@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db'
 import { teeTimeSlots, courses } from '@/lib/db/schema'
-import { and, eq, lt, gte } from 'drizzle-orm'
+import { and, eq, lt, gte, inArray, asc, or, gt } from 'drizzle-orm'
 import { createClient } from '@/lib/supabase/server'
 
 export type CourseSlot = {
@@ -122,5 +122,76 @@ export async function getSlotsByDate(
     return { data: Array.from(map.values()) }
   } catch {
     return { error: 'Failed to load tee times.' }
+  }
+}
+
+// ─── Quick-book next slots — batch query for /courses listing ────────────────
+// Returns the next N available slots for each of the given course ids,
+// starting from NOW (today at the current time, or any future day). Used by
+// the courses browser so every card can show an inline "next tee time" chip
+// without N+1 queries.
+
+export interface NextSlot {
+  id: string
+  date: string       // YYYY-MM-DD
+  startTime: string  // HH:MM:SS
+  creditCost: number
+}
+
+export async function getNextSlotsForCourses(
+  courseIds: string[],
+  limit = 3,
+): Promise<Record<string, NextSlot[]>> {
+  if (courseIds.length === 0) return {}
+
+  try {
+    const now = new Date()
+    const todayStr = now.toISOString().split('T')[0]
+    const nowTimeStr = now.toTimeString().split(' ')[0] // HH:MM:SS
+
+    // Fetch ~50 rows per course on average — we filter down in JS to keep
+    // the query simple (Drizzle does not have a clean per-group LIMIT N).
+    // On realistic inventory (50 courses × ~14 days × handful of slots) this
+    // is still a small number of rows.
+    const rows = await db
+      .select({
+        courseId: teeTimeSlots.courseId,
+        id: teeTimeSlots.id,
+        date: teeTimeSlots.date,
+        startTime: teeTimeSlots.startTime,
+        creditCost: teeTimeSlots.creditCost,
+      })
+      .from(teeTimeSlots)
+      .where(
+        and(
+          inArray(teeTimeSlots.courseId, courseIds),
+          eq(teeTimeSlots.status, 'AVAILABLE'),
+          // Future slots only: either a later date, or today with later time
+          or(
+            gt(teeTimeSlots.date, todayStr),
+            and(eq(teeTimeSlots.date, todayStr), gte(teeTimeSlots.startTime, nowTimeStr)),
+          ),
+        ),
+      )
+      .orderBy(asc(teeTimeSlots.date), asc(teeTimeSlots.startTime))
+
+    const result: Record<string, NextSlot[]> = {}
+    for (const courseId of courseIds) result[courseId] = []
+
+    for (const r of rows) {
+      const bucket = result[r.courseId]
+      if (!bucket || bucket.length >= limit) continue
+      bucket.push({
+        id: r.id,
+        date: r.date,
+        startTime: r.startTime,
+        creditCost: r.creditCost,
+      })
+    }
+
+    return result
+  } catch {
+    // Silent fallback — cards still render, just without the inline chips
+    return {}
   }
 }

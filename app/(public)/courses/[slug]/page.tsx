@@ -192,6 +192,42 @@ export default async function CourseDetailPage({
             {course.name} is part of the Gimmelab member network — available for booking with your monthly credits, with no green fees or booking fees ever. One of the finest courses in our network, offering a premier golf experience for members at every tier.
           </p>
 
+          {/* How Gimmelab works at this course */}
+          <div className="cd-host-eyebrow">The Experience</div>
+          <div className="cd-host-heading">How Gimmelab works at {course.name}.</div>
+          <div className="cd-host-grid">
+            <div className="cd-host-card">
+              <svg className="cd-host-icon" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2.5" y="3.5" width="15" height="11" rx="1.5"/>
+                <path d="M2.5 7h15"/>
+                <path d="M7 17h6"/>
+              </svg>
+              <div className="cd-host-num">01</div>
+              <div className="cd-host-title">Browse & book in under a minute.</div>
+              <div className="cd-host-body">Real-time availability right here on this page. Use monthly credits — no green fees, no booking fees, no phone calls. Need to bring friends? Add them when you book, one credit pool covers the whole foursome.</div>
+            </div>
+            <div className="cd-host-card">
+              <svg className="cd-host-icon" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2.5" y="2.5" width="6" height="6" rx="0.5"/>
+                <rect x="11.5" y="2.5" width="6" height="6" rx="0.5"/>
+                <rect x="2.5" y="11.5" width="6" height="6" rx="0.5"/>
+                <path d="M11.5 11.5h2.5v2.5M17.5 11.5v2.5M11.5 17.5h2.5M15.5 15.5h2v2"/>
+              </svg>
+              <div className="cd-host-num">02</div>
+              <div className="cd-host-title">Show your QR at the pro shop.</div>
+              <div className="cd-host-body">On your tee time, walk into the pro shop and show the QR code from your confirmation. No card swipe, no payment back-and-forth. Scan and play.</div>
+            </div>
+            <div className="cd-host-card">
+              <svg className="cd-host-icon" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 17V3"/>
+                <path d="M5 3h10l-2.5 3L15 9H5"/>
+              </svg>
+              <div className="cd-host-num">03</div>
+              <div className="cd-host-title">Tee off. Come back whenever.</div>
+              <div className="cd-host-body">Credits roll over on Core and Heavy plans, so a rainout doesn&apos;t mean you lose the round. Rate the course after your round to unlock better recommendations across the network.</div>
+            </div>
+          </div>
+
           {/* Photo strip */}
           {course.photos.length > 0 && (
             <>
@@ -356,6 +392,15 @@ export default async function CourseDetailPage({
         .cd-section-title { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #847C72; text-transform: uppercase; margin-bottom: 14px; font-family: 'Inter', sans-serif; }
         .cd-about-text { font-size: 14px; color: #1E1D1B; line-height: 1.75; margin-bottom: 32px; font-family: 'Inter', sans-serif; }
 
+        .cd-host-eyebrow { font-family: var(--font-space-mono), 'Space Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.22em; color: #C4893A; text-transform: uppercase; margin-bottom: 10px; }
+        .cd-host-heading { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #847C72; text-transform: uppercase; margin-bottom: 14px; font-family: 'Inter', sans-serif; }
+        .cd-host-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 32px; }
+        .cd-host-card { background: #F4F0EA; border: 1px solid #DDD7CC; border-radius: 14px; padding: 28px 28px; display: flex; flex-direction: column; }
+        .cd-host-icon { color: #C4893A; opacity: 0.85; margin-bottom: 14px; }
+        .cd-host-num { font-family: var(--font-space-grotesk), 'Inter', sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -0.03em; color: #C4893A; line-height: 1; }
+        .cd-host-title { font-size: 18px; font-weight: 700; color: #0C0C0B; letter-spacing: -0.02em; margin-top: 12px; margin-bottom: 8px; font-family: 'Inter', sans-serif; }
+        .cd-host-body { font-size: 13px; line-height: 1.6; color: #847C72; font-family: 'Inter', sans-serif; }
+
         .cd-photo-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 32px; }
         .cd-photo-item { height: 160px; overflow: hidden; border-radius: 2px; background: #E5DDD3; position: relative; }
         .cd-photo-img { object-fit: cover; transition: transform 0.3s; }
@@ -411,6 +456,7 @@ export default async function CourseDetailPage({
           .cd-body-wrap { padding: 24px 20px 40px; }
           .cd-stats-row { grid-template-columns: repeat(2, 1fr); }
           .cd-photo-strip { grid-template-columns: 1fr 1fr; }
+          .cd-host-grid { grid-template-columns: 1fr; }
           .cd-related { padding: 0 20px 40px; }
           .cd-footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
         }

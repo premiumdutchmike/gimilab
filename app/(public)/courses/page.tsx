@@ -6,6 +6,8 @@ import { getCreditBalance } from '@/lib/credits/ledger'
 import CoursesBrowser from '@/components/courses-browser'
 import { FALLBACK_COURSES, type CourseItem } from './fallback-courses'
 import type { PlanKey } from '@/lib/credits/pricing'
+import { getNextSlotsForCourses } from '@/actions/slots'
+import { getUserFavorites } from '@/actions/favorites'
 
 export const metadata = {
   title: 'Member Courses — gimmelab',
@@ -52,6 +54,18 @@ export default async function PublicCoursesPage() {
       }))
     : FALLBACK_COURSES
 
+  // Batch-fetch next 3 available slots per course + the user's favorites.
+  // Both run in parallel so the listing stays fast.
+  const [nextSlotsByCourse, favoriteIds] = await Promise.all([
+    displayCourses.length > 0
+      ? getNextSlotsForCourses(
+          displayCourses.map((c) => c.id),
+          3,
+        )
+      : Promise.resolve({}),
+    user ? getUserFavorites(user.id) : Promise.resolve(new Set<string>()),
+  ])
+
   const userTier: PlanKey | undefined =
     dbUser?.subscriptionTier && (ALLOWED_TIERS as readonly string[]).includes(dbUser.subscriptionTier)
       ? (dbUser.subscriptionTier as PlanKey)
@@ -64,6 +78,8 @@ export default async function PublicCoursesPage() {
       balance={balance}
       userTier={userTier}
       userHomeZip={dbUser?.homeZip ?? null}
+      nextSlotsByCourse={nextSlotsByCourse}
+      favoriteIds={Array.from(favoriteIds)}
     />
   )
 }

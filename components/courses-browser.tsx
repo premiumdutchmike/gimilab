@@ -7,6 +7,25 @@ import type { CourseItem } from '@/app/(public)/courses/fallback-courses'
 import type { PlanKey } from '@/lib/credits/pricing'
 import CreditDollarHint from '@/components/credit-dollar-hint'
 import { geocodeZip, distanceMiles, type LatLng } from '@/lib/geo/distance'
+import type { NextSlot } from '@/actions/slots'
+import FavoriteButton from '@/components/favorite-button'
+
+function formatSlotTime(t: string): string {
+  const [h, m] = t.split(':').map(Number)
+  const ampm = h < 12 ? 'am' : 'pm'
+  const hour = h === 0 ? 12 : h > 12 ? h - 12 : h
+  return `${hour}:${m.toString().padStart(2, '0')}${ampm}`
+}
+
+function formatSlotDate(ymd: string): string {
+  const d = new Date(`${ymd}T00:00:00`)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const diffDays = Math.floor((d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+  if (diffDays === 0) return 'Today'
+  if (diffDays === 1) return 'Tmrw'
+  return d.toLocaleDateString('en-US', { weekday: 'short' })
+}
 
 type SortKey = 'featured' | 'credit-asc' | 'name-asc' | 'distance-asc'
 type RadiusFilter = 'all' | 10 | 25 | 50
@@ -24,13 +43,18 @@ export default function CoursesBrowser({
   balance,
   userTier,
   userHomeZip,
+  nextSlotsByCourse = {},
+  favoriteIds = [],
 }: {
   courses: CourseItem[]
   isLoggedIn: boolean
   balance?: number
   userTier?: PlanKey
   userHomeZip?: string | null
+  nextSlotsByCourse?: Record<string, NextSlot[]>
+  favoriteIds?: string[]
 }) {
+  const favoriteSet = useMemo(() => new Set(favoriteIds), [favoriteIds])
   const displayTier: PlanKey = userTier ?? 'core'
 
   const [search, setSearch] = useState('')
@@ -40,6 +64,14 @@ export default function CoursesBrowser({
   const [isResolving, setIsResolving] = useState(false)
   const [radius, setRadius] = useState<RadiusFilter>('all')
   const [sort, setSort] = useState<SortKey>('featured')
+  const [favoritesOnly, setFavoritesOnly] = useState(false)
+  // Live copy of the favorite set — updated optimistically when the user
+  // toggles a heart so the "favorites only" filter reflects changes without
+  // requiring a page refresh.
+  const [liveFavorites, setLiveFavorites] = useState<Set<string>>(favoriteSet)
+  useEffect(() => {
+    setLiveFavorites(favoriteSet)
+  }, [favoriteSet])
 
   // Auto-resolve the pre-filled zip on mount (if the user is logged in and
   // has a homeZip saved on their profile).
@@ -103,6 +135,10 @@ export default function CoursesBrowser({
       list = list.filter((c) => c.distance != null && c.distance <= radius)
     }
 
+    if (favoritesOnly) {
+      list = list.filter((c) => liveFavorites.has(c.id))
+    }
+
     if (sort === 'credit-asc') list.sort((a, b) => a.baseCreditCost - b.baseCreditCost)
     else if (sort === 'name-asc') list.sort((a, b) => a.name.localeCompare(b.name))
     else if (sort === 'distance-asc' && resolvedOrigin) {
@@ -114,7 +150,7 @@ export default function CoursesBrowser({
     }
 
     return list
-  }, [courses, search, radius, sort, resolvedOrigin, balance])
+  }, [courses, search, radius, sort, resolvedOrigin, balance, favoritesOnly, liveFavorites])
 
   const affordableCount = useMemo(
     () => (balance == null ? null : filtered.filter((c) => c.affordable).length),
@@ -194,6 +230,19 @@ export default function CoursesBrowser({
             )
           })}
         </div>
+        {isLoggedIn && (
+          <button
+            type="button"
+            className={`cb-favs-toggle${favoritesOnly ? ' active' : ''}`}
+            onClick={() => setFavoritesOnly((v) => !v)}
+            title={favoritesOnly ? 'Show all courses' : 'Show only favorites'}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill={favoritesOnly ? '#C4893A' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+            Favorites
+          </button>
+        )}
         <select
           className="cb-sort"
           value={sort}
@@ -225,65 +274,100 @@ export default function CoursesBrowser({
             const isFeatured = i === 1 && sort === 'featured'
             const showPriceSignal = balance != null
             const notAffordable = showPriceSignal && !course.affordable
-            // Card always goes to the course detail page — from there the
-            // member can browse the tee-time calendar or hit "Book Now" to
-            // jump into /book. Logged-out users land on the detail page too
-            // (it's public) and get the "Sign in to Book" CTA there.
             const href = `/courses/${course.slug}`
+            const nextSlots = nextSlotsByCourse[course.id] ?? []
+            const isFav = liveFavorites.has(course.id)
 
             return (
-              <Link
+              <div
                 key={course.id}
-                href={href}
                 className={`c-card${isFeatured ? ' featured' : ''}${notAffordable ? ' muted' : ''}`}
               >
-                <div className="c-thumb-wrap">
-                  {course.photos[0] ? (
-                    <Image
-                      src={course.photos[0]}
-                      alt={course.name}
-                      fill
-                      className="c-thumb"
-                      sizes="(max-width: 700px) 100vw, (max-width: 1080px) 50vw, 33vw"
-                    />
-                  ) : (
-                    <div className="c-thumb-placeholder" />
-                  )}
-                  <div className={`c-tag${isFeatured ? ' featured-tag' : ''}`}>
-                    {isFeatured
-                      ? 'Featured'
-                      : notAffordable
-                      ? 'Not enough credits'
-                      : 'Open today'}
-                  </div>
-                  {course.distance != null && (
-                    <div className="c-distance">{course.distance.toFixed(1)} mi</div>
-                  )}
-                </div>
-                <div className="c-body">
-                  <div className="c-name">{course.name}</div>
-                  <div className="c-meta">
-                    {course.holes} Holes · {course.address}
-                  </div>
-                  <div className="c-divider" />
-                  <div className="c-bottom-row">
-                    <div className="c-credits-block">
-                      <div className="c-credits-label">Credits</div>
-                      <div className={`c-credits-num${isFeatured ? ' featured-num' : ''}`}>
-                        {course.baseCreditCost}
-                      </div>
-                      <CreditDollarHint credits={course.baseCreditCost} plan={displayTier} />
+                {isLoggedIn && (
+                  <FavoriteButton
+                    courseId={course.id}
+                    initialFavorited={isFav}
+                    onToggle={(nowFavorited) => {
+                      setLiveFavorites((prev) => {
+                        const next = new Set(prev)
+                        if (nowFavorited) next.add(course.id)
+                        else next.delete(course.id)
+                        return next
+                      })
+                    }}
+                  />
+                )}
+                <Link href={href} className="c-card-link">
+                  <div className="c-thumb-wrap">
+                    {course.photos[0] ? (
+                      <Image
+                        src={course.photos[0]}
+                        alt={course.name}
+                        fill
+                        className="c-thumb"
+                        sizes="(max-width: 700px) 100vw, (max-width: 1080px) 50vw, 33vw"
+                      />
+                    ) : (
+                      <div className="c-thumb-placeholder" />
+                    )}
+                    <div className={`c-tag${isFeatured ? ' featured-tag' : ''}`}>
+                      {isFeatured
+                        ? 'Featured'
+                        : notAffordable
+                        ? 'Not enough credits'
+                        : 'Open today'}
                     </div>
-                    <div className="c-right-col">
-                      <div className={`c-status${notAffordable ? ' locked' : ''}`}>
-                        <span className="c-status-dot" />
-                        {notAffordable ? 'Locked' : 'Live'}
+                    {course.distance != null && (
+                      <div className="c-distance">{course.distance.toFixed(1)} mi</div>
+                    )}
+                  </div>
+                  <div className="c-body">
+                    <div className="c-name">{course.name}</div>
+                    <div className="c-meta">
+                      {course.holes} Holes · {course.address}
+                    </div>
+                    <div className="c-divider" />
+                    <div className="c-bottom-row">
+                      <div className="c-credits-block">
+                        <div className="c-credits-label">Credits</div>
+                        <div className={`c-credits-num${isFeatured ? ' featured-num' : ''}`}>
+                          {course.baseCreditCost}
+                        </div>
+                        <CreditDollarHint credits={course.baseCreditCost} plan={displayTier} />
                       </div>
-                      <span className="c-cta">View course →</span>
+                      <div className="c-right-col">
+                        <div className={`c-status${notAffordable ? ' locked' : ''}`}>
+                          <span className="c-status-dot" />
+                          {notAffordable ? 'Locked' : 'Live'}
+                        </div>
+                        <span className="c-cta">View course →</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+                {/* Quick-book chip row — escapes the <Link> so each chip
+                    navigates to its own slot. Only renders if we have live
+                    slot data and the course is affordable (or balance is
+                    unknown). */}
+                {nextSlots.length > 0 && !notAffordable && (
+                  <div className="c-quick-row">
+                    <div className="c-quick-label">Next tee times</div>
+                    <div className="c-quick-chips">
+                      {nextSlots.map((s) => {
+                        const chipHref = isLoggedIn
+                          ? `/book?course=${course.id}&date=${s.date}&slot=${s.id}`
+                          : `/login?redirectTo=${encodeURIComponent(`/book?course=${course.id}&date=${s.date}&slot=${s.id}`)}`
+                        return (
+                          <Link key={s.id} href={chipHref} className="c-quick-chip">
+                            <span className="c-quick-day">{formatSlotDate(s.date)}</span>
+                            <span className="c-quick-time">{formatSlotTime(s.startTime)}</span>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
             )
           })}
         </div>
@@ -560,11 +644,17 @@ export default function CoursesBrowser({
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          text-decoration: none;
           transition: box-shadow 0.22s, transform 0.22s, opacity 0.22s;
           position: relative;
           color: var(--ink);
           font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+        }
+        .c-card-link {
+          display: flex;
+          flex-direction: column;
+          text-decoration: none;
+          color: inherit;
+          flex: 1;
         }
         .c-card:hover {
           box-shadow: 0 16px 48px rgba(0,0,0,0.12);
@@ -709,6 +799,85 @@ export default function CoursesBrowser({
           text-align: right;
         }
         .c-card:hover .c-cta { color: var(--accent); border-color: var(--accent); }
+
+        /* Quick-book chip row */
+        .c-quick-row {
+          border-top: 1px solid var(--cream-mid);
+          padding: 14px 22px 18px;
+          background: rgba(255,255,255,0.5);
+        }
+        .c-quick-label {
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 9px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--ink-soft);
+          margin-bottom: 10px;
+        }
+        .c-quick-chips {
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
+        }
+        .c-quick-chip {
+          display: inline-flex;
+          align-items: baseline;
+          gap: 6px;
+          padding: 8px 12px;
+          border-radius: 8px;
+          background: #fff;
+          border: 1px solid var(--cream-mid);
+          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          text-decoration: none;
+          color: var(--ink);
+          transition: border-color 0.15s, transform 0.12s, background 0.15s;
+        }
+        .c-quick-chip:hover {
+          border-color: var(--gold);
+          background: #fff;
+          transform: translateY(-1px);
+        }
+        .c-quick-day {
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 9px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--ink-soft);
+        }
+        .c-quick-time {
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--ink);
+          letter-spacing: -0.02em;
+        }
+
+        /* Favorites-only toggle in filters row */
+        .cb-favs-toggle {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: var(--cream-card);
+          border: 1px solid var(--cream-mid);
+          color: var(--ink-mid);
+          border-radius: 10px;
+          padding: 11px 14px;
+          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+        .cb-favs-toggle:hover:not(.active) {
+          border-color: var(--gold);
+          color: var(--ink);
+        }
+        .cb-favs-toggle.active {
+          background: #fff;
+          border-color: var(--gold);
+          color: var(--gold);
+        }
 
         /* Join banner */
         .cb-join-banner {

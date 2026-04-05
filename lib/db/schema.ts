@@ -10,6 +10,7 @@ import {
   timestamp,
   jsonb,
   check,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core'
 import { relations, sql } from 'drizzle-orm'
 
@@ -195,6 +196,27 @@ export const ratings = pgTable('ratings', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
+// ─── User Favorite Courses ───────────────────────────────────────────────────
+export const userFavoriteCourses = pgTable(
+  'user_favorite_courses',
+  {
+    id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+    userId: uuid('user_id')
+      .references(() => users.id, { onDelete: 'cascade' })
+      .notNull(),
+    courseId: uuid('course_id')
+      .references(() => courses.id, { onDelete: 'cascade' })
+      .notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    userCourseUnique: uniqueIndex('user_favorite_courses_user_id_course_id_key').on(
+      table.userId,
+      table.courseId,
+    ),
+  }),
+)
+
 // ─── Verification Queue ──────────────────────────────────────────────────────
 export const verificationQueue = pgTable('verification_queue', {
   id:        uuid('id').primaryKey().default(sql`gen_random_uuid()`),
@@ -262,6 +284,11 @@ export const ratingsRelations = relations(ratings, ({ one }) => ({
 
 export const verificationQueueRelations = relations(verificationQueue, ({ one }) => ({
   course: one(courses, { fields: [verificationQueue.courseId], references: [courses.id] }),
+}))
+
+export const userFavoriteCoursesRelations = relations(userFavoriteCourses, ({ one }) => ({
+  user: one(users, { fields: [userFavoriteCourses.userId], references: [users.id] }),
+  course: one(courses, { fields: [userFavoriteCourses.courseId], references: [courses.id] }),
 }))
 
 // ─── TypeScript Types ─────────────────────────────────────────────────────────

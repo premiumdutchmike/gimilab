@@ -18,11 +18,13 @@
 
 ---
 
-## Deferred — later sessions
+## Shipped 2026-04-04 (round 2)
 
-- [ ] **#4 — Quick-book from `/courses`** without opening the detail page (inline tee-time list on each card). Power-user feature, wait for usage data.
-- [ ] **#6 — Favorite / saved courses**. Requires new `user_favorite_courses(userId, courseId, createdAt)` table. Good candidate for v2 after we see which members book at the same courses repeatedly.
-- [ ] **#7 — "Host experience" content** on course detail pages — QR checkout walkthrough, pro shop greeting photo, etc. Marketing/content gap, not engineering.
+- [x] **#4 — Quick-book chip row** on every `/courses` card. Batch query `getNextSlotsForCourses(courseIds, limit=3)` in `actions/slots.ts` fetches the next 3 available slots per course in a single round trip. Each chip links straight to `/book?course=<id>&date=<ymd>&slot=<slotId>` (or wraps that in a login redirect for logged-out users).
+- [x] **#6 — Favorites**. New `user_favorite_courses` table (`(userId, courseId)` unique index, cascade deletes). New `actions/favorites.ts` with `toggleFavorite()` + `getUserFavorites()`. New `components/favorite-button.tsx` — optimistic toggle heart in the top-right of each card, `onToggle` callback keeps the shared favorites set in sync. "Favorites" filter button in the toolbar shows only favorited courses.
+- [x] **#7 — Host experience section** on course detail pages. 3-step editorial strip between "About this course" and the tee-times calendar: Browse & book → Show your QR → Tee off. Course-specific heading ("How Gimmelab works at {course.name}.").
+
+All 10 gaps from the original audit are now shipped. No further deferred work.
 
 ---
 
