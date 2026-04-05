@@ -161,6 +161,17 @@ export default function VsTeeTimeGolfPassPage() {
           </div>
         </section>
 
+        {/* ── EDITORIAL BREAK — photo + aside ── */}
+        <section className="vs-break" aria-hidden="true">
+          <div className="vs-break-overlay" />
+          <div className="vs-break-inner">
+            <div className="vs-break-label">A small aside</div>
+            <blockquote className="vs-break-quote">
+              The pass model isn&apos;t wrong. It&apos;s just finished growing.
+            </blockquote>
+          </div>
+        </section>
+
         {/* ── COMPARISON TABLE ── */}
         <section className="vs-section">
           <div className="vs-section-head">
@@ -372,8 +383,19 @@ export default function VsTeeTimeGolfPassPage() {
           position: absolute;
           inset: 0;
           background:
+            /* cream wash on top of the photo — keeps text dominant */
+            linear-gradient(
+              100deg,
+              rgba(253,250,246,0.97) 0%,
+              rgba(253,250,246,0.94) 40%,
+              rgba(253,250,246,0.82) 70%,
+              rgba(253,250,246,0.70) 100%
+            ),
+            /* atmospheric accent glows */
             radial-gradient(ellipse 80% 60% at 70% 50%, rgba(191,123,46,0.08) 0%, transparent 60%),
             radial-gradient(ellipse 50% 80% at 20% 30%, rgba(232,64,42,0.05) 0%, transparent 50%),
+            /* the editorial photograph beneath everything */
+            url('/imagery/vs-teetimegolfpass/hero.jpeg') right center / cover no-repeat,
             var(--vs-off-white);
         }
         .vs-hero-grid {
@@ -803,14 +825,81 @@ export default function VsTeeTimeGolfPassPage() {
 
         /* ── CTA ── */
         .vs-cta {
+          position: relative;
           background: var(--vs-midnight);
           color: var(--vs-linen);
           padding: clamp(80px, 10vw, 140px) clamp(24px, 8vw, 120px);
           text-align: center;
+          overflow: hidden;
+        }
+        .vs-cta::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: url('/imagery/vs-teetimegolfpass/sunset-foursome.jpeg') center center / cover no-repeat;
+          z-index: 0;
+        }
+        .vs-cta::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            180deg,
+            rgba(12,12,11,0.58) 0%,
+            rgba(12,12,11,0.82) 100%
+          );
+          z-index: 1;
         }
         .vs-cta-inner {
+          position: relative;
+          z-index: 2;
           max-width: 720px;
           margin: 0 auto;
+        }
+
+        /* ── EDITORIAL BREAK (between Ceiling and Comparison) ── */
+        .vs-break {
+          position: relative;
+          min-height: 420px;
+          padding: clamp(72px, 9vw, 120px) clamp(24px, 8vw, 120px);
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: url('/imagery/vs-teetimegolfpass/walking.jpeg') center center / cover no-repeat;
+        }
+        .vs-break-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            180deg,
+            rgba(12,12,11,0.55) 0%,
+            rgba(12,12,11,0.78) 100%
+          );
+          z-index: 1;
+        }
+        .vs-break-inner {
+          position: relative;
+          z-index: 2;
+          max-width: 820px;
+          text-align: center;
+        }
+        .vs-break-label {
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: var(--vs-amber);
+          margin-bottom: 24px;
+        }
+        .vs-break-quote {
+          font-family: var(--font-space-grotesk), sans-serif;
+          font-size: clamp(26px, 3.6vw, 46px);
+          font-weight: 700;
+          line-height: 1.2;
+          letter-spacing: -0.025em;
+          color: var(--vs-linen);
+          margin: 0;
         }
         .vs-cta-hl {
           font-size: clamp(40px, 6vw, 72px);
