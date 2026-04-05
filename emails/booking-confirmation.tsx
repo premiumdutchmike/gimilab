@@ -12,6 +12,7 @@ interface BookingConfirmationProps {
   players: number
   creditCost: number
   qrCode: string
+  guests?: Array<{ firstName: string; lastName: string; email: string }>
 }
 
 export default function BookingConfirmation({
@@ -23,6 +24,7 @@ export default function BookingConfirmation({
   players,
   creditCost,
   qrCode,
+  guests = [],
 }: BookingConfirmationProps) {
   return (
     <Html>
@@ -66,6 +68,26 @@ export default function BookingConfirmation({
               </Column>
             </Row>
           </Section>
+
+          {guests.length > 0 && (
+            <>
+              <Hr style={divider} />
+              <Section style={{ padding: '16px 24px' }}>
+                <Text style={detailLabel}>Your group</Text>
+                <Text style={{ ...detailValue, fontSize: 14, marginBottom: 4 }}>
+                  {memberName} <span style={{ color: 'rgba(0,0,0,0.35)', fontWeight: 400 }}>(you)</span>
+                </Text>
+                {guests.map((g, i) => (
+                  <Text key={i} style={{ ...detailValue, fontSize: 14, marginBottom: 4 }}>
+                    {g.firstName} {g.lastName}{' '}
+                    <span style={{ color: 'rgba(0,0,0,0.35)', fontWeight: 400, fontSize: 12 }}>
+                      · {g.email}
+                    </span>
+                  </Text>
+                ))}
+              </Section>
+            </>
+          )}
 
           <Hr style={divider} />
 

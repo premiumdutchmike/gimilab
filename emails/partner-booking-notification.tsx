@@ -13,11 +13,13 @@ interface PartnerBookingNotificationProps {
   creditCost: number
   partnerEarnings: string
   totalBookingsToday: number
+  guests?: Array<{ firstName: string; lastName: string }>
 }
 
 export default function PartnerBookingNotification({
   partnerName, memberName, courseName, date, time,
   players, creditCost, partnerEarnings, totalBookingsToday,
+  guests = [],
 }: PartnerBookingNotificationProps) {
   const firstName = partnerName?.split(' ')[0] || 'there'
 
@@ -68,6 +70,27 @@ export default function PartnerBookingNotification({
                 <span style={{ ...detailValue, color: '#2E6B38', fontWeight: 700 }}>{partnerEarnings}</span>
               </Text>
             </Section>
+
+            {guests.length > 0 && (
+              <Section style={{ marginTop: 16 }}>
+                <Text style={sectionTitle}>Tee sheet</Text>
+                <Section style={detailBox}>
+                  <Text style={detailRow}>
+                    <span style={detailLabel}>1.</span>
+                    <span style={detailValue}>{memberName} (host)</span>
+                  </Text>
+                  {guests.map((g, i) => (
+                    <Text
+                      key={i}
+                      style={i === guests.length - 1 ? { ...detailRow, borderBottom: 'none', paddingBottom: 0 } : detailRow}
+                    >
+                      <span style={detailLabel}>{i + 2}.</span>
+                      <span style={detailValue}>{g.firstName} {g.lastName}</span>
+                    </Text>
+                  ))}
+                </Section>
+              </Section>
+            )}
           </Section>
 
           {totalBookingsToday > 1 && (

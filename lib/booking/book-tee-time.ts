@@ -1,22 +1,34 @@
 import { db } from '@/lib/db'
-import { bookings, teeTimeSlots, creditLedger, courses } from '@/lib/db/schema'
-import { eq, sql } from 'drizzle-orm'
+import { bookings, bookingGuests, teeTimeSlots, creditLedger, courses, users } from '@/lib/db/schema'
+import { eq, sql, inArray } from 'drizzle-orm'
 import { debitCredits } from '@/lib/credits/ledger'
 import { CREDIT_VALUE_CENTS } from '@/lib/stripe/client'
 import { randomUUID } from 'crypto'
 import type { Booking } from '@/lib/db/schema'
 
-export interface BookingResult {
-  booking: Booking
+export interface GuestInput {
+  firstName: string
+  lastName: string
+  email: string
 }
 
-// Atomic booking — credit debit + slot status update in a single transaction.
-// Uses SELECT FOR UPDATE to prevent race conditions on concurrent bookings.
+export interface BookingResult {
+  booking: Booking
+  guestIds: string[]
+}
+
+// Atomic booking — credit debit + slot status update + guest inserts in a
+// single transaction. Uses SELECT FOR UPDATE to prevent race conditions.
+//
+// The booking owner (userId) is always player 1. `guests` contains additional
+// players 2-4. Party size = 1 + guests.length, and credit cost is multiplied
+// accordingly.
 export async function bookTeeTime(
   userId: string,
   slotId: string,
-  players = 1
+  guests: GuestInput[] = []
 ): Promise<BookingResult> {
+  const players = 1 + guests.length
   if (players < 1 || players > 4) throw new Error('INVALID_PLAYERS')
 
   return db.transaction(async (tx) => {
@@ -68,13 +80,35 @@ export async function bookTeeTime(
       })
       .returning()
 
-    // 5. Mark slot as booked
+    // 6. Insert guests (if any) — silent attribution match against users.email
+    const guestIds: string[] = []
+    if (guests.length > 0) {
+      const normalizedEmails = guests.map((g) => g.email.trim().toLowerCase())
+      const existingUsers = await tx
+        .select({ id: users.id, email: users.email })
+        .from(users)
+        .where(inArray(users.email, normalizedEmails))
+      const emailToUserId = new Map(existingUsers.map((u) => [u.email.toLowerCase(), u.id]))
+
+      const guestRows = guests.map((g) => ({
+        bookingId: booking.id,
+        firstName: g.firstName.trim(),
+        lastName: g.lastName.trim(),
+        email: g.email.trim().toLowerCase(),
+        matchedUserId: emailToUserId.get(g.email.trim().toLowerCase()) ?? null,
+      }))
+
+      const inserted = await tx.insert(bookingGuests).values(guestRows).returning({ id: bookingGuests.id })
+      guestIds.push(...inserted.map((r) => r.id))
+    }
+
+    // 7. Mark slot as booked
     await tx
       .update(teeTimeSlots)
       .set({ status: 'BOOKED', bookingId: booking.id, updatedAt: new Date() })
       .where(eq(teeTimeSlots.id, slotId))
 
-    return { booking }
+    return { booking, guestIds }
   })
 }
 

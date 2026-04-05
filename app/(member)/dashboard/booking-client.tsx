@@ -26,6 +26,13 @@ function formatDateLabel(dateStr: string): string {
   })
 }
 
+type Guest = { firstName: string; lastName: string; email: string }
+const emptyGuest = (): Guest => ({ firstName: '', lastName: '', email: '' })
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+function isGuestValid(g: Guest): boolean {
+  return g.firstName.trim().length > 0 && g.lastName.trim().length > 0 && EMAIL_RE.test(g.email.trim())
+}
+
 export function BookingClient({ courseOptions, balance }: BookingClientProps) {
   const router = useRouter()
 
@@ -34,6 +41,21 @@ export function BookingClient({ courseOptions, balance }: BookingClientProps) {
   const [courseFilter, setCourseFilter] = useState('')
   const [timeFilter, setTimeFilter] = useState('any')
   const [players, setPlayers] = useState(1)
+  const [guests, setGuests] = useState<Guest[]>([])
+
+  // Keep guest array length = players - 1 whenever the stepper changes
+  function handlePlayersChange(n: number) {
+    setPlayers(n)
+    setGuests((prev) => {
+      const needed = n - 1
+      if (prev.length === needed) return prev
+      if (prev.length < needed) return [...prev, ...Array.from({ length: needed - prev.length }, emptyGuest)]
+      return prev.slice(0, needed)
+    })
+  }
+  function updateGuest(idx: number, patch: Partial<Guest>) {
+    setGuests((prev) => prev.map((g, i) => (i === idx ? { ...g, ...patch } : g)))
+  }
 
   // Results
   const [results, setResults] = useState<CourseWithSlots[] | null>(null)
@@ -83,8 +105,19 @@ export function BookingClient({ courseOptions, balance }: BookingClientProps) {
 
   function handleConfirm() {
     if (!picked) return
+    // Guard: all guest fields must be valid before we hit the server
+    if (players > 1 && guests.some((g) => !isGuestValid(g))) {
+      setBookingError('Fill in every guest — first name, last name, email.')
+      return
+    }
     startBooking(async () => {
-      const res = await confirmBooking(picked.slotId, players)
+      // Send only trimmed guest data
+      const normalized = guests.map((g) => ({
+        firstName: g.firstName.trim(),
+        lastName: g.lastName.trim(),
+        email: g.email.trim(),
+      }))
+      const res = await confirmBooking(picked.slotId, normalized)
       if (res.error) {
         setBookingError(res.error)
       } else {
@@ -94,11 +127,15 @@ export function BookingClient({ courseOptions, balance }: BookingClientProps) {
           date: date ? formatDateLabel(date) : '',
         })
         setPicked(null)
+        setGuests([])
+        setPlayers(1)
       }
     })
   }
 
   const totalCredits = picked ? picked.creditCost * players : 0
+  const guestsFilled = players === 1 || guests.every(isGuestValid)
+  const canConfirm = !!picked && guestsFilled && !isBooking
 
   return (
     <>
@@ -201,7 +238,7 @@ export function BookingClient({ courseOptions, balance }: BookingClientProps) {
                 <select
                   className="bk-select"
                   value={players}
-                  onChange={e => setPlayers(Number(e.target.value))}
+                  onChange={e => handlePlayersChange(Number(e.target.value))}
                 >
                   {[1, 2, 3, 4].map(n => <option key={n} value={n}>{n}</option>)}
                 </select>
@@ -371,6 +408,62 @@ export function BookingClient({ courseOptions, balance }: BookingClientProps) {
         )}
       </div>
 
+      {/* ── Guest details form (shown above confirm bar when picked + players > 1) ── */}
+      {picked && players > 1 && (
+        <div style={{
+          position: 'fixed', bottom: 72, left: 228, right: 0,
+          background: '#fff', borderTop: '1px solid rgba(12,12,11,0.09)',
+          padding: '18px 36px 14px',
+          zIndex: 89,
+          maxHeight: '45vh', overflowY: 'auto',
+        }}>
+          <div style={{
+            fontSize: 10, fontWeight: 700, letterSpacing: '0.12em',
+            textTransform: 'uppercase', color: '#847C72', marginBottom: 12,
+          }}>
+            Guest details — {players - 1} {players - 1 === 1 ? 'guest' : 'guests'} · each plays on your credits
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {guests.map((g, i) => (
+              <div key={i} style={{
+                display: 'grid',
+                gridTemplateColumns: '80px 1fr 1fr 1.4fr',
+                gap: 10, alignItems: 'center',
+              }}>
+                <div style={{
+                  fontSize: 11, fontWeight: 700, color: '#0C0C0B',
+                  letterSpacing: '0.04em', textTransform: 'uppercase',
+                }}>
+                  Player {i + 2}
+                </div>
+                <input
+                  className="bk-input"
+                  placeholder="First name"
+                  value={g.firstName}
+                  onChange={(e) => updateGuest(i, { firstName: e.target.value })}
+                  style={{ padding: '10px 12px', fontSize: 13 }}
+                />
+                <input
+                  className="bk-input"
+                  placeholder="Last name"
+                  value={g.lastName}
+                  onChange={(e) => updateGuest(i, { lastName: e.target.value })}
+                  style={{ padding: '10px 12px', fontSize: 13 }}
+                />
+                <input
+                  className="bk-input"
+                  placeholder="email@example.com"
+                  type="email"
+                  value={g.email}
+                  onChange={(e) => updateGuest(i, { email: e.target.value })}
+                  style={{ padding: '10px 12px', fontSize: 13 }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ── Confirm bar ── */}
       <div style={{
         position: 'fixed', bottom: 0, left: 228, right: 0,
@@ -411,14 +504,16 @@ export function BookingClient({ courseOptions, balance }: BookingClientProps) {
           </button>
           <button
             onClick={handleConfirm}
-            disabled={isBooking}
+            disabled={!canConfirm}
+            title={players > 1 && !guestsFilled ? 'Fill in every guest first' : undefined}
             style={{
               background: '#BF7B2E', border: 'none', borderRadius: 2,
               padding: '13px 28px',
               fontFamily: 'inherit', fontSize: 13, fontWeight: 700,
               letterSpacing: '0.08em', textTransform: 'uppercase',
-              color: '#0C0C0B', cursor: isBooking ? 'default' : 'pointer',
-              opacity: isBooking ? 0.7 : 1,
+              color: '#0C0C0B',
+              cursor: canConfirm ? 'pointer' : 'not-allowed',
+              opacity: canConfirm ? 1 : 0.5,
               transition: 'background 0.15s',
             }}
           >

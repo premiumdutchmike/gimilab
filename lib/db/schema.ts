@@ -152,6 +152,23 @@ export const bookings = pgTable('bookings', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
+// ─── Booking Guests ──────────────────────────────────────────────────────────
+// Additional players on a booking, captured at booking time. The booking owner
+// (bookings.userId) is always player 1 and is NOT represented here — this
+// table only holds players 2–4. Party size = 1 + count(booking_guests).
+export const bookingGuests = pgTable('booking_guests', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  bookingId: uuid('booking_id').references(() => bookings.id, { onDelete: 'cascade' }).notNull(),
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  email: text('email').notNull(),
+  // If this email already belongs to a Gimmelab user, link it for attribution.
+  // Silent — does NOT block the booking.
+  matchedUserId: uuid('matched_user_id').references(() => users.id),
+  welcomeEmailSentAt: timestamp('welcome_email_sent_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+})
+
 // ─── Credit Ledger (immutable — NEVER update rows) ───────────────────────────
 export const creditLedger = pgTable('credit_ledger', {
   id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),

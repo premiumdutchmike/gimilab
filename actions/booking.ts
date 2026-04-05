@@ -2,15 +2,27 @@
 
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { bookTeeTime, cancelBooking } from '@/lib/booking/book-tee-time'
+import { bookTeeTime, cancelBooking, type GuestInput } from '@/lib/booking/book-tee-time'
 import { db } from '@/lib/db'
-import { teeTimeSlots, courses, bookings, partners, users } from '@/lib/db/schema'
-import { eq, and, gte, lt, count } from 'drizzle-orm'
+import { teeTimeSlots, courses, bookings, bookingGuests, partners, users } from '@/lib/db/schema'
+import { eq, and, gte, lt, count, inArray } from 'drizzle-orm'
 import { sendEmail } from '@/lib/email'
 import BookingConfirmation from '@/emails/booking-confirmation'
 import BookingCancellation from '@/emails/booking-cancellation'
 import PartnerBookingNotification from '@/emails/partner-booking-notification'
+import GuestWelcome from '@/emails/guest-welcome'
+
+const guestSchema = z.object({
+  firstName: z.string().trim().min(1, 'First name required').max(60),
+  lastName:  z.string().trim().min(1, 'Last name required').max(60),
+  email:     z.string().trim().toLowerCase().email('Valid email required').max(255),
+})
+const confirmSchema = z.object({
+  slotId: z.string().uuid(),
+  guests: z.array(guestSchema).max(3).default([]),
+})
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('en-US', {
@@ -81,16 +93,35 @@ export async function bookSlot(slotId: string): Promise<{ error: string } | neve
 
 export async function confirmBooking(
   slotId: string,
-  players = 1,
-): Promise<{ error?: string; success?: boolean }> {
+  guestsInput: GuestInput[] = [],
+): Promise<{ error?: string; success?: boolean; fieldErrors?: Record<string, string> }> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) return { error: 'Not authenticated.' }
 
+  // Validate with Zod — this also normalizes emails to lowercase
+  const parsed = confirmSchema.safeParse({ slotId, guests: guestsInput })
+  if (!parsed.success) {
+    const first = parsed.error.issues[0]
+    return { error: first?.message ?? 'Invalid input.' }
+  }
+  const guests = parsed.data.guests
+  const players = 1 + guests.length
+
+  // Reject if any guest email matches the booking member's own email
+  if (user.email && guests.some((g) => g.email === user.email!.toLowerCase())) {
+    return { error: "You're already player 1 — don't add your own email as a guest." }
+  }
+  // Reject duplicate guest emails within the same booking
+  const guestEmails = guests.map((g) => g.email)
+  if (new Set(guestEmails).size !== guestEmails.length) {
+    return { error: 'Each guest needs a unique email address.' }
+  }
+
   let result: Awaited<ReturnType<typeof bookTeeTime>>
   try {
-    result = await bookTeeTime(user.id, slotId, players)
+    result = await bookTeeTime(user.id, slotId, guests)
   } catch (err) {
     const message = err instanceof Error ? err.message : ''
     if (message === 'SLOT_NOT_AVAILABLE') {
@@ -124,6 +155,7 @@ export async function confirmBooking(
         players,
         creditCost: result.booking.creditCost,
         qrCode: result.booking.qrCode ?? result.booking.id.slice(0, 8).toUpperCase(),
+        guests,
       }),
     })
   })
@@ -169,12 +201,59 @@ export async function confirmBooking(
           creditCost: result.booking.creditCost,
           partnerEarnings: `$${earnings}`,
           totalBookingsToday: todayCount?.count ?? 1,
+          guests: guests.map(({ firstName, lastName }) => ({ firstName, lastName })),
         }),
       })
     } catch (err) {
       console.error('[booking] partner notification failed:', err)
     }
   })
+
+  // Send guest welcome emails — one per guest, once per booking
+  if (guests.length > 0 && result.guestIds.length > 0) {
+    getSlotAndCourse(slotId).then(async (slot) => {
+      if (!slot) return
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://gimmelab.com'
+      const signupUrl = `${appUrl}/signup?ref=guest`
+      const sentIds: string[] = []
+
+      await Promise.all(
+        guests.map(async (g, idx) => {
+          const guestRowId = result.guestIds[idx]
+          try {
+            await sendEmail({
+              to: g.email,
+              subject: `${memberName} booked you a round at ${slot.courseName}`,
+              react: GuestWelcome({
+                guestFirstName: g.firstName,
+                hostName: memberName,
+                courseName: slot.courseName,
+                courseAddress: slot.courseAddress ?? '',
+                date: formatDate(slot.date),
+                time: formatTime(slot.startTime),
+                signupUrl,
+              }),
+            })
+            sentIds.push(guestRowId)
+          } catch (err) {
+            console.error('[booking] guest welcome email failed:', g.email, err)
+          }
+        })
+      )
+
+      // Stamp welcomeEmailSentAt so we don't accidentally resend on retry
+      if (sentIds.length > 0) {
+        try {
+          await db
+            .update(bookingGuests)
+            .set({ welcomeEmailSentAt: new Date() })
+            .where(inArray(bookingGuests.id, sentIds))
+        } catch (err) {
+          console.error('[booking] failed to stamp welcomeEmailSentAt:', err)
+        }
+      }
+    })
+  }
 
   return { success: true }
 }
