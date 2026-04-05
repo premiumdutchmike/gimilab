@@ -34,7 +34,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // ── Public routes — no auth needed ──────────────────────────────────────
-  const publicPaths = ['/', '/pricing', '/about', '/partner', '/partners', '/partner/apply', '/signup', '/login', '/welcome', '/vs-golfnow']
+  const publicPaths = ['/', '/pricing', '/about', '/partner', '/partners', '/partner/apply', '/signup', '/login', '/welcome', '/vs-golfnow', '/vs-teetimegolfpass']
   const isPublicPath = publicPaths.some(p => pathname === p)
     || pathname.startsWith('/auth')
     || pathname.startsWith('/welcome')
@@ -43,6 +43,7 @@ export async function proxy(request: NextRequest) {
     || pathname.startsWith('/partners') // public partner marketing page (plural)
     || pathname.startsWith('/partner/apply') // partner apply + signup are public
     || pathname.startsWith('/vs-golfnow') // public GolfNow comparison landing page
+    || pathname.startsWith('/vs-teetimegolfpass') // public TeeTimeGolfPass comparison landing page
 
   // ── Unauthenticated: redirect to login ──────────────────────────────────
   // Special case: if they were trying to hit a partner portal or onboarding
