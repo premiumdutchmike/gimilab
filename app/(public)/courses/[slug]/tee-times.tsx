@@ -44,7 +44,7 @@ export default function TeeTimes({
   const returnUrl = `/courses/${slug}`
   const loginHref = `/login?redirectTo=${encodeURIComponent(returnUrl)}`
   const signupHref = `/signup?redirectTo=${encodeURIComponent(returnUrl)}`
-  const days = useMemo(() => buildDays(7), [])
+  const days = useMemo(() => buildDays(14), [])
   const [activeDay, setActiveDay] = useState(0)
   const [slots, setSlots] = useState<CourseSlot[] | null>(null)
   const [loading, setLoading] = useState(false)
@@ -121,7 +121,12 @@ export default function TeeTimes({
                     Book
                   </Link>
                 ) : (
-                  <Link href={loginHref} className="tt-slot-btn">Sign in to Book</Link>
+                  <Link
+                    href={`/login?redirectTo=${encodeURIComponent(`/book?course=${courseId}&date=${days[activeDay].dateStr}&slot=${slot.id}`)}`}
+                    className="tt-slot-btn"
+                  >
+                    Sign in to Book
+                  </Link>
                 )}
               </div>
             ))}
@@ -162,8 +167,8 @@ export default function TeeTimes({
       </div>
 
       <style>{`
-        .tt-tabs { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; }
-        .tt-tab { background: #FFFFFF; border: 1px solid rgba(12,12,11,0.15); border-radius: 2px; padding: 10px 16px; font-size: 12px; font-weight: 600; color: #847C72; cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; text-align: center; font-family: 'Inter', sans-serif; }
+        .tt-tabs { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; scrollbar-width: thin; -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%); mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%); }
+        .tt-tab { background: #FFFFFF; border: 1px solid rgba(12,12,11,0.15); border-radius: 2px; padding: 10px 12px; font-size: 12px; font-weight: 600; color: #847C72; cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; text-align: center; font-family: 'Inter', sans-serif; }
         .tt-tab:hover { border-color: #BF7B2E; color: #BF7B2E; }
         .tt-tab.active { background: rgba(191,123,46,0.10); border-color: #BF7B2E; color: #BF7B2E; }
         .tt-tab-day { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }

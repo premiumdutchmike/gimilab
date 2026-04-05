@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useTransition, useCallback, useEffect, useRef } from 'react'
+import { useState, useTransition, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { getSlotsByDate, type CourseWithSlots } from '@/actions/slots'
 import { confirmBooking } from '@/actions/booking'
+import CreditDollarHint from '@/components/credit-dollar-hint'
 
 type CourseOption = { id: string; name: string }
 
@@ -196,6 +197,24 @@ export function BookingClient({
   const totalCredits = picked ? picked.creditCost * players : 0
   const guestsFilled = players === 1 || guests.every(isGuestValid)
   const canConfirm = !!picked && guestsFilled && !isBooking
+
+  // Free-cancellation deadline: refunds are full only if > 24h before tee time.
+  const cancellationNotice = useMemo(() => {
+    if (!picked || !date) return null
+    const tee = new Date(`${date}T${picked.startTime}`)
+    if (Number.isNaN(tee.getTime())) return null
+    const deadline = new Date(tee.getTime() - 24 * 60 * 60 * 1000)
+    if (deadline.getTime() <= Date.now()) {
+      return 'Non-refundable after this point'
+    }
+    const label = deadline.toLocaleString('en-US', {
+      weekday: 'short',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    })
+    return `Free cancellation until ${label}`
+  }, [picked, date])
 
   return (
     <>
@@ -546,11 +565,19 @@ export function BookingClient({
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 22, fontWeight: 700, color: '#BF7B2E', letterSpacing: '-0.03em' }}>
-              {totalCredits}
-            </span>
-            <span style={{ fontSize: 11, color: '#847C72' }}>credits</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+            {cancellationNotice && (
+              <div style={{ fontSize: 11, color: '#847C72', letterSpacing: '0.02em' }}>
+                {cancellationNotice}
+              </div>
+            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 22, fontWeight: 700, color: '#BF7B2E', letterSpacing: '-0.03em' }}>
+                {totalCredits}
+              </span>
+              <span style={{ fontSize: 11, color: '#847C72' }}>credits</span>
+            </div>
+            <CreditDollarHint credits={totalCredits} />
           </div>
           <button
             onClick={() => { setPicked(null); setBookingError(null) }}

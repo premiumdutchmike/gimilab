@@ -8,6 +8,8 @@ export type CourseItem = {
   slug: string
   type: string
   tags: string[]
+  lat?: number | null
+  lng?: number | null
 }
 
 export const FALLBACK_COURSES: CourseItem[] = [

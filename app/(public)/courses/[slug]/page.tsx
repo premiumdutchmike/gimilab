@@ -8,6 +8,7 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 import { FALLBACK_COURSES } from '../fallback-courses'
 import TeeTimes from './tee-times'
+import CreditDollarHint from '@/components/credit-dollar-hint'
 
 export async function generateMetadata({
   params,
@@ -131,6 +132,7 @@ export default async function CourseDetailPage({
           </div>
           <div className="cd-hero-cta">
             <div className="cd-hero-credit-note">{creditShort} per round · members only</div>
+            <CreditDollarHint credits={course.baseCreditCost} />
             {isLoggedIn ? (
               <Link href={`/book?course=${course.id}`} className="cd-hero-join-btn">
                 Book Now
@@ -165,6 +167,7 @@ export default async function CourseDetailPage({
                 {course.baseCreditCost}
               </div>
               <div className="cd-stat-sub">per round</div>
+              <CreditDollarHint credits={course.baseCreditCost} />
             </div>
             <div className="cd-stat-box">
               <div className="cd-stat-label">Holes</div>

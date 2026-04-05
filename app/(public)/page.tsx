@@ -8,6 +8,7 @@ import PuttAnimations from '@/components/putt-animations'
 import HeroScrollEffect from '@/components/hero-scroll-effect'
 import AnimatedButton from '@/components/animated-button'
 import SavingsCalculator from '@/components/savings-calculator'
+import CreditDollarHint from '@/components/credit-dollar-hint'
 
 export const metadata = {
   title: 'gimmelab — One membership. Every course.',
@@ -105,6 +106,7 @@ export default async function HomePage() {
               <div>
                 <div className="bc-cost-label">Cost</div>
                 <div className="bc-credits">85<span className="bc-credits-unit">credits</span></div>
+                <CreditDollarHint credits={85} />
               </div>
               <Link href="/signup" className="bc-book-btn">Book tee time →</Link>
             </div>
