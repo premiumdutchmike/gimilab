@@ -5,6 +5,7 @@ import { courses, teeTimeBlocks, teeTimeSlots } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
+import { setPartnerLive } from './set-live'
 
 const schema = z.object({
   courseId:  z.string().uuid(),
@@ -80,9 +81,16 @@ export async function createInitialSlots(_prev: unknown, formData: FormData) {
     await db.insert(teeTimeSlots).values(slotsToInsert.slice(i, i + 500))
   }
 
+  // Wizard's last real step is done — mark the partner live and fire the
+  // go-live email. Idempotent, so a rerun on retry is safe.
+  await setPartnerLive()
+
   redirect('/partner/onboarding/live')
 }
 
 export async function skipSlots() {
+  // A partner who skips slots still finishes onboarding — they just have
+  // zero inventory until they come back to the inventory page.
+  await setPartnerLive()
   redirect('/partner/onboarding/live')
 }

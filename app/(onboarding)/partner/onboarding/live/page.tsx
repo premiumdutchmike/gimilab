@@ -1,59 +1,51 @@
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { db } from '@/lib/db'
 import { partners, courses, teeTimeSlots } from '@/lib/db/schema'
 import { eq, count } from 'drizzle-orm'
-import { setPartnerLive } from '@/actions/partner/set-live'
 import { LiveScreen } from './live-screen'
 
+// This page is the wizard's celebration screen. It is READ-ONLY — the write
+// that flips `partners.onboardingComplete` happens inside
+// `actions/partner/create-slots.ts :: createInitialSlots / skipSlots` which
+// is the real last step. Server Components must be idempotent.
+//
+// We still guard the happy-path prerequisites here so a partner who manually
+// navigates here (without completing the wizard) gets bounced back to the
+// step they need to finish.
 export default async function LivePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/partner/apply/signup')
 
-  let courseName = ''
-  let courseType = ''
-  let holes = 18
-  let location = ''
-  let gimmelabRate = 0
-  let slotCount = 0
-  let stripeConnected = false
+  const partner = await db.query.partners.findFirst({ where: eq(partners.userId, user.id) })
+  if (!partner) redirect('/partner/apply/signup')
 
-  if (user) {
-    const partner = await db.query.partners.findFirst({ where: eq(partners.userId, user.id) })
-    if (partner) {
-      stripeConnected = !!partner.stripeConnectAccountId
+  const course = await db.query.courses.findFirst({ where: eq(courses.partnerId, partner.id) })
+  if (!course) redirect('/partner/onboarding/course')
+  if (!course.gimmelabRateCents) redirect('/partner/onboarding/pricing')
 
-      // Mark live
-      await setPartnerLive()
+  const [slotCountResult] = await db
+    .select({ count: count() })
+    .from(teeTimeSlots)
+    .where(eq(teeTimeSlots.courseId, course.id))
+  const slotCount = slotCountResult?.count ?? 0
 
-      const course = await db.query.courses.findFirst({ where: eq(courses.partnerId, partner.id) })
-      if (course) {
-        courseName = course.name ?? ''
-        holes = course.holes ?? 18
-        gimmelabRate = course.gimmelabRateCents ? Math.round(course.gimmelabRateCents / 100) : 0
-
-        const [addrParts] = (course.address ?? '').split(',').reverse()
-        location = course.address ?? ''
-
-        const [result] = await db.select({ count: count() })
-          .from(teeTimeSlots)
-          .where(eq(teeTimeSlots.courseId, course.id))
-        slotCount = result?.count ?? 0
-      }
-    }
-  }
-
-  const slug = courseName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+  // If onboarding is not marked complete yet, the user shouldn't be here —
+  // they need to actually submit the slots form (or skip) via the wizard
+  // action, which is what flips the flag. Bounce them to the slots step.
+  if (!partner.onboardingComplete) redirect('/partner/onboarding/slots')
 
   return (
     <LiveScreen
-      courseName={courseName}
-      courseType={courseType}
-      holes={holes}
-      location={location}
-      gimmelabRate={gimmelabRate}
+      courseName={course.name ?? ''}
+      courseType=""
+      holes={course.holes ?? 18}
+      location={course.address ?? ''}
+      gimmelabRate={course.gimmelabRateCents ? Math.round(course.gimmelabRateCents / 100) : 0}
       slotCount={slotCount}
-      stripeConnected={stripeConnected}
-      slug={slug}
+      stripeConnected={!!partner.stripeConnectAccountId}
+      slug={course.slug}
     />
   )
 }

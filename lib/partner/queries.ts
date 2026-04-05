@@ -133,6 +133,66 @@ export const getPartnerAnalytics = cache(async function getPartnerAnalytics(part
   return { monthly, totals: totalsRows[0] ?? { bookingCount: 0, totalCredits: 0, revenueCents: 0 } }
 })
 
+export const getPartnerDashboardStats = cache(async function getPartnerDashboardStats(partnerId: string) {
+  const course = await getPartnerCourse(partnerId)
+  if (!course) {
+    return { totalBookings: 0, thisWeekBookingCount: 0, activeSlotCount: 0, revenueCents: 0 }
+  }
+
+  // ISO week: Monday 00:00 → next Monday 00:00 (local time)
+  const now = new Date()
+  const day = now.getDay() // 0 (Sun) .. 6 (Sat)
+  const daysFromMonday = (day + 6) % 7 // Mon=0, Sun=6
+  const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysFromMonday)
+  const nextMonday = new Date(monday)
+  nextMonday.setDate(monday.getDate() + 7)
+
+  const weekStart = monday.toISOString().split('T')[0]
+  const weekEnd = nextMonday.toISOString().split('T')[0]
+  const today = new Date().toISOString().split('T')[0]
+
+  const [totalsRow, thisWeekRow, activeSlotsRow] = await Promise.all([
+    db
+      .select({
+        bookingCount: sql<number>`COUNT(*)`,
+        revenueCents: sql<number>`COALESCE(SUM(${bookings.payoutAmountCents}), 0)`,
+      })
+      .from(bookings)
+      .where(eq(bookings.courseId, course.id)),
+
+    db
+      .select({ cnt: count() })
+      .from(bookings)
+      .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
+      .where(
+        and(
+          eq(teeTimeSlots.courseId, course.id),
+          inArray(bookings.status, ['CONFIRMED', 'COMPLETED']),
+          gte(teeTimeSlots.date, weekStart),
+          lt(teeTimeSlots.date, weekEnd),
+        ),
+      ),
+
+    db
+      .select({ cnt: count() })
+      .from(teeTimeSlots)
+      .where(
+        and(
+          eq(teeTimeSlots.courseId, course.id),
+          eq(teeTimeSlots.status, 'AVAILABLE'),
+          gte(teeTimeSlots.date, today),
+        ),
+      ),
+  ])
+
+  return {
+    totalBookings: Number(totalsRow[0]?.bookingCount ?? 0),
+    thisWeekBookingCount: Number(thisWeekRow[0]?.cnt ?? 0),
+    activeSlotCount: Number(activeSlotsRow[0]?.cnt ?? 0),
+    revenueCents: Number(totalsRow[0]?.revenueCents ?? 0),
+  }
+})
+
 export const getUpcomingSlots = cache(async function getUpcomingSlots(courseId: string, days = 14) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)

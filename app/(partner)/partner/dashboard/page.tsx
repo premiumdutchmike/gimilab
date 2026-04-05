@@ -1,8 +1,13 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { getPartnerByUserId, getPartnerCourse } from '@/lib/partner/queries'
+import { getPartnerByUserId, getPartnerCourse, getPartnerDashboardStats } from '@/lib/partner/queries'
 
 export const metadata = { title: 'Partner Dashboard — Gimmelab' }
+
+function formatCents(cents: number) {
+  return `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
 
 export default async function PartnerDashboardPage() {
   const supabase = await createClient()
@@ -15,11 +20,18 @@ export default async function PartnerDashboardPage() {
   const course = await getPartnerCourse(partner.id)
   if (!course) redirect('/partner/course/new')
 
+  const dashboardStats = await getPartnerDashboardStats(partner.id).catch(() => ({
+    totalBookings: 0,
+    thisWeekBookingCount: 0,
+    activeSlotCount: 0,
+    revenueCents: 0,
+  }))
+
   const stats = [
-    { label: 'Total bookings', value: '0' },
-    { label: 'This week', value: '0' },
-    { label: 'Active slots', value: '0' },
-    { label: 'Revenue', value: '$0' },
+    { label: 'Total bookings', value: String(dashboardStats.totalBookings) },
+    { label: 'This week', value: String(dashboardStats.thisWeekBookingCount) },
+    { label: 'Active slots', value: String(dashboardStats.activeSlotCount) },
+    { label: 'Revenue', value: formatCents(dashboardStats.revenueCents) },
   ]
 
   return (
@@ -43,6 +55,18 @@ export default async function PartnerDashboardPage() {
           </div>
         ))}
       </div>
+
+      {dashboardStats.totalBookings === 0 && (
+        <div className="mt-6 px-5 py-5 border border-white/10 bg-[#0f1923]">
+          <p className="text-sm font-semibold text-white mb-1">No bookings yet.</p>
+          <p className="text-xs text-white/50 leading-relaxed">
+            You'll see activity here as members book your course. Tee times are generated every night from your blocks in{' '}
+            <Link href="/partner/inventory" className="text-sky-400 hover:text-sky-300 underline underline-offset-2">
+              Inventory →
+            </Link>
+          </p>
+        </div>
+      )}
     </div>
   )
 }

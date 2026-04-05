@@ -34,20 +34,31 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // ── Public routes — no auth needed ──────────────────────────────────────
-  const publicPaths = ['/', '/pricing', '/about', '/partner', '/partner/apply', '/signup', '/login', '/welcome']
+  const publicPaths = ['/', '/pricing', '/about', '/partner', '/partners', '/partner/apply', '/signup', '/login', '/welcome']
   const isPublicPath = publicPaths.some(p => pathname === p)
     || pathname.startsWith('/auth')
     || pathname.startsWith('/welcome')
     || pathname.startsWith('/api/')
     || pathname.startsWith('/courses') // course listing + detail are public (auth state handled in page)
+    || pathname.startsWith('/partners') // public partner marketing page (plural)
     || pathname.startsWith('/partner/apply') // partner apply + signup are public
 
   // ── Unauthenticated: redirect to login ──────────────────────────────────
+  // Special case: if they were trying to hit a partner portal or onboarding
+  // route, send them to the partner signup flow instead of the consumer
+  // /login page — a course operator clicking an outreach link shouldn't land
+  // on a member-facing sign-in screen.
   if (!user && !isPublicPath) {
-    const loginUrl = request.nextUrl.clone()
-    loginUrl.pathname = '/login'
-    loginUrl.searchParams.set('redirectTo', pathname)
-    return NextResponse.redirect(loginUrl)
+    const redirectUrl = request.nextUrl.clone()
+    const isPartnerProtected =
+      pathname.startsWith('/partner/') && !pathname.startsWith('/partner/apply')
+    if (isPartnerProtected) {
+      redirectUrl.pathname = '/partner/apply/signup'
+    } else {
+      redirectUrl.pathname = '/login'
+    }
+    redirectUrl.searchParams.set('redirectTo', pathname)
+    return NextResponse.redirect(redirectUrl)
   }
 
   if (!user) {
@@ -76,6 +87,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/partner/profile') ||
     pathname.startsWith('/partner/settings') ||
     pathname.startsWith('/partner/course') ||
+    pathname.startsWith('/partner/checkin') ||
     pathname.startsWith('/partner/onboarding')
 
   // ── Admin routes (/admin/*)
