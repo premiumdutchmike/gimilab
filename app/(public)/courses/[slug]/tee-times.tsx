@@ -34,11 +34,16 @@ const PREVIEW_COUNT = 3 // slots shown to non-members before the gate
 
 export default function TeeTimes({
   courseId,
+  slug,
   isLoggedIn,
 }: {
   courseId: string
+  slug: string
   isLoggedIn: boolean
 }) {
+  const returnUrl = `/courses/${slug}`
+  const loginHref = `/login?redirectTo=${encodeURIComponent(returnUrl)}`
+  const signupHref = `/signup?redirectTo=${encodeURIComponent(returnUrl)}`
   const days = useMemo(() => buildDays(7), [])
   const [activeDay, setActiveDay] = useState(0)
   const [slots, setSlots] = useState<CourseSlot[] | null>(null)
@@ -111,7 +116,7 @@ export default function TeeTimes({
                 {isLoggedIn ? (
                   <Link href="/dashboard" className="tt-slot-btn">Book</Link>
                 ) : (
-                  <Link href="/pricing" className="tt-slot-btn">Join to Book</Link>
+                  <Link href={loginHref} className="tt-slot-btn">Sign in to Book</Link>
                 )}
               </div>
             ))}
@@ -125,7 +130,7 @@ export default function TeeTimes({
                 <div className="tt-gate-sub">
                   Members unlock full booking access across every course in the network. Plans from $99/month.
                 </div>
-                <Link href="/pricing" className="tt-gate-btn">
+                <Link href={signupHref} className="tt-gate-btn">
                   See Membership Plans
                   <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="2" y1="6" x2="10" y2="6"/><polyline points="7 3 10 6 7 9"/>
@@ -139,7 +144,7 @@ export default function TeeTimes({
               <div className="tt-gate">
                 <div className="tt-gate-title">Join to book these tee times.</div>
                 <div className="tt-gate-sub">Members book with monthly credits — no green fees, no booking fees ever.</div>
-                <Link href="/pricing" className="tt-gate-btn">
+                <Link href={signupHref} className="tt-gate-btn">
                   See Membership Plans
                   <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="2" y1="6" x2="10" y2="6"/><polyline points="7 3 10 6 7 9"/>

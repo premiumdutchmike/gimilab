@@ -13,6 +13,7 @@ type Tab = 'signin' | 'signup'
 interface AuthCardProps {
   defaultTab?: Tab
   plan?: string
+  redirectTo?: string
 }
 
 const signinSchema = z.object({
@@ -30,7 +31,7 @@ const signupSchema = z.object({
 type SignInValues = z.infer<typeof signinSchema>
 type SignUpValues = z.infer<typeof signupSchema>
 
-export function AuthCard({ defaultTab = 'signin', plan }: AuthCardProps) {
+export function AuthCard({ defaultTab = 'signin', plan, redirectTo }: AuthCardProps) {
   const [activeTab, setActiveTab] = useState<Tab>(defaultTab)
   const [showPw, setShowPw] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -45,6 +46,7 @@ export function AuthCard({ defaultTab = 'signin', plan }: AuthCardProps) {
       const fd = new FormData()
       fd.set('email', values.email)
       fd.set('password', values.password)
+      if (redirectTo) fd.set('redirectTo', redirectTo)
       const result = await signInWithEmail(fd)
       if (result?.error) setError(result.error)
     })
@@ -58,6 +60,7 @@ export function AuthCard({ defaultTab = 'signin', plan }: AuthCardProps) {
       fd.set('password', values.password)
       fd.set('fullName', `${values.firstName} ${values.lastName}`)
       fd.set('plan', plan ?? 'core')
+      if (redirectTo) fd.set('redirectTo', redirectTo)
       const result = await signUpWithEmail(fd)
       if (result?.error) setError(result.error)
     })
@@ -66,7 +69,7 @@ export function AuthCard({ defaultTab = 'signin', plan }: AuthCardProps) {
   function handleGoogle() {
     setError(null)
     startTransition(async () => {
-      const result = await signInWithGoogle(plan ?? 'core')
+      const result = await signInWithGoogle(plan ?? 'core', redirectTo)
       if (result?.error) setError(result.error)
     })
   }

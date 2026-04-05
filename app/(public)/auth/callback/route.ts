@@ -8,6 +8,7 @@ import { users } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { subscriptionTierSchema } from '@/lib/validations'
 import type { SubscriptionTierKey } from '@/lib/db/schema'
+import { safeRedirect } from '@/lib/auth/redirect'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
@@ -50,14 +51,25 @@ export async function GET(request: NextRequest) {
     })
     .onConflictDoNothing()
 
-  // Read pending plan from cookie
+  // Read pending plan + return path from cookies
   const pendingPlan = cookieStore.get('gimmelab-pending-plan')?.value
+  const pendingRedirect = safeRedirect(cookieStore.get('gimmelab-pending-redirect')?.value)
   const tier: SubscriptionTierKey = subscriptionTierSchema.safeParse(pendingPlan).success
     ? (pendingPlan as SubscriptionTierKey)
     : 'core'
 
   // Get the user row (may have been just inserted or existed before)
   const [existingUser] = await db.select().from(users).where(eq(users.id, user.id))
+
+  // If this user already has an active subscription, this is a returning
+  // sign-in — skip the Stripe checkout step and send them straight to
+  // wherever they were trying to go (or the dashboard).
+  if (existingUser?.subscriptionStatus === 'active') {
+    cookieStore.delete('gimmelab-pending-plan')
+    cookieStore.delete('gimmelab-pending-redirect')
+    return NextResponse.redirect(`${appUrl}${pendingRedirect ?? '/dashboard'}`)
+  }
+
   let customerId = existingUser?.stripeCustomerId
 
   if (!customerId) {
@@ -83,8 +95,9 @@ export async function GET(request: NextRequest) {
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/signup?plan=${tier}`,
   })
 
-  // Clear pending plan cookie
+  // Clear pending cookies
   cookieStore.delete('gimmelab-pending-plan')
+  cookieStore.delete('gimmelab-pending-redirect')
 
   return NextResponse.redirect(session.url!)
 }

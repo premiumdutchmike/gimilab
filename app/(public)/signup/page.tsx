@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { AuthCard } from '@/components/auth-card'
+import { safeRedirect } from '@/lib/auth/redirect'
 
 export const metadata: Metadata = {
   title: 'Create Account — gimmelab',
@@ -9,9 +10,15 @@ export const metadata: Metadata = {
 export default async function SignupPage({
   searchParams,
 }: {
-  searchParams: Promise<{ plan?: string }>
+  searchParams: Promise<{ plan?: string; redirectTo?: string }>
 }) {
-  const { plan } = await searchParams
+  const { plan, redirectTo } = await searchParams
 
-  return <AuthCard defaultTab="signup" plan={plan} />
+  return (
+    <AuthCard
+      defaultTab="signup"
+      plan={plan}
+      redirectTo={safeRedirect(redirectTo) ?? undefined}
+    />
+  )
 }

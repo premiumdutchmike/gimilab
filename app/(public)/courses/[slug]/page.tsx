@@ -139,8 +139,11 @@ export default async function CourseDetailPage({
                 </svg>
               </Link>
             ) : (
-              <Link href="/pricing" className="cd-hero-join-btn">
-                Join to Book
+              <Link
+                href={`/login?redirectTo=${encodeURIComponent(`/courses/${slug}`)}`}
+                className="cd-hero-join-btn"
+              >
+                Sign in to Book
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="2" y1="6" x2="10" y2="6"/><polyline points="7 3 10 6 7 9"/>
                 </svg>
@@ -208,7 +211,7 @@ export default async function CourseDetailPage({
 
           {/* Tee Times */}
           <div className="cd-section-title">Available Tee Times</div>
-          <TeeTimes courseId={course.id} isLoggedIn={isLoggedIn} />
+          <TeeTimes courseId={course.id} slug={slug} isLoggedIn={isLoggedIn} />
         </div>
 
         {/* Sidebar */}
@@ -247,8 +250,18 @@ export default async function CourseDetailPage({
                 <Link href="/dashboard" className="cd-sb-join-btn">Book a Tee Time</Link>
               ) : (
                 <>
-                  <Link href="/pricing" className="cd-sb-join-btn">Choose a Plan — From $99/mo</Link>
-                  <Link href="/login" className="cd-sb-login-link">Already a member? Log in →</Link>
+                  <Link
+                    href={`/signup?redirectTo=${encodeURIComponent(`/courses/${slug}`)}`}
+                    className="cd-sb-join-btn"
+                  >
+                    Choose a Plan — From $99/mo
+                  </Link>
+                  <Link
+                    href={`/login?redirectTo=${encodeURIComponent(`/courses/${slug}`)}`}
+                    className="cd-sb-login-link"
+                  >
+                    Already a member? Log in →
+                  </Link>
                 </>
               )}
 

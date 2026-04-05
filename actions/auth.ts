@@ -9,6 +9,7 @@ import { users } from '@/lib/db/schema'
 import type { SubscriptionTierKey } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { signUpSchema, subscriptionTierSchema } from '@/lib/validations'
+import { safeRedirect } from '@/lib/auth/redirect'
 
 export async function signUpWithEmail(formData: FormData) {
   const raw = {
@@ -93,6 +94,7 @@ export async function signUpWithEmail(formData: FormData) {
 export async function signInWithEmail(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const redirectToRaw = formData.get('redirectTo') as string | null
 
   const supabase = await createClient()
 
@@ -102,10 +104,12 @@ export async function signInWithEmail(formData: FormData) {
     return { error: 'Invalid email or password.' }
   }
 
-  redirect('/dashboard')
+  // Send the user back to whatever page they tried to visit before login,
+  // falling back to /dashboard. `safeRedirect` prevents open-redirect attacks.
+  redirect(safeRedirect(redirectToRaw) ?? '/dashboard')
 }
 
-export async function signInWithGoogle(plan: string) {
+export async function signInWithGoogle(plan: string, redirectTo?: string) {
   const cookieStore = await cookies()
   const validPlan = subscriptionTierSchema.safeParse(plan).success ? plan : 'core'
 
@@ -116,6 +120,21 @@ export async function signInWithGoogle(plan: string) {
     sameSite: 'lax',
     path: '/',
   })
+
+  // Store a validated return path in cookie so /auth/callback can read it
+  // after Google OAuth redirects back to us.
+  const safe = safeRedirect(redirectTo)
+  if (safe) {
+    cookieStore.set('gimmelab-pending-redirect', safe, {
+      maxAge: 60 * 60,
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+    })
+  } else {
+    // Clear any stale cookie from a previous attempt
+    cookieStore.delete('gimmelab-pending-redirect')
+  }
 
   const supabase = await createClient()
 
