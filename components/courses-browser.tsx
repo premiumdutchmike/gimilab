@@ -225,9 +225,11 @@ export default function CoursesBrowser({
             const isFeatured = i === 1 && sort === 'featured'
             const showPriceSignal = balance != null
             const notAffordable = showPriceSignal && !course.affordable
-            const href = isLoggedIn
-              ? `/book?course=${course.id}`
-              : `/login?redirectTo=${encodeURIComponent(`/courses/${course.slug}`)}`
+            // Card always goes to the course detail page — from there the
+            // member can browse the tee-time calendar or hit "Book Now" to
+            // jump into /book. Logged-out users land on the detail page too
+            // (it's public) and get the "Sign in to Book" CTA there.
+            const href = `/courses/${course.slug}`
 
             return (
               <Link
@@ -277,9 +279,7 @@ export default function CoursesBrowser({
                         <span className="c-status-dot" />
                         {notAffordable ? 'Locked' : 'Live'}
                       </div>
-                      <span className="c-cta">
-                        {isLoggedIn ? 'Book tee time →' : 'Sign in to book →'}
-                      </span>
+                      <span className="c-cta">View course →</span>
                     </div>
                   </div>
                 </div>
