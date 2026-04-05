@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useCallback } from 'react'
+import { useState, useTransition, useCallback, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { getSlotsByDate, type CourseWithSlots } from '@/actions/slots'
 import { confirmBooking } from '@/actions/booking'
@@ -10,6 +10,21 @@ type CourseOption = { id: string; name: string }
 interface BookingClientProps {
   courseOptions: CourseOption[]
   balance: number
+  /** Course to pre-filter on mount (e.g. from /book?course=<id>) */
+  preselectedCourseId?: string
+  /** Date to pre-select on mount (YYYY-MM-DD). Defaults to today if course is set. */
+  preselectedDate?: string
+  /** Slot to auto-pick once the initial fetch returns */
+  preselectedSlotId?: string
+}
+
+function todayStr(): string {
+  // Local-time YYYY-MM-DD — not UTC — so the date picker shows the user's today
+  const d = new Date()
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 function formatTime(t: string): string {
@@ -33,15 +48,28 @@ function isGuestValid(g: Guest): boolean {
   return g.firstName.trim().length > 0 && g.lastName.trim().length > 0 && EMAIL_RE.test(g.email.trim())
 }
 
-export function BookingClient({ courseOptions, balance }: BookingClientProps) {
+export function BookingClient({
+  courseOptions,
+  balance,
+  preselectedCourseId,
+  preselectedDate,
+  preselectedSlotId,
+}: BookingClientProps) {
   const router = useRouter()
 
-  // Filters
-  const [date, setDate] = useState('')
-  const [courseFilter, setCourseFilter] = useState('')
+  // Filters — seeded from URL params when present. If a course is preselected
+  // and no date is given, default the date to today so we have something to
+  // fetch immediately.
+  const initialDate = preselectedDate ?? (preselectedCourseId ? todayStr() : '')
+  const [date, setDate] = useState(initialDate)
+  const [courseFilter, setCourseFilter] = useState(preselectedCourseId ?? '')
   const [timeFilter, setTimeFilter] = useState('any')
   const [players, setPlayers] = useState(1)
   const [guests, setGuests] = useState<Guest[]>([])
+
+  // Slot to auto-pick once the initial fetch resolves. Consumed by a
+  // useEffect below and then cleared so it only fires once.
+  const pendingSlotPickRef = useRef<string | null>(preselectedSlotId ?? null)
 
   // Keep guest array length = players - 1 whenever the stepper changes
   function handlePlayersChange(n: number) {
@@ -97,6 +125,38 @@ export function BookingClient({ courseOptions, balance }: BookingClientProps) {
   function handleTimeChange(v: string) {
     setTimeFilter(v); setPicked(null); fetchSlots(date, courseFilter, v)
   }
+
+  // Auto-fetch on mount when we arrived via /book?course=<id>&date=<ymd>.
+  // Separate from the normal handlers so we only run once per arrival.
+  const didInitialFetchRef = useRef(false)
+  useEffect(() => {
+    if (didInitialFetchRef.current) return
+    if (!initialDate) return
+    didInitialFetchRef.current = true
+    fetchSlots(initialDate, courseFilter, timeFilter)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Auto-pick a slot if the user arrived via /book?slot=<id>. Fires the first
+  // time `results` populates with a match, then clears the pending ref so
+  // subsequent filter changes don't re-trigger.
+  useEffect(() => {
+    const target = pendingSlotPickRef.current
+    if (!target || !results) return
+    for (const course of results) {
+      const match = course.slots.find((s) => s.id === target)
+      if (match) {
+        setPicked({
+          slotId: match.id,
+          courseName: course.courseName,
+          startTime: match.startTime,
+          creditCost: match.creditCost,
+        })
+        pendingSlotPickRef.current = null
+        break
+      }
+    }
+  }, [results])
 
   function pickSlot(course: CourseWithSlots, slot: { id: string; startTime: string; creditCost: number }) {
     setPicked({ slotId: slot.id, courseName: course.courseName, startTime: slot.startTime, creditCost: slot.creditCost })

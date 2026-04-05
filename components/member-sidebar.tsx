@@ -26,6 +26,17 @@ const navItems = [
     ),
   },
   {
+    href: '/book',
+    label: 'Book a Round',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7">
+        <circle cx="10" cy="10" r="7.5" />
+        <line x1="10" y1="4" x2="10" y2="10" />
+        <line x1="10" y1="10" x2="14" y2="12" />
+      </svg>
+    ),
+  },
+  {
     href: '/rounds',
     label: 'My Rounds',
     icon: (

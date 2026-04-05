@@ -132,7 +132,7 @@ export default async function CourseDetailPage({
           <div className="cd-hero-cta">
             <div className="cd-hero-credit-note">{creditShort} per round · members only</div>
             {isLoggedIn ? (
-              <Link href="/dashboard" className="cd-hero-join-btn">
+              <Link href={`/book?course=${course.id}`} className="cd-hero-join-btn">
                 Book Now
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="2" y1="6" x2="10" y2="6"/><polyline points="7 3 10 6 7 9"/>
@@ -247,7 +247,7 @@ export default async function CourseDetailPage({
               <div className="cd-sb-divider" />
 
               {isLoggedIn ? (
-                <Link href="/dashboard" className="cd-sb-join-btn">Book a Tee Time</Link>
+                <Link href={`/book?course=${course.id}`} className="cd-sb-join-btn">Book a Tee Time</Link>
               ) : (
                 <>
                   <Link

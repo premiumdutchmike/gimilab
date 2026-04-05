@@ -114,7 +114,12 @@ export default function TeeTimes({
                 </div>
                 <span className="tt-slot-cost">{slot.creditCost} cr</span>
                 {isLoggedIn ? (
-                  <Link href="/dashboard" className="tt-slot-btn">Book</Link>
+                  <Link
+                    href={`/book?course=${courseId}&date=${days[activeDay].dateStr}&slot=${slot.id}`}
+                    className="tt-slot-btn"
+                  >
+                    Book
+                  </Link>
                 ) : (
                   <Link href={loginHref} className="tt-slot-btn">Sign in to Book</Link>
                 )}
