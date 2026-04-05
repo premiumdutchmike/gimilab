@@ -80,6 +80,7 @@ export default async function InventoryPage() {
           blocks.map((block: TeeTimeBlock) => (
             <div
               key={block.id}
+              className="p-inv-block-row"
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -207,47 +208,76 @@ export default async function InventoryPage() {
           </div>
         ) : (
           <>
-            {/* Table header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 120px', gap: 8, padding: '10px 0', borderBottom: '1px solid rgba(244,238,227,0.05)' }}>
-              {['DATE', 'TIME', 'CREDITS', 'STATUS'].map((col) => (
-                <span key={col} style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(244,238,227,0.25)', textTransform: 'uppercase' }}>
-                  {col}
-                </span>
-              ))}
+            {/* Desktop table */}
+            <div className="p-inv-slots-desktop">
+              {/* Table header */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 120px', gap: 8, padding: '10px 0', borderBottom: '1px solid rgba(244,238,227,0.05)' }}>
+                {['DATE', 'TIME', 'CREDITS', 'STATUS'].map((col) => (
+                  <span key={col} style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(244,238,227,0.25)', textTransform: 'uppercase' }}>
+                    {col}
+                  </span>
+                ))}
+              </div>
+
+              {/* Table rows */}
+              {visibleSlots.map((slot) => {
+                const statusColor =
+                  slot.status === 'BOOKED' ? '#BF7B2E' :
+                  slot.status === 'AVAILABLE' ? 'rgba(244,238,227,0.8)' : 'rgba(244,238,227,0.25)'
+
+                return (
+                  <div
+                    key={slot.id}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 80px 80px 120px',
+                      gap: 8,
+                      padding: '8px 0',
+                      borderBottom: '1px solid rgba(244,238,227,0.05)',
+                    }}
+                  >
+                    <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.55)', fontFamily: 'var(--font-geist-mono)' }}>
+                      {slot.date}
+                    </span>
+                    <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.55)', fontFamily: 'var(--font-geist-mono)' }}>
+                      {formatTime(slot.startTime)}
+                    </span>
+                    <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.55)', fontFamily: 'var(--font-geist-mono)' }}>
+                      {slot.creditCost}
+                    </span>
+                    <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', color: statusColor, textTransform: 'uppercase' }}>
+                      {slot.status}
+                    </span>
+                  </div>
+                )
+              })}
             </div>
 
-            {/* Table rows */}
-            {visibleSlots.map((slot) => {
-              const statusColor =
-                slot.status === 'BOOKED' ? '#BF7B2E' :
-                slot.status === 'AVAILABLE' ? 'rgba(244,238,227,0.8)' : 'rgba(244,238,227,0.25)'
-
-              return (
-                <div
-                  key={slot.id}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 80px 80px 120px',
-                    gap: 8,
-                    padding: '8px 0',
-                    borderBottom: '1px solid rgba(244,238,227,0.05)',
-                  }}
-                >
-                  <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.55)', fontFamily: 'var(--font-geist-mono)' }}>
-                    {slot.date}
-                  </span>
-                  <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.55)', fontFamily: 'var(--font-geist-mono)' }}>
-                    {formatTime(slot.startTime)}
-                  </span>
-                  <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.55)', fontFamily: 'var(--font-geist-mono)' }}>
-                    {slot.creditCost}
-                  </span>
-                  <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', color: statusColor, textTransform: 'uppercase' }}>
-                    {slot.status}
-                  </span>
-                </div>
-              )
-            })}
+            {/* Mobile card list */}
+            <div className="p-inv-slots-cards">
+              {visibleSlots.map((slot) => {
+                const statusColor =
+                  slot.status === 'BOOKED' ? '#BF7B2E' :
+                  slot.status === 'AVAILABLE' ? '#5FB380' : 'rgba(244,238,227,0.35)'
+                return (
+                  <div key={slot.id} className="p-inv-card">
+                    <div className="p-inv-card-primary" style={{ fontFamily: 'var(--font-geist-mono)' }}>
+                      {slot.date} · {formatTime(slot.startTime)}
+                    </div>
+                    <div className="p-inv-card-row">
+                      <span className="p-inv-card-label">Credits</span>
+                      <span className="p-inv-card-value" style={{ color: '#BF7B2E', fontWeight: 700 }}>{slot.creditCost} cr</span>
+                    </div>
+                    <div className="p-inv-card-row">
+                      <span className="p-inv-card-label">Status</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: statusColor }}>
+                        {slot.status}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
 
             {/* Overflow note */}
             {slots.length > 100 && (
@@ -258,6 +288,62 @@ export default async function InventoryPage() {
           </>
         )}
       </div>
+
+      <style>{`
+        .p-inv-slots-cards { display: none; }
+        @media (max-width: 899px) {
+          .p-inv-slots-desktop { display: none !important; }
+          .p-inv-slots-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-top: 12px;
+          }
+          .p-inv-card {
+            background: #1E1D1B;
+            border: 1px solid rgba(244,238,227,0.08);
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .p-inv-card-primary {
+            font-size: 14px;
+            font-weight: 700;
+            color: #F4EEE3;
+          }
+          .p-inv-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+          }
+          .p-inv-card-label {
+            font-size: 11px;
+            color: #847C72;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+          }
+          .p-inv-card-value {
+            font-size: 13px;
+            color: #F4EEE3;
+            font-weight: 600;
+          }
+          /* Block rows: stack cleaner on mobile */
+          .p-inv-block-row {
+            gap: 10px !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .p-inv-block-row > div[style*="margin-left: auto"],
+          .p-inv-block-row > div:last-child {
+            margin-left: 0 !important;
+            width: 100%;
+            justify-content: flex-start;
+          }
+        }
+      `}</style>
     </div>
   )
 }

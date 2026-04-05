@@ -37,12 +37,12 @@ export default function PartnerApplyPage() {
       </nav>
 
       {/* Hero */}
-      <section style={{
+      <section className="pa-hero" style={{
         background: '#0C0C0B',
         padding: '80px 24px 0',
         flex: '0 0 auto',
       }}>
-        <div style={{
+        <div className="pa-hero-grid" style={{
           maxWidth: 1100,
           margin: '0 auto',
           display: 'grid',
@@ -120,7 +120,7 @@ export default function PartnerApplyPage() {
           }}>
             Live in four steps
           </h2>
-          <div style={{
+          <div className="pa-steps-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
             gap: 24,
@@ -188,7 +188,7 @@ export default function PartnerApplyPage() {
       </section>
 
       {/* Footer */}
-      <footer style={{
+      <footer className="pa-footer" style={{
         background: '#0C0C0B',
         borderTop: '1px solid rgba(229,221,211,0.08)',
         padding: '24px 40px',
@@ -209,6 +209,38 @@ export default function PartnerApplyPage() {
           gimmelab.com · © 2026
         </span>
       </footer>
+
+      <style>{`
+        @media (max-width: 900px) {
+          .pa-hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 48px !important;
+            padding-bottom: 64px !important;
+          }
+          .pa-steps-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .pa-hero {
+            padding: 56px 20px 0 !important;
+          }
+          .pa-hero-grid {
+            gap: 36px !important;
+            padding-bottom: 48px !important;
+          }
+          .pa-steps-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+          .pa-footer {
+            padding: 20px 20px !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+            align-items: flex-start !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

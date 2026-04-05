@@ -77,42 +77,122 @@ export default async function PartnerPricingPage() {
           </p>
         </div>
       ) : (
-        <div style={{ background: '#1E1D1B', border: '1px solid rgba(244,238,227,0.08)', overflow: 'hidden' }}>
-          <div style={{
-            display: 'grid', gridTemplateColumns: '1fr 160px 120px 220px',
-            padding: '10px 20px', borderBottom: '1px solid rgba(244,238,227,0.08)',
-          }}>
-            {['Days', 'Time', 'Base rate', 'Override'].map(h => (
-              <span key={h} style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(244,238,227,0.3)' }}>
-                {h}
-              </span>
+        <>
+          {/* Desktop table */}
+          <div className="p-pri-desktop" style={{ background: '#1E1D1B', border: '1px solid rgba(244,238,227,0.08)', overflow: 'hidden' }}>
+            <div style={{
+              display: 'grid', gridTemplateColumns: '1fr 160px 120px 220px',
+              padding: '10px 20px', borderBottom: '1px solid rgba(244,238,227,0.08)',
+            }}>
+              {['Days', 'Time', 'Base rate', 'Override'].map(h => (
+                <span key={h} style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(244,238,227,0.3)' }}>
+                  {h}
+                </span>
+              ))}
+            </div>
+
+            {activeBlocks.map((block, i) => (
+              <div key={block.id} style={{
+                display: 'grid', gridTemplateColumns: '1fr 160px 120px 220px',
+                padding: '14px 20px', alignItems: 'center',
+                borderBottom: i < activeBlocks.length - 1 ? '1px solid rgba(244,238,227,0.08)' : 'none',
+              }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#F4EEE3' }}>
+                  {formatDays(block.dayOfWeek)}
+                </span>
+                <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.5)' }}>
+                  {formatTime(block.startTime)} – {formatTime(block.endTime)}
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(244,238,227,0.4)' }}>
+                  {course.baseCreditCost} cr
+                </span>
+                <BlockOverrideEditor
+                  blockId={block.id}
+                  initialOverride={block.creditOverride ?? null}
+                  baseRate={course.baseCreditCost}
+                />
+              </div>
             ))}
           </div>
 
-          {activeBlocks.map((block, i) => (
-            <div key={block.id} style={{
-              display: 'grid', gridTemplateColumns: '1fr 160px 120px 220px',
-              padding: '14px 20px', alignItems: 'center',
-              borderBottom: i < activeBlocks.length - 1 ? '1px solid rgba(244,238,227,0.08)' : 'none',
-            }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#F4EEE3' }}>
-                {formatDays(block.dayOfWeek)}
-              </span>
-              <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.5)' }}>
-                {formatTime(block.startTime)} – {formatTime(block.endTime)}
-              </span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(244,238,227,0.4)' }}>
-                {course.baseCreditCost} cr
-              </span>
-              <BlockOverrideEditor
-                blockId={block.id}
-                initialOverride={block.creditOverride ?? null}
-                baseRate={course.baseCreditCost}
-              />
-            </div>
-          ))}
-        </div>
+          {/* Mobile card list */}
+          <div className="p-pri-cards">
+            {activeBlocks.map((block) => (
+              <div key={block.id} className="p-pri-card">
+                <div className="p-pri-card-primary">{formatDays(block.dayOfWeek)}</div>
+                <div className="p-pri-card-row">
+                  <span className="p-pri-card-label">Time</span>
+                  <span className="p-pri-card-value">{formatTime(block.startTime)} – {formatTime(block.endTime)}</span>
+                </div>
+                <div className="p-pri-card-row">
+                  <span className="p-pri-card-label">Base rate</span>
+                  <span className="p-pri-card-value" style={{ color: 'rgba(244,238,227,0.5)' }}>{course.baseCreditCost} cr</span>
+                </div>
+                <div className="p-pri-card-override">
+                  <span className="p-pri-card-label" style={{ marginBottom: 6, display: 'block' }}>Override</span>
+                  <BlockOverrideEditor
+                    blockId={block.id}
+                    initialOverride={block.creditOverride ?? null}
+                    baseRate={course.baseCreditCost}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
+
+      <style>{`
+        .p-pri-cards { display: none; }
+        @media (max-width: 899px) {
+          .p-pri-desktop { display: none !important; }
+          .p-pri-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .p-pri-card {
+            background: #1E1D1B;
+            border: 1px solid rgba(244,238,227,0.08);
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+          }
+          .p-pri-card-primary {
+            font-size: 15px;
+            font-weight: 700;
+            color: #F4EEE3;
+            letter-spacing: -0.01em;
+          }
+          .p-pri-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+          }
+          .p-pri-card-label {
+            font-size: 11px;
+            color: #847C72;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+          }
+          .p-pri-card-value {
+            font-size: 13px;
+            color: #F4EEE3;
+            font-weight: 600;
+          }
+          .p-pri-card-override {
+            padding-top: 4px;
+            border-top: 1px solid rgba(244,238,227,0.05);
+            margin-top: 2px;
+          }
+        }
+        @media (max-width: 640px) {
+          .p-pri-card { padding: 16px; }
+        }
+      `}</style>
 
       {/* Info box */}
       <div style={{

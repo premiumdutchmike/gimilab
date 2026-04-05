@@ -31,6 +31,7 @@ export default function PartnerNav({ businessName }: PartnerNavProps) {
     <div style={{ position: 'sticky', top: 0, zIndex: 40 }}>
       {/* Top bar */}
       <div
+        className="pn-topbar"
         style={{
           height: 52,
           background: '#0C0C0B',
@@ -57,12 +58,17 @@ export default function PartnerNav({ businessName }: PartnerNavProps) {
           gimmelab
         </Link>
         <span
+          className="pn-business"
           style={{
             fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
             color: '#847C72',
+            maxWidth: '60%',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
           }}
         >
           {businessName}
@@ -133,6 +139,13 @@ export default function PartnerNav({ businessName }: PartnerNavProps) {
           </span>
         ))}
       </div>
+
+      <style>{`
+        @media (max-width: 640px) {
+          .pn-topbar { padding: 0 16px !important; height: 48px !important; }
+          .pn-business { display: none !important; }
+        }
+      `}</style>
     </div>
   )
 }

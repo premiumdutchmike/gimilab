@@ -45,7 +45,7 @@ export default async function PartnerPayoutsPage() {
       </h1>
 
       {/* Summary strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, marginBottom: 32 }}>
+      <div className="p-pay-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, marginBottom: 32 }}>
         {[
           { label: 'Pending balance',    value: formatCents(summary.pendingCents),  note: `${summary.pendingCount} bookings` },
           { label: 'Total paid out',     value: formatCents(summary.totalPaidCents), note: `${transfers.filter(t => t.status === 'COMPLETED').length} transfers` },
@@ -103,44 +103,138 @@ export default async function PartnerPayoutsPage() {
           <p style={{ fontSize: 12, color: 'rgba(244,238,227,0.25)' }}>Your first payout will appear here once processed.</p>
         </div>
       ) : (
-        <div style={{ background: '#1E1D1B', border: '1px solid rgba(244,238,227,0.08)', overflow: 'hidden' }}>
-          <div style={{
-            display: 'grid', gridTemplateColumns: '1fr 120px 100px 140px 160px',
-            padding: '10px 20px', borderBottom: '1px solid rgba(244,238,227,0.08)',
-          }}>
-            {['Date', 'Bookings', 'Amount', 'Status', 'Stripe Transfer'].map(h => (
-              <span key={h} style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(244,238,227,0.3)' }}>
-                {h}
-              </span>
-            ))}
+        <>
+          {/* Desktop table */}
+          <div className="p-pay-desktop" style={{ background: '#1E1D1B', border: '1px solid rgba(244,238,227,0.08)', overflow: 'hidden' }}>
+            <div style={{
+              display: 'grid', gridTemplateColumns: '1fr 120px 100px 140px 160px',
+              padding: '10px 20px', borderBottom: '1px solid rgba(244,238,227,0.08)',
+            }}>
+              {['Date', 'Bookings', 'Amount', 'Status', 'Stripe Transfer'].map(h => (
+                <span key={h} style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(244,238,227,0.3)' }}>
+                  {h}
+                </span>
+              ))}
+            </div>
+
+            {transfers.map((t, i) => {
+              const s = STATUS_STYLE[t.status] ?? { label: t.status, color: '#F4EEE3', bg: 'transparent' }
+              return (
+                <div key={t.id} style={{
+                  display: 'grid', gridTemplateColumns: '1fr 120px 100px 140px 160px',
+                  padding: '13px 20px', alignItems: 'center',
+                  borderBottom: i < transfers.length - 1 ? '1px solid rgba(244,238,227,0.08)' : 'none',
+                }}>
+                  <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.6)' }}>{formatDate(t.createdAt)}</span>
+                  <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.6)' }}>{t.bookingCount}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#BF7B2E' }}>{formatCents(t.amountCents)}</span>
+                  <span style={{
+                    display: 'inline-block', fontSize: 10, fontWeight: 700,
+                    letterSpacing: '0.06em', textTransform: 'uppercase',
+                    color: s.color, background: s.bg, padding: '3px 8px', borderRadius: 2,
+                  }}>
+                    {s.label}
+                  </span>
+                  <span style={{ fontSize: 11, color: 'rgba(244,238,227,0.3)', fontFamily: 'monospace' }}>
+                    {t.stripeTransferId ? t.stripeTransferId.slice(0, 18) + '…' : '—'}
+                  </span>
+                </div>
+              )
+            })}
           </div>
 
-          {transfers.map((t, i) => {
-            const s = STATUS_STYLE[t.status] ?? { label: t.status, color: '#F4EEE3', bg: 'transparent' }
-            return (
-              <div key={t.id} style={{
-                display: 'grid', gridTemplateColumns: '1fr 120px 100px 140px 160px',
-                padding: '13px 20px', alignItems: 'center',
-                borderBottom: i < transfers.length - 1 ? '1px solid rgba(244,238,227,0.08)' : 'none',
-              }}>
-                <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.6)' }}>{formatDate(t.createdAt)}</span>
-                <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.6)' }}>{t.bookingCount}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#BF7B2E' }}>{formatCents(t.amountCents)}</span>
-                <span style={{
-                  display: 'inline-block', fontSize: 10, fontWeight: 700,
-                  letterSpacing: '0.06em', textTransform: 'uppercase',
-                  color: s.color, background: s.bg, padding: '3px 8px', borderRadius: 2,
-                }}>
-                  {s.label}
-                </span>
-                <span style={{ fontSize: 11, color: 'rgba(244,238,227,0.3)', fontFamily: 'monospace' }}>
-                  {t.stripeTransferId ? t.stripeTransferId.slice(0, 18) + '…' : '—'}
-                </span>
-              </div>
-            )
-          })}
-        </div>
+          {/* Mobile card list */}
+          <div className="p-pay-cards">
+            {transfers.map((t) => {
+              const s = STATUS_STYLE[t.status] ?? { label: t.status, color: '#F4EEE3', bg: 'transparent' }
+              return (
+                <div key={t.id} className="p-pay-card">
+                  <div className="p-pay-card-primary" style={{ fontFamily: 'var(--font-geist-mono)' }}>
+                    {formatCents(t.amountCents)}
+                  </div>
+                  <div className="p-pay-card-row">
+                    <span className="p-pay-card-label">Date</span>
+                    <span className="p-pay-card-value">{formatDate(t.createdAt)}</span>
+                  </div>
+                  <div className="p-pay-card-row">
+                    <span className="p-pay-card-label">Bookings</span>
+                    <span className="p-pay-card-value">{t.bookingCount}</span>
+                  </div>
+                  <div className="p-pay-card-row">
+                    <span className="p-pay-card-label">Status</span>
+                    <span style={{
+                      display: 'inline-block', fontSize: 10, fontWeight: 700,
+                      letterSpacing: '0.06em', textTransform: 'uppercase',
+                      color: s.color, background: s.bg, padding: '3px 8px', borderRadius: 2,
+                    }}>
+                      {s.label}
+                    </span>
+                  </div>
+                  <div className="p-pay-card-row">
+                    <span className="p-pay-card-label">Transfer</span>
+                    <span className="p-pay-card-value" style={{ fontFamily: 'monospace', fontSize: 11, color: 'rgba(244,238,227,0.4)' }}>
+                      {t.stripeTransferId ? t.stripeTransferId.slice(0, 14) + '…' : '—'}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </>
       )}
+
+      <style>{`
+        .p-pay-cards { display: none; }
+        @media (max-width: 899px) {
+          .p-pay-stats {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+          .p-pay-desktop { display: none !important; }
+          .p-pay-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .p-pay-card {
+            background: #1E1D1B;
+            border: 1px solid rgba(244,238,227,0.08);
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .p-pay-card-primary {
+            font-size: 18px;
+            font-weight: 900;
+            color: #BF7B2E;
+            letter-spacing: -0.02em;
+          }
+          .p-pay-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+          }
+          .p-pay-card-label {
+            font-size: 11px;
+            color: #847C72;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+          }
+          .p-pay-card-value {
+            font-size: 13px;
+            color: #F4EEE3;
+            font-weight: 600;
+          }
+        }
+        @media (max-width: 640px) {
+          .p-pay-stats {
+            grid-template-columns: 1fr !important;
+          }
+          .p-pay-card { padding: 16px; }
+        }
+      `}</style>
     </div>
   )
 }

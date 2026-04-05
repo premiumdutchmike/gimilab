@@ -48,7 +48,7 @@ export default async function PartnerSettingsPage({
   const statusInfo = connectStatus ? CONNECT_STATUS[connectStatus] ?? null : null
 
   return (
-    <div style={{ padding: '32px 28px', maxWidth: 720, margin: '0 auto' }}>
+    <div className="ps-wrap" style={{ padding: '32px 28px', maxWidth: 720, margin: '0 auto' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 32 }}>
@@ -193,6 +193,11 @@ export default async function PartnerSettingsPage({
         </div>
       </section>
 
+      <style>{`
+        @media (max-width: 640px) {
+          .ps-wrap { padding: 24px 16px 48px !important; }
+        }
+      `}</style>
     </div>
   )
 }

@@ -46,15 +46,19 @@ export default async function PartnerLayout({
       }}
     >
       {stripeConnectPending && (
-        <div style={{
-          background: '#BF7B2E',
-          padding: '10px 24px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 12,
-        }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#0C0C0B' }}>
+        <div
+          className="pl-stripe-banner"
+          style={{
+            background: '#BF7B2E',
+            padding: '10px 24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+            flexWrap: 'wrap',
+          }}
+        >
+          <span className="pl-stripe-msg" style={{ fontSize: 13, fontWeight: 600, color: '#0C0C0B' }}>
             Payouts on hold — connect your bank account to start receiving payments.
           </span>
           <Link
@@ -78,6 +82,13 @@ export default async function PartnerLayout({
       )}
       <PartnerNav businessName={partner.businessName} />
       <main style={{ flex: 1 }}>{children}</main>
+
+      <style>{`
+        @media (max-width: 640px) {
+          .pl-stripe-banner { padding: 10px 16px !important; }
+          .pl-stripe-msg { font-size: 12px !important; }
+        }
+      `}</style>
     </div>
   )
 }

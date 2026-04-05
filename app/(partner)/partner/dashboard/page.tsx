@@ -35,7 +35,7 @@ export default async function PartnerDashboardPage() {
   ]
 
   return (
-    <div style={{ padding: '48px 32px 80px', maxWidth: 1280, margin: '0 auto' }}>
+    <div className="pd-wrap" style={{ padding: '48px 32px 80px', maxWidth: 1280, margin: '0 auto' }}>
       {/* Pending approval banner */}
       {course.status === 'pending' && (
         <div
@@ -84,6 +84,7 @@ export default async function PartnerDashboardPage() {
 
       {/* Stat grid */}
       <div
+        className="pd-stat-grid"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
@@ -209,6 +210,17 @@ export default async function PartnerDashboardPage() {
           </Link>
         ))}
       </div>
+
+      <style>{`
+        @media (max-width: 900px) {
+          .pd-wrap { padding: 36px 24px 64px !important; }
+          .pd-stat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 480px) {
+          .pd-wrap { padding: 28px 16px 48px !important; }
+          .pd-stat-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   )
 }

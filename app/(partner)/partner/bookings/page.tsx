@@ -109,76 +109,177 @@ export default async function PartnerBookingsPage({
           )}
         </div>
       ) : (
-        <div style={{ background: '#1E1D1B', border: '1px solid rgba(244,238,227,0.08)', overflow: 'hidden' }}>
-          {/* Table head */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '130px 80px 1fr 80px 90px 90px',
-            gap: 0,
-            padding: '10px 20px',
-            borderBottom: '1px solid rgba(244,238,227,0.08)',
-          }}>
-            {['Date', 'Time', 'Member', 'Credits', 'Status', 'Payout'].map(h => (
-              <span key={h} style={{
-                fontSize: 9, fontWeight: 700, letterSpacing: '0.12em',
-                textTransform: 'uppercase', color: 'rgba(244,238,227,0.3)',
-              }}>
-                {h}
-              </span>
-            ))}
+        <>
+          {/* Desktop table */}
+          <div className="p-bookings-desktop" style={{ background: '#1E1D1B', border: '1px solid rgba(244,238,227,0.08)', overflow: 'hidden' }}>
+            {/* Table head */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '130px 80px 1fr 80px 90px 90px',
+              gap: 0,
+              padding: '10px 20px',
+              borderBottom: '1px solid rgba(244,238,227,0.08)',
+            }}>
+              {['Date', 'Time', 'Member', 'Credits', 'Status', 'Payout'].map(h => (
+                <span key={h} style={{
+                  fontSize: 9, fontWeight: 700, letterSpacing: '0.12em',
+                  textTransform: 'uppercase', color: 'rgba(244,238,227,0.3)',
+                }}>
+                  {h}
+                </span>
+              ))}
+            </div>
+
+            {/* Rows */}
+            {rows.map((row, i) => {
+              const status = STATUS_STYLES[row.status] ?? { label: row.status, color: '#F4EEE3', bg: 'transparent' }
+              const payout = PAYOUT_STYLES[row.payoutStatus ?? 'PENDING'] ?? { label: row.payoutStatus ?? '—', color: 'rgba(244,238,227,0.35)' }
+              return (
+                <div
+                  key={row.bookingId}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '130px 80px 1fr 80px 90px 90px',
+                    gap: 0,
+                    padding: '14px 20px',
+                    borderBottom: i < rows.length - 1 ? '1px solid rgba(244,238,227,0.08)' : 'none',
+                    alignItems: 'center',
+                  }}
+                >
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#F4EEE3' }}>
+                    {formatDate(row.date)}
+                  </span>
+                  <span style={{ fontSize: 13, color: 'rgba(244,238,227,0.6)', fontWeight: 500 }}>
+                    {formatTime(row.startTime)}
+                  </span>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#F4EEE3' }}>
+                      {row.memberName ?? '—'}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'rgba(244,238,227,0.35)', marginTop: 1 }}>
+                      {row.memberEmail}
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#BF7B2E' }}>
+                    {row.creditCost} cr
+                  </span>
+                  <span style={{
+                    display: 'inline-block',
+                    fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    color: status.color,
+                    background: status.bg,
+                    padding: '3px 8px', borderRadius: 2,
+                  }}>
+                    {status.label}
+                  </span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: payout.color }}>
+                    {payout.label}
+                  </span>
+                </div>
+              )
+            })}
           </div>
 
-          {/* Rows */}
-          {rows.map((row, i) => {
-            const status = STATUS_STYLES[row.status] ?? { label: row.status, color: '#F4EEE3', bg: 'transparent' }
-            const payout = PAYOUT_STYLES[row.payoutStatus ?? 'PENDING'] ?? { label: row.payoutStatus ?? '—', color: 'rgba(244,238,227,0.35)' }
-            return (
-              <div
-                key={row.bookingId}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '130px 80px 1fr 80px 90px 90px',
-                  gap: 0,
-                  padding: '14px 20px',
-                  borderBottom: i < rows.length - 1 ? '1px solid rgba(244,238,227,0.08)' : 'none',
-                  alignItems: 'center',
-                }}
-              >
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#F4EEE3' }}>
-                  {formatDate(row.date)}
-                </span>
-                <span style={{ fontSize: 13, color: 'rgba(244,238,227,0.6)', fontWeight: 500 }}>
-                  {formatTime(row.startTime)}
-                </span>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#F4EEE3' }}>
-                    {row.memberName ?? '—'}
+          {/* Mobile card list */}
+          <div className="p-bookings-cards">
+            {rows.map((row) => {
+              const status = STATUS_STYLES[row.status] ?? { label: row.status, color: '#F4EEE3', bg: 'transparent' }
+              const payout = PAYOUT_STYLES[row.payoutStatus ?? 'PENDING'] ?? { label: row.payoutStatus ?? '—', color: 'rgba(244,238,227,0.35)' }
+              return (
+                <div key={row.bookingId} className="p-bookings-card">
+                  <div className="p-bookings-card-primary">{row.memberName ?? '—'}</div>
+                  {row.memberEmail && (
+                    <div className="p-bookings-card-sub">{row.memberEmail}</div>
+                  )}
+                  <div className="p-bookings-card-row">
+                    <span className="p-bookings-card-label">Date</span>
+                    <span className="p-bookings-card-value">{formatDate(row.date)}</span>
                   </div>
-                  <div style={{ fontSize: 11, color: 'rgba(244,238,227,0.35)', marginTop: 1 }}>
-                    {row.memberEmail}
+                  <div className="p-bookings-card-row">
+                    <span className="p-bookings-card-label">Time</span>
+                    <span className="p-bookings-card-value">{formatTime(row.startTime)}</span>
+                  </div>
+                  <div className="p-bookings-card-row">
+                    <span className="p-bookings-card-label">Credits</span>
+                    <span className="p-bookings-card-value" style={{ color: '#BF7B2E', fontWeight: 700 }}>{row.creditCost} cr</span>
+                  </div>
+                  <div className="p-bookings-card-row">
+                    <span className="p-bookings-card-label">Status</span>
+                    <span style={{
+                      display: 'inline-block',
+                      fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      color: status.color,
+                      background: status.bg,
+                      padding: '3px 8px', borderRadius: 2,
+                    }}>
+                      {status.label}
+                    </span>
+                  </div>
+                  <div className="p-bookings-card-row">
+                    <span className="p-bookings-card-label">Payout</span>
+                    <span className="p-bookings-card-value" style={{ color: payout.color, fontWeight: 600 }}>{payout.label}</span>
                   </div>
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#BF7B2E' }}>
-                  {row.creditCost} cr
-                </span>
-                <span style={{
-                  display: 'inline-block',
-                  fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  color: status.color,
-                  background: status.bg,
-                  padding: '3px 8px', borderRadius: 2,
-                }}>
-                  {status.label}
-                </span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: payout.color }}>
-                  {payout.label}
-                </span>
-              </div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </div>
+        </>
       )}
+
+      <style>{`
+        .p-bookings-cards { display: none; }
+        @media (max-width: 899px) {
+          .p-bookings-desktop { display: none !important; }
+          .p-bookings-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .p-bookings-card {
+            background: #1E1D1B;
+            border: 1px solid rgba(244,238,227,0.08);
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .p-bookings-card-primary {
+            font-size: 15px;
+            font-weight: 700;
+            color: #F4EEE3;
+            letter-spacing: -0.01em;
+          }
+          .p-bookings-card-sub {
+            font-size: 11px;
+            color: rgba(244,238,227,0.35);
+            margin-top: -4px;
+            margin-bottom: 4px;
+          }
+          .p-bookings-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+          }
+          .p-bookings-card-label {
+            font-size: 11px;
+            color: #847C72;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+          }
+          .p-bookings-card-value {
+            font-size: 13px;
+            color: #F4EEE3;
+            font-weight: 600;
+          }
+        }
+        @media (max-width: 640px) {
+          .p-bookings-card { padding: 16px 16px; }
+        }
+      `}</style>
     </div>
   )
 }
