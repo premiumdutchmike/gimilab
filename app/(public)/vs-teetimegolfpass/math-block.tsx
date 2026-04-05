@@ -238,7 +238,7 @@ export default function MathBlock() {
         ) : (
           <>
             At <strong>{rounds} rounds/year</strong>, TTGP is{' '}
-            <strong>{currency(Math.abs(math.gimmelabVsTtgp))}</strong> cheaper — but you&apos;d pay
+            <strong>{currency(Math.abs(math.gimmelabVsTtgp))}</strong>{' '}cheaper — but you&apos;d pay
             a booking fee every round and hit the $500 savings ceiling the moment you play more.
             Gimmelab {tierMeta.label} pulls ahead from{' '}
             <strong>
