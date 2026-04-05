@@ -105,31 +105,31 @@ export default function CourseForm(props: CourseFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-xl">
       <div className="space-y-2">
-        <Label htmlFor="name" className="text-white">Course name</Label>
-        <Input id="name" {...register('name')} className="bg-[#0f1923] border-[#1a1a1a] text-white" />
+        <Label htmlFor="name" className="text-[#F4EEE3]">Course name</Label>
+        <Input id="name" {...register('name')} className="bg-[#1E1D1B] border-[rgba(244,238,227,0.08)] text-[#F4EEE3]" />
         {errors.name && <p className="text-red-400 text-xs">{errors.name.message}</p>}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description" className="text-white">Description</Label>
+        <Label htmlFor="description" className="text-[#F4EEE3]">Description</Label>
         <Textarea id="description" {...register('description')} rows={4}
-          className="bg-[#0f1923] border-[#1a1a1a] text-white resize-none" />
+          className="bg-[#1E1D1B] border-[rgba(244,238,227,0.08)] text-[#F4EEE3] resize-none" />
         {errors.description && <p className="text-red-400 text-xs">{errors.description.message}</p>}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="address" className="text-white">Address</Label>
-        <Input id="address" {...register('address')} className="bg-[#0f1923] border-[#1a1a1a] text-white" />
+        <Label htmlFor="address" className="text-[#F4EEE3]">Address</Label>
+        <Input id="address" {...register('address')} className="bg-[#1E1D1B] border-[rgba(244,238,227,0.08)] text-[#F4EEE3]" />
         {errors.address && <p className="text-red-400 text-xs">{errors.address.message}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="holes" className="text-white">Holes</Label>
+          <Label htmlFor="holes" className="text-[#F4EEE3]">Holes</Label>
           <select
             id="holes"
             {...register('holes')}
-            className="w-full h-10 px-3 bg-[#0f1923] border border-[#1a1a1a] text-white rounded-none text-sm"
+            className="w-full h-10 px-3 bg-[#1E1D1B] border border-[rgba(244,238,227,0.08)] text-[#F4EEE3] rounded-none text-sm"
           >
             <option value="18">18 holes</option>
             <option value="9">9 holes</option>
@@ -137,19 +137,19 @@ export default function CourseForm(props: CourseFormProps) {
           {errors.holes && <p className="text-red-400 text-xs">{errors.holes.message}</p>}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="baseCreditCost" className="text-white">Base credit cost</Label>
+          <Label htmlFor="baseCreditCost" className="text-[#F4EEE3]">Base credit cost</Label>
           <Input
             id="baseCreditCost"
             type="number"
             {...register('baseCreditCost', { valueAsNumber: true })}
-            className="bg-[#0f1923] border-[#1a1a1a] text-white"
+            className="bg-[#1E1D1B] border-[rgba(244,238,227,0.08)] text-[#F4EEE3]"
           />
           {errors.baseCreditCost && <p className="text-red-400 text-xs">{errors.baseCreditCost.message}</p>}
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label className="text-white">Photo URLs <span className="text-white/40 font-normal">(comma-separated)</span></Label>
+        <Label className="text-[#F4EEE3]">Photo URLs <span className="text-[#847C72] font-normal">(comma-separated)</span></Label>
         <Textarea
           ref={photosRef}
           defaultValue={
@@ -157,12 +157,12 @@ export default function CourseForm(props: CourseFormProps) {
           }
           rows={2}
           placeholder="https://example.com/photo1.jpg, https://example.com/photo2.jpg"
-          className="bg-[#0f1923] border-[#1a1a1a] text-white resize-none"
+          className="bg-[#1E1D1B] border-[rgba(244,238,227,0.08)] text-[#F4EEE3] resize-none"
         />
       </div>
 
       <div className="space-y-2">
-        <Label className="text-white">Amenities</Label>
+        <Label className="text-[#F4EEE3]">Amenities</Label>
         <div className="grid grid-cols-2 gap-2">
           {AMENITIES.map((amenity) => (
             <label key={amenity} className="flex items-center gap-2 cursor-pointer">
@@ -170,9 +170,9 @@ export default function CourseForm(props: CourseFormProps) {
                 type="checkbox"
                 checked={selectedAmenities.includes(amenity)}
                 onChange={() => toggleAmenity(amenity)}
-                className="accent-[#38bdf8]"
+                className="accent-[#BF7B2E]"
               />
-              <span className="text-sm text-white/70">{amenity}</span>
+              <span className="text-sm text-[#847C72]">{amenity}</span>
             </label>
           ))}
         </div>

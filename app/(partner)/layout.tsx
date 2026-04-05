@@ -35,7 +35,16 @@ export default async function PartnerLayout({
   const stripeConnectPending = !partner.stripeConnectAccountId
 
   return (
-    <div className="min-h-screen bg-[#090f1a] flex flex-col">
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#0C0C0B',
+        color: '#F4EEE3',
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily: "var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+      }}
+    >
       {stripeConnectPending && (
         <div style={{
           background: '#BF7B2E',
@@ -45,7 +54,7 @@ export default async function PartnerLayout({
           justifyContent: 'space-between',
           gap: 12,
         }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#0C0C0B' }}>
             Payouts on hold — connect your bank account to start receiving payments.
           </span>
           <Link
@@ -55,20 +64,20 @@ export default async function PartnerLayout({
               fontWeight: 700,
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
-              color: '#0C0C0B',
-              background: '#fff',
+              color: '#BF7B2E',
+              background: '#F4EEE3',
               padding: '6px 14px',
               borderRadius: 2,
               textDecoration: 'none',
               whiteSpace: 'nowrap',
             }}
           >
-            Connect Now →
+            Connect now →
           </Link>
         </div>
       )}
       <PartnerNav businessName={partner.businessName} />
-      <main className="flex-1">{children}</main>
+      <main style={{ flex: 1 }}>{children}</main>
     </div>
   )
 }

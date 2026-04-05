@@ -40,16 +40,16 @@ export default async function PartnerPricingPage() {
   return (
     <div style={{ padding: '32px 28px', maxWidth: 1000, margin: '0 auto' }}>
 
-      <h1 style={{ fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', marginBottom: 8 }}>
+      <h1 style={{ fontSize: 26, fontWeight: 900, color: '#F4EEE3', letterSpacing: '-0.03em', marginBottom: 8 }}>
         Pricing
       </h1>
-      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 32 }}>
+      <p style={{ fontSize: 12, color: 'rgba(244,238,227,0.4)', marginBottom: 32 }}>
         Set your base credit rate and per-block overrides. Changes apply to newly generated slots.
       </p>
 
       {/* Base rate */}
-      <div style={{ background: '#141414', border: '1px solid #1f1f1f', padding: '24px', marginBottom: 24 }}>
-        <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 16 }}>
+      <div style={{ background: '#1E1D1B', border: '1px solid rgba(244,238,227,0.08)', padding: '24px', marginBottom: 24 }}>
+        <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(244,238,227,0.35)', marginBottom: 16 }}>
           Base rate
         </p>
         <BaseRateEditor
@@ -58,32 +58,32 @@ export default async function PartnerPricingPage() {
           floor={course.creditFloor ?? null}
           ceiling={course.creditCeiling ?? null}
         />
-        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 12, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 11, color: 'rgba(244,238,227,0.3)', marginTop: 12, lineHeight: 1.6 }}>
           Applied to all tee time slots unless a block override is set below.
           1 credit = $1.00 member value · your payout is {course.payoutRate ? `${Math.round(Number(course.payoutRate) * 100)}%` : '70%'} per credit.
         </p>
       </div>
 
       {/* Block overrides */}
-      <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 12 }}>
+      <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(244,238,227,0.35)', marginBottom: 12 }}>
         Block overrides
       </p>
 
       {activeBlocks.length === 0 ? (
-        <div style={{ background: '#141414', border: '1px solid #1f1f1f', padding: '48px 20px', textAlign: 'center' }}>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', marginBottom: 6 }}>No inventory blocks set up yet.</p>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)' }}>
-            Add blocks in <a href="/partner/inventory" style={{ color: '#38bdf8', textDecoration: 'none' }}>Inventory</a> to set per-block pricing.
+        <div style={{ background: '#1E1D1B', border: '1px solid rgba(244,238,227,0.08)', padding: '48px 20px', textAlign: 'center' }}>
+          <p style={{ fontSize: 13, color: 'rgba(244,238,227,0.35)', marginBottom: 6 }}>No inventory blocks set up yet.</p>
+          <p style={{ fontSize: 12, color: 'rgba(244,238,227,0.25)' }}>
+            Add blocks in <a href="/partner/inventory" style={{ color: '#BF7B2E', textDecoration: 'none' }}>Inventory</a> to set per-block pricing.
           </p>
         </div>
       ) : (
-        <div style={{ background: '#141414', border: '1px solid #1f1f1f', overflow: 'hidden' }}>
+        <div style={{ background: '#1E1D1B', border: '1px solid rgba(244,238,227,0.08)', overflow: 'hidden' }}>
           <div style={{
             display: 'grid', gridTemplateColumns: '1fr 160px 120px 220px',
-            padding: '10px 20px', borderBottom: '1px solid #1f1f1f',
+            padding: '10px 20px', borderBottom: '1px solid rgba(244,238,227,0.08)',
           }}>
             {['Days', 'Time', 'Base rate', 'Override'].map(h => (
-              <span key={h} style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)' }}>
+              <span key={h} style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(244,238,227,0.3)' }}>
                 {h}
               </span>
             ))}
@@ -93,15 +93,15 @@ export default async function PartnerPricingPage() {
             <div key={block.id} style={{
               display: 'grid', gridTemplateColumns: '1fr 160px 120px 220px',
               padding: '14px 20px', alignItems: 'center',
-              borderBottom: i < activeBlocks.length - 1 ? '1px solid #1f1f1f' : 'none',
+              borderBottom: i < activeBlocks.length - 1 ? '1px solid rgba(244,238,227,0.08)' : 'none',
             }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#F4EEE3' }}>
                 {formatDays(block.dayOfWeek)}
               </span>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+              <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.5)' }}>
                 {formatTime(block.startTime)} – {formatTime(block.endTime)}
               </span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.4)' }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(244,238,227,0.4)' }}>
                 {course.baseCreditCost} cr
               </span>
               <BlockOverrideEditor
@@ -117,11 +117,11 @@ export default async function PartnerPricingPage() {
       {/* Info box */}
       <div style={{
         marginTop: 24,
-        background: 'rgba(56,189,248,0.05)', border: '1px solid rgba(56,189,248,0.12)',
+        background: 'rgba(191,123,46,0.05)', border: '1px solid rgba(191,123,46,0.15)',
         padding: '14px 20px',
       }}>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>
-          <span style={{ color: '#38bdf8', fontWeight: 700 }}>How overrides work: </span>
+        <p style={{ fontSize: 12, color: 'rgba(244,238,227,0.4)', lineHeight: 1.6 }}>
+          <span style={{ color: '#BF7B2E', fontWeight: 700 }}>How overrides work: </span>
           When a block has a credit override, all slots generated from that block use that cost instead of the base rate.
           Useful for peak/off-peak pricing (e.g. weekends cost more, early morning less).
           Changes only affect <em>newly generated</em> slots — existing booked slots are unaffected.

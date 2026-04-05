@@ -113,7 +113,7 @@ export default function BlockForm(props: BlockFormProps) {
 
       {/* Days of week */}
       <div className="space-y-2">
-        <Label className="text-white">Days of week</Label>
+        <Label className="text-[#F4EEE3]">Days of week</Label>
         <div className="flex gap-2">
           {DAY_LABELS.map((label, i) => (
             <button
@@ -128,9 +128,9 @@ export default function BlockForm(props: BlockFormProps) {
                 fontWeight: 700,
                 letterSpacing: '1px',
                 cursor: 'pointer',
-                background: selectedDays.includes(i) ? '#fff' : 'transparent',
-                color: selectedDays.includes(i) ? '#000' : 'rgba(255,255,255,0.4)',
-                border: selectedDays.includes(i) ? '1px solid #fff' : '1px solid #333',
+                background: selectedDays.includes(i) ? '#F4EEE3' : 'transparent',
+                color: selectedDays.includes(i) ? '#0C0C0B' : '#847C72',
+                border: selectedDays.includes(i) ? '1px solid #F4EEE3' : '1px solid rgba(244,238,227,0.08)',
                 borderRadius: 0,
               }}
             >
@@ -146,24 +146,24 @@ export default function BlockForm(props: BlockFormProps) {
       {/* Start / End time */}
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="startTime" className="text-white">Start time</Label>
+          <Label htmlFor="startTime" className="text-[#F4EEE3]">Start time</Label>
           <Input
             id="startTime"
             type="time"
             {...register('startTime')}
-            className="bg-[#0f1923] border-[#1a1a1a] text-white"
+            className="bg-[#1E1D1B] border-[rgba(244,238,227,0.08)] text-[#F4EEE3]"
           />
           {errors.startTime && (
             <p className="text-red-400 text-xs">{errors.startTime.message}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="endTime" className="text-white">End time</Label>
+          <Label htmlFor="endTime" className="text-[#F4EEE3]">End time</Label>
           <Input
             id="endTime"
             type="time"
             {...register('endTime')}
-            className="bg-[#0f1923] border-[#1a1a1a] text-white"
+            className="bg-[#1E1D1B] border-[rgba(244,238,227,0.08)] text-[#F4EEE3]"
           />
           {errors.endTime && (
             <p className="text-red-400 text-xs">{errors.endTime.message}</p>
@@ -173,9 +173,9 @@ export default function BlockForm(props: BlockFormProps) {
 
       {/* Slots per interval */}
       <div className="space-y-2">
-        <Label htmlFor="slotsPerInterval" className="text-white">
+        <Label htmlFor="slotsPerInterval" className="text-[#F4EEE3]">
           Slots per 10-min interval{' '}
-          <span className="text-white/40 font-normal">(1–4)</span>
+          <span className="text-[#847C72] font-normal">(1–4)</span>
         </Label>
         <Input
           id="slotsPerInterval"
@@ -183,7 +183,7 @@ export default function BlockForm(props: BlockFormProps) {
           min={1}
           max={4}
           {...register('slotsPerInterval', { valueAsNumber: true })}
-          className="bg-[#0f1923] border-[#1a1a1a] text-white"
+          className="bg-[#1E1D1B] border-[rgba(244,238,227,0.08)] text-[#F4EEE3]"
         />
         {errors.slotsPerInterval && (
           <p className="text-red-400 text-xs">{errors.slotsPerInterval.message}</p>
@@ -192,9 +192,9 @@ export default function BlockForm(props: BlockFormProps) {
 
       {/* Credit override */}
       <div className="space-y-2">
-        <Label htmlFor="creditOverride" className="text-white">
+        <Label htmlFor="creditOverride" className="text-[#F4EEE3]">
           Credit override{' '}
-          <span className="text-white/40 font-normal">(blank = use course base)</span>
+          <span className="text-[#847C72] font-normal">(blank = use course base)</span>
         </Label>
         <Input
           id="creditOverride"
@@ -202,7 +202,7 @@ export default function BlockForm(props: BlockFormProps) {
           min={10}
           max={500}
           {...register('creditOverride', { valueAsNumber: true })}
-          className="bg-[#0f1923] border-[#1a1a1a] text-white"
+          className="bg-[#1E1D1B] border-[rgba(244,238,227,0.08)] text-[#F4EEE3]"
         />
         {errors.creditOverride && (
           <p className="text-red-400 text-xs">{errors.creditOverride.message}</p>
@@ -212,27 +212,27 @@ export default function BlockForm(props: BlockFormProps) {
       {/* Valid from / until */}
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="validFrom" className="text-white">Valid from</Label>
+          <Label htmlFor="validFrom" className="text-[#F4EEE3]">Valid from</Label>
           <Input
             id="validFrom"
             type="date"
             {...register('validFrom')}
-            className="bg-[#0f1923] border-[#1a1a1a] text-white"
+            className="bg-[#1E1D1B] border-[rgba(244,238,227,0.08)] text-[#F4EEE3]"
           />
           {errors.validFrom && (
             <p className="text-red-400 text-xs">{errors.validFrom.message}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="validUntil" className="text-white">
+          <Label htmlFor="validUntil" className="text-[#F4EEE3]">
             Valid until{' '}
-            <span className="text-white/40 font-normal">(blank = ongoing)</span>
+            <span className="text-[#847C72] font-normal">(blank = ongoing)</span>
           </Label>
           <Input
             id="validUntil"
             type="date"
             {...register('validUntil')}
-            className="bg-[#0f1923] border-[#1a1a1a] text-white"
+            className="bg-[#1E1D1B] border-[rgba(244,238,227,0.08)] text-[#F4EEE3]"
           />
         </div>
       </div>
@@ -243,9 +243,9 @@ export default function BlockForm(props: BlockFormProps) {
           id="isActive"
           type="checkbox"
           {...register('isActive')}
-          className="accent-[#38bdf8]"
+          className="accent-[#BF7B2E]"
         />
-        <Label htmlFor="isActive" className="text-white/70 text-sm font-normal cursor-pointer">
+        <Label htmlFor="isActive" className="text-[#847C72] text-sm font-normal cursor-pointer">
           Active (block will generate tee time slots)
         </Label>
       </div>

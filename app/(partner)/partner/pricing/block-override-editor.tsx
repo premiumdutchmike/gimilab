@@ -44,32 +44,32 @@ export default function BlockOverrideEditor({
           }}
           autoFocus
           style={{
-            width: 64, background: '#0f1923', border: '1px solid #38bdf8',
-            borderRadius: 2, padding: '3px 6px', color: '#fff', fontSize: 12,
+            width: 64, background: '#0C0C0B', border: '1px solid #BF7B2E',
+            borderRadius: 2, padding: '3px 6px', color: '#F4EEE3', fontSize: 12,
             fontFamily: 'inherit', outline: 'none',
           }}
         />
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>cr</span>
+        <span style={{ fontSize: 11, color: 'rgba(244,238,227,0.35)' }}>cr</span>
         <button onClick={() => save(value ? parseInt(value, 10) : null)} disabled={isPending} style={{
-          background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.25)',
+          background: 'rgba(191,123,46,0.12)', border: '1px solid rgba(191,123,46,0.3)',
           borderRadius: 2, padding: '3px 8px', cursor: 'pointer',
-          fontSize: 10, fontWeight: 700, color: '#38bdf8', fontFamily: 'inherit',
+          fontSize: 10, fontWeight: 700, color: '#BF7B2E', fontFamily: 'inherit',
           opacity: isPending ? 0.5 : 1,
         }}>
           Save
         </button>
         {displayed !== null && (
           <button onClick={() => save(null)} disabled={isPending} style={{
-            background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
+            background: 'transparent', border: '1px solid rgba(244,238,227,0.1)',
             borderRadius: 2, padding: '3px 8px', cursor: 'pointer',
-            fontSize: 10, color: 'rgba(255,255,255,0.3)', fontFamily: 'inherit',
+            fontSize: 10, color: 'rgba(244,238,227,0.35)', fontFamily: 'inherit',
           }}>
             Use base
           </button>
         )}
         <button onClick={() => setEditing(false)} style={{
           background: 'transparent', border: 'none', cursor: 'pointer',
-          fontSize: 10, color: 'rgba(255,255,255,0.25)', padding: '3px', fontFamily: 'inherit',
+          fontSize: 10, color: 'rgba(244,238,227,0.3)', padding: '3px', fontFamily: 'inherit',
         }}>✕</button>
         {error && <span style={{ fontSize: 10, color: '#f87171', width: '100%' }}>{error}</span>}
       </div>
@@ -83,13 +83,13 @@ export default function BlockOverrideEditor({
     }}>
       {displayed !== null ? (
         <>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#38bdf8' }}>{displayed} cr</span>
-          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.08em' }}>EDIT</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#BF7B2E' }}>{displayed} cr</span>
+          <span style={{ fontSize: 9, color: 'rgba(244,238,227,0.3)', letterSpacing: '0.08em' }}>EDIT</span>
         </>
       ) : (
         <>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>— (base rate)</span>
-          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.08em' }}>SET</span>
+          <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.35)' }}>— (base rate)</span>
+          <span style={{ fontSize: 9, color: 'rgba(244,238,227,0.3)', letterSpacing: '0.08em' }}>SET</span>
         </>
       )}
     </button>

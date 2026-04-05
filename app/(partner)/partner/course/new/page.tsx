@@ -19,8 +19,8 @@ export default async function NewCoursePage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-black text-white tracking-tight">Set up your course</h1>
-        <p className="text-white/40 text-sm mt-1">Your course will be reviewed before going live.</p>
+        <h1 className="text-2xl font-black text-[#F4EEE3] tracking-tight">Set up your course</h1>
+        <p className="text-[#847C72] text-sm mt-1">Your course will be reviewed before going live.</p>
       </div>
       <CourseForm mode="create" partnerId={partner.id} />
     </div>

@@ -44,23 +44,23 @@ export default function BaseRateEditor({
           onKeyDown={e => { if (e.key === 'Enter') save(); if (e.key === 'Escape') setEditing(false) }}
           autoFocus
           style={{
-            width: 72, background: '#0f1923', border: '1px solid #38bdf8',
-            borderRadius: 2, padding: '5px 8px', color: '#fff', fontSize: 14,
+            width: 72, background: '#0C0C0B', border: '1px solid #BF7B2E',
+            borderRadius: 2, padding: '5px 8px', color: '#F4EEE3', fontSize: 14,
             fontFamily: 'inherit', outline: 'none', fontWeight: 700,
           }}
         />
-        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>credits</span>
+        <span style={{ fontSize: 13, color: 'rgba(244,238,227,0.4)' }}>credits</span>
         <button onClick={save} disabled={isPending} style={{
-          background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.25)',
+          background: 'rgba(191,123,46,0.12)', border: '1px solid rgba(191,123,46,0.3)',
           borderRadius: 2, padding: '5px 12px', cursor: isPending ? 'default' : 'pointer',
-          fontSize: 11, fontWeight: 700, color: '#38bdf8', fontFamily: 'inherit',
+          fontSize: 11, fontWeight: 700, color: '#BF7B2E', fontFamily: 'inherit',
           opacity: isPending ? 0.5 : 1,
         }}>
           Save
         </button>
         <button onClick={() => setEditing(false)} style={{
           background: 'transparent', border: 'none', cursor: 'pointer',
-          fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: 'inherit',
+          fontSize: 11, color: 'rgba(244,238,227,0.35)', fontFamily: 'inherit',
         }}>Cancel</button>
         {error && <span style={{ fontSize: 11, color: '#f87171' }}>{error}</span>}
       </div>
@@ -69,20 +69,20 @@ export default function BaseRateEditor({
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-      <span style={{ fontSize: 32, fontWeight: 900, color: '#fff', letterSpacing: '-0.04em' }}>
+      <span style={{ fontSize: 32, fontWeight: 900, color: '#F4EEE3', letterSpacing: '-0.04em' }}>
         {displayed}
       </span>
-      <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)' }}>credits</span>
+      <span style={{ fontSize: 14, color: 'rgba(244,238,227,0.4)' }}>credits</span>
       <button onClick={() => setEditing(true)} style={{
-        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+        background: 'rgba(244,238,227,0.05)', border: '1px solid rgba(244,238,227,0.1)',
         borderRadius: 2, padding: '4px 10px', cursor: 'pointer',
-        fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.4)',
+        fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: 'rgba(244,238,227,0.4)',
         textTransform: 'uppercase', fontFamily: 'inherit',
       }}>
         Edit
       </button>
       {(floor || ceiling) && (
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
+        <span style={{ fontSize: 11, color: 'rgba(244,238,227,0.3)' }}>
           {floor && ceiling ? `${floor}–${ceiling} cr range` : floor ? `min ${floor} cr` : `max ${ceiling} cr`}
         </span>
       )}

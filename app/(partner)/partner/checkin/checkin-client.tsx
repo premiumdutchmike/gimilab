@@ -116,18 +116,18 @@ export default function CheckInClient() {
   return (
     <div style={{ maxWidth: 480, margin: '40px auto', padding: '0 24px' }}>
       <div style={{
-        background: '#0f1923', border: '1px solid #1a2433',
+        background: '#1E1D1B', border: '1px solid rgba(244,238,227,0.08)',
         borderRadius: 6, overflow: 'hidden',
       }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #1a2433' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(244,238,227,0.08)' }}>
           <div style={{
             fontSize: 9, fontWeight: 700, letterSpacing: '0.14em',
-            textTransform: 'uppercase', color: '#38bdf8', marginBottom: 6,
+            textTransform: 'uppercase', color: '#BF7B2E', marginBottom: 6,
           }}>
             Pro Shop
           </div>
-          <div style={{ fontSize: 18, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>
+          <div style={{ fontSize: 18, fontWeight: 900, color: '#F4EEE3', letterSpacing: '-0.02em' }}>
             Member Check-in
           </div>
         </div>
@@ -135,15 +135,15 @@ export default function CheckInClient() {
         {/* Mode toggle */}
         {!result && (
           <div style={{
-            display: 'flex', borderBottom: '1px solid #1a2433',
+            display: 'flex', borderBottom: '1px solid rgba(244,238,227,0.08)',
           }}>
             <button
               onClick={() => setMode('scan')}
               style={{
                 flex: 1, padding: '12px', border: 'none', cursor: 'pointer',
-                background: mode === 'scan' ? 'rgba(56,189,248,0.08)' : 'transparent',
-                borderBottom: mode === 'scan' ? '2px solid #38bdf8' : '2px solid transparent',
-                color: mode === 'scan' ? '#38bdf8' : 'rgba(255,255,255,0.4)',
+                background: mode === 'scan' ? 'rgba(191,123,46,0.08)' : 'transparent',
+                borderBottom: mode === 'scan' ? '2px solid #BF7B2E' : '2px solid transparent',
+                color: mode === 'scan' ? '#BF7B2E' : 'rgba(244,238,227,0.4)',
                 fontSize: 12, fontWeight: 700, letterSpacing: '0.08em',
                 textTransform: 'uppercase',
               }}
@@ -154,9 +154,9 @@ export default function CheckInClient() {
               onClick={() => setMode('manual')}
               style={{
                 flex: 1, padding: '12px', border: 'none', cursor: 'pointer',
-                background: mode === 'manual' ? 'rgba(56,189,248,0.08)' : 'transparent',
-                borderBottom: mode === 'manual' ? '2px solid #38bdf8' : '2px solid transparent',
-                color: mode === 'manual' ? '#38bdf8' : 'rgba(255,255,255,0.4)',
+                background: mode === 'manual' ? 'rgba(191,123,46,0.08)' : 'transparent',
+                borderBottom: mode === 'manual' ? '2px solid #BF7B2E' : '2px solid transparent',
+                color: mode === 'manual' ? '#BF7B2E' : 'rgba(244,238,227,0.4)',
                 fontSize: 12, fontWeight: 700, letterSpacing: '0.08em',
                 textTransform: 'uppercase',
               }}
@@ -172,12 +172,12 @@ export default function CheckInClient() {
             /* ── Success ── */
             <div>
               <div style={{
-                background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)',
+                background: 'rgba(95,179,128,0.08)', border: '1px solid rgba(95,179,128,0.3)',
                 borderRadius: 4, padding: '24px', textAlign: 'center',
               }}>
                 <div style={{
                   width: 48, height: 48, borderRadius: '50%',
-                  background: 'rgba(34,197,94,0.15)', border: '2px solid #22c55e',
+                  background: 'rgba(95,179,128,0.15)', border: '2px solid #5FB380',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   margin: '0 auto 16px', fontSize: 24,
                 }}>
@@ -185,17 +185,17 @@ export default function CheckInClient() {
                 </div>
                 <div style={{
                   fontSize: 11, fontWeight: 700, letterSpacing: '0.1em',
-                  textTransform: 'uppercase', color: '#22c55e', marginBottom: 12,
+                  textTransform: 'uppercase', color: '#5FB380', marginBottom: 12,
                 }}>
                   Checked in
                 </div>
-                <div style={{ fontSize: 20, fontWeight: 900, color: '#fff', marginBottom: 4 }}>
+                <div style={{ fontSize: 20, fontWeight: 900, color: '#F4EEE3', marginBottom: 4 }}>
                   {result.memberName}
                 </div>
-                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', marginBottom: 4 }}>
+                <div style={{ fontSize: 14, color: 'rgba(244,238,227,0.6)', marginBottom: 4 }}>
                   {result.courseName}
                 </div>
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
+                <div style={{ fontSize: 13, color: 'rgba(244,238,227,0.4)' }}>
                   {result.date} at {result.time} · {result.players} player{result.players !== 1 ? 's' : ''}
                 </div>
               </div>
@@ -203,10 +203,10 @@ export default function CheckInClient() {
                 onClick={reset}
                 style={{
                   width: '100%', marginTop: 14, padding: '14px',
-                  background: '#38bdf8', border: 'none',
+                  background: '#BF7B2E', border: 'none',
                   borderRadius: 4, fontSize: 12, fontWeight: 700,
                   letterSpacing: '0.08em', textTransform: 'uppercase',
-                  color: '#0a0f1a', cursor: 'pointer',
+                  color: '#0C0C0B', cursor: 'pointer',
                 }}
               >
                 Next Check-in
@@ -223,8 +223,8 @@ export default function CheckInClient() {
                   minHeight: 300,
                   borderRadius: 8,
                   overflow: 'hidden',
-                  background: '#0a0f1a',
-                  border: '1px solid #1a2433',
+                  background: '#0C0C0B',
+                  border: '1px solid rgba(244,238,227,0.08)',
                 }}
               />
               {cameraError && (
@@ -240,7 +240,7 @@ export default function CheckInClient() {
               {!cameraReady && !cameraError && (
                 <div style={{
                   marginTop: 12, fontSize: 12,
-                  color: 'rgba(255,255,255,0.4)', textAlign: 'center',
+                  color: 'rgba(244,238,227,0.4)', textAlign: 'center',
                 }}>
                   Starting camera…
                 </div>
@@ -248,7 +248,7 @@ export default function CheckInClient() {
               {cameraReady && (
                 <div style={{
                   marginTop: 12, fontSize: 11,
-                  color: 'rgba(255,255,255,0.3)', textAlign: 'center',
+                  color: 'rgba(244,238,227,0.35)', textAlign: 'center',
                 }}>
                   Point camera at the member's QR code. Check-in is automatic.
                 </div>
@@ -263,7 +263,7 @@ export default function CheckInClient() {
               )}
               {isPending && (
                 <div style={{
-                  marginTop: 10, fontSize: 12, color: '#38bdf8',
+                  marginTop: 10, fontSize: 12, color: '#BF7B2E',
                   fontWeight: 600, textAlign: 'center',
                 }}>
                   Checking in…
@@ -276,7 +276,7 @@ export default function CheckInClient() {
               <label style={{
                 display: 'block', fontSize: 11, fontWeight: 700,
                 letterSpacing: '0.1em', textTransform: 'uppercase',
-                color: 'rgba(255,255,255,0.4)', marginBottom: 8,
+                color: 'rgba(244,238,227,0.4)', marginBottom: 8,
               }}>
                 Enter Check-in Code
               </label>
@@ -291,11 +291,11 @@ export default function CheckInClient() {
                   maxLength={8}
                   autoFocus
                   style={{
-                    flex: 1, background: '#0a0f1a',
-                    border: `1px solid ${error ? '#ef4444' : '#1a2433'}`,
+                    flex: 1, background: '#0C0C0B',
+                    border: `1px solid ${error ? '#ef4444' : 'rgba(244,238,227,0.08)'}`,
                     borderRadius: 4, padding: '12px 14px',
                     fontSize: 18, fontWeight: 700, fontFamily: 'monospace',
-                    color: '#fff', letterSpacing: '0.1em', outline: 'none',
+                    color: '#F4EEE3', letterSpacing: '0.1em', outline: 'none',
                   }}
                 />
                 <button
@@ -303,7 +303,7 @@ export default function CheckInClient() {
                   disabled={isPending || !code.trim()}
                   style={{
                     padding: '12px 20px',
-                    background: '#38bdf8', color: '#0a0f1a',
+                    background: '#BF7B2E', color: '#0C0C0B',
                     border: 'none', borderRadius: 4,
                     fontSize: 12, fontWeight: 700, letterSpacing: '0.08em',
                     textTransform: 'uppercase', cursor: 'pointer',
@@ -318,7 +318,7 @@ export default function CheckInClient() {
                   {error}
                 </div>
               )}
-              <div style={{ marginTop: 12, fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
+              <div style={{ marginTop: 12, fontSize: 11, color: 'rgba(244,238,227,0.35)' }}>
                 Enter the 8-character code from the member's app or email.
               </div>
             </div>

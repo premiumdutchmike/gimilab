@@ -37,10 +37,10 @@ export default async function EditBlockPage({
   return (
     <div className="px-8 py-8">
       <div style={{ marginBottom: 32 }}>
-        <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '3px', color: '#444', textTransform: 'uppercase', marginBottom: 8 }}>
+        <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '3px', color: 'rgba(244,238,227,0.35)', textTransform: 'uppercase', marginBottom: 8 }}>
           Inventory
         </p>
-        <h1 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, letterSpacing: '-1px', color: '#fff', lineHeight: 1, margin: 0 }}>
+        <h1 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, letterSpacing: '-1px', color: '#F4EEE3', lineHeight: 1, margin: 0 }}>
           Edit block
         </h1>
       </div>

@@ -18,16 +18,16 @@ function formatTime(t: string) {
 }
 
 const STATUS_STYLES: Record<string, { label: string; color: string; bg: string }> = {
-  CONFIRMED:  { label: 'Confirmed',  color: '#4ade80', bg: 'rgba(74,222,128,0.10)' },
-  COMPLETED:  { label: 'Completed',  color: '#38bdf8', bg: 'rgba(56,189,248,0.10)' },
+  CONFIRMED:  { label: 'Confirmed',  color: '#5FB380', bg: 'rgba(95,179,128,0.12)' },
+  COMPLETED:  { label: 'Completed',  color: '#BF7B2E', bg: 'rgba(191,123,46,0.12)' },
   CANCELLED:  { label: 'Cancelled',  color: '#f87171', bg: 'rgba(248,113,113,0.10)' },
-  NO_SHOW:    { label: 'No-show',    color: '#fbbf24', bg: 'rgba(251,191,36,0.10)'  },
+  NO_SHOW:    { label: 'No-show',    color: '#BF7B2E', bg: 'rgba(191,123,46,0.12)'  },
 }
 
 const PAYOUT_STYLES: Record<string, { label: string; color: string }> = {
-  PENDING:    { label: 'Pending',   color: 'rgba(255,255,255,0.3)' },
-  PROCESSED:  { label: 'Paid out',  color: '#4ade80' },
-  HELD:       { label: 'Held',      color: '#fbbf24' },
+  PENDING:    { label: 'Pending',   color: 'rgba(244,238,227,0.35)' },
+  PROCESSED:  { label: 'Paid out',  color: '#5FB380' },
+  HELD:       { label: 'Held',      color: '#BF7B2E' },
 }
 
 type Tab = 'upcoming' | 'past'
@@ -58,20 +58,20 @@ export default async function PartnerBookingsPage({
       {/* Header */}
       <div style={{ marginBottom: 28, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16 }}>
         <div>
-          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#38bdf8', marginBottom: 6 }}>
+          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#BF7B2E', marginBottom: 6 }}>
             {course.name}
           </p>
-          <h1 style={{ fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1 }}>
+          <h1 style={{ fontSize: 26, fontWeight: 900, color: '#F4EEE3', letterSpacing: '-0.03em', lineHeight: 1 }}>
             Bookings
           </h1>
         </div>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontWeight: 500 }}>
+        <div style={{ fontSize: 12, color: 'rgba(244,238,227,0.35)', fontWeight: 500 }}>
           {rows.length} {tab} booking{rows.length !== 1 ? 's' : ''}
         </div>
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 2, marginBottom: 24, borderBottom: '1px solid #1a1a1a' }}>
+      <div style={{ display: 'flex', gap: 2, marginBottom: 24, borderBottom: '1px solid rgba(244,238,227,0.08)' }}>
         {(['upcoming', 'past'] as Tab[]).map(t => (
           <a
             key={t}
@@ -83,8 +83,8 @@ export default async function PartnerBookingsPage({
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
               textDecoration: 'none',
-              color: tab === t ? '#fff' : 'rgba(255,255,255,0.3)',
-              borderBottom: tab === t ? '2px solid #38bdf8' : '2px solid transparent',
+              color: tab === t ? '#F4EEE3' : 'rgba(244,238,227,0.35)',
+              borderBottom: tab === t ? '2px solid #BF7B2E' : '2px solid transparent',
               transition: 'color 0.15s',
             }}
           >
@@ -96,32 +96,32 @@ export default async function PartnerBookingsPage({
       {/* Table */}
       {rows.length === 0 ? (
         <div style={{
-          background: '#0f1923', border: '1px solid #1a1a1a',
+          background: '#1E1D1B', border: '1px solid rgba(244,238,227,0.08)',
           padding: '60px 24px', textAlign: 'center',
         }}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>
+          <p style={{ fontSize: 14, fontWeight: 600, color: 'rgba(244,238,227,0.4)', marginBottom: 6 }}>
             No {tab} bookings yet.
           </p>
           {tab === 'upcoming' && (
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)' }}>
+            <p style={{ fontSize: 12, color: 'rgba(244,238,227,0.25)' }}>
               Bookings will appear here once members reserve tee times at your course.
             </p>
           )}
         </div>
       ) : (
-        <div style={{ background: '#0f1923', border: '1px solid #1a1a1a', overflow: 'hidden' }}>
+        <div style={{ background: '#1E1D1B', border: '1px solid rgba(244,238,227,0.08)', overflow: 'hidden' }}>
           {/* Table head */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: '130px 80px 1fr 80px 90px 90px',
             gap: 0,
             padding: '10px 20px',
-            borderBottom: '1px solid #1a1a1a',
+            borderBottom: '1px solid rgba(244,238,227,0.08)',
           }}>
             {['Date', 'Time', 'Member', 'Credits', 'Status', 'Payout'].map(h => (
               <span key={h} style={{
                 fontSize: 9, fontWeight: 700, letterSpacing: '0.12em',
-                textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)',
+                textTransform: 'uppercase', color: 'rgba(244,238,227,0.3)',
               }}>
                 {h}
               </span>
@@ -130,8 +130,8 @@ export default async function PartnerBookingsPage({
 
           {/* Rows */}
           {rows.map((row, i) => {
-            const status = STATUS_STYLES[row.status] ?? { label: row.status, color: '#fff', bg: 'transparent' }
-            const payout = PAYOUT_STYLES[row.payoutStatus ?? 'PENDING'] ?? { label: row.payoutStatus ?? '—', color: 'rgba(255,255,255,0.3)' }
+            const status = STATUS_STYLES[row.status] ?? { label: row.status, color: '#F4EEE3', bg: 'transparent' }
+            const payout = PAYOUT_STYLES[row.payoutStatus ?? 'PENDING'] ?? { label: row.payoutStatus ?? '—', color: 'rgba(244,238,227,0.35)' }
             return (
               <div
                 key={row.bookingId}
@@ -140,25 +140,25 @@ export default async function PartnerBookingsPage({
                   gridTemplateColumns: '130px 80px 1fr 80px 90px 90px',
                   gap: 0,
                   padding: '14px 20px',
-                  borderBottom: i < rows.length - 1 ? '1px solid #1a1a1a' : 'none',
+                  borderBottom: i < rows.length - 1 ? '1px solid rgba(244,238,227,0.08)' : 'none',
                   alignItems: 'center',
                 }}
               >
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#F4EEE3' }}>
                   {formatDate(row.date)}
                 </span>
-                <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>
+                <span style={{ fontSize: 13, color: 'rgba(244,238,227,0.6)', fontWeight: 500 }}>
                   {formatTime(row.startTime)}
                 </span>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#F4EEE3' }}>
                     {row.memberName ?? '—'}
                   </div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 1 }}>
+                  <div style={{ fontSize: 11, color: 'rgba(244,238,227,0.35)', marginTop: 1 }}>
                     {row.memberEmail}
                   </div>
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#38bdf8' }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#BF7B2E' }}>
                   {row.creditCost} cr
                 </span>
                 <span style={{

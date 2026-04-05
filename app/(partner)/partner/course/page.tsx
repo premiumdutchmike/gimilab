@@ -19,9 +19,9 @@ export default async function EditCoursePage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-black text-white tracking-tight">{course.name}</h1>
-        <p className="text-white/40 text-sm mt-1">
-          Status: <span className={course.status === 'active' ? 'text-[#38bdf8]' : 'text-yellow-400'}>{course.status}</span>
+        <h1 className="text-2xl font-black text-[#F4EEE3] tracking-tight">{course.name}</h1>
+        <p className="text-[#847C72] text-sm mt-1">
+          Status: <span className={course.status === 'active' ? 'text-[#5FB380]' : 'text-[#BF7B2E]'}>{course.status}</span>
         </p>
       </div>
       <CourseForm

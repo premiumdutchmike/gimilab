@@ -40,26 +40,26 @@ export default async function InventoryPage() {
     <div className="px-8 py-8 max-w-4xl">
       {/* Page header */}
       <div style={{ marginBottom: 32 }}>
-        <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '3px', color: '#444', textTransform: 'uppercase', marginBottom: 8 }}>
+        <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '3px', color: 'rgba(244,238,227,0.35)', textTransform: 'uppercase', marginBottom: 8 }}>
           Partner Portal
         </p>
-        <h1 style={{ fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 900, letterSpacing: '-1px', color: '#fff', lineHeight: 1, margin: 0 }}>
+        <h1 style={{ fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 900, letterSpacing: '-1px', color: '#F4EEE3', lineHeight: 1, margin: 0 }}>
           Inventory
         </h1>
       </div>
 
       {/* ── Blocks section ── */}
-      <div style={{ borderTop: '1px solid #1a1a1a', marginBottom: 48 }}>
+      <div style={{ borderTop: '1px solid rgba(244,238,227,0.08)', marginBottom: 48 }}>
         {/* Section label bar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid #1a1a1a' }}>
-          <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '3px', color: '#444', textTransform: 'uppercase' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid rgba(244,238,227,0.08)' }}>
+          <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '3px', color: 'rgba(244,238,227,0.35)', textTransform: 'uppercase' }}>
             AVAILABILITY BLOCKS — {blocks.length}
           </span>
           <Link
             href="/partner/inventory/new"
             style={{
-              background: '#fff',
-              color: '#000',
+              background: '#F4EEE3',
+              color: '#0C0C0B',
               fontSize: 10,
               fontWeight: 800,
               letterSpacing: '2px',
@@ -73,7 +73,7 @@ export default async function InventoryPage() {
         </div>
 
         {blocks.length === 0 ? (
-          <div style={{ padding: '32px 0', color: '#444', fontSize: 13 }}>
+          <div style={{ padding: '32px 0', color: 'rgba(244,238,227,0.35)', fontSize: 13 }}>
             No blocks yet. Add your first availability block to start generating tee times.
           </div>
         ) : (
@@ -85,7 +85,7 @@ export default async function InventoryPage() {
                 alignItems: 'center',
                 gap: 16,
                 padding: '16px 0',
-                borderBottom: '1px solid #111',
+                borderBottom: '1px solid rgba(244,238,227,0.05)',
                 flexWrap: 'wrap',
               }}
             >
@@ -99,8 +99,8 @@ export default async function InventoryPage() {
                       fontWeight: 700,
                       letterSpacing: '1px',
                       padding: '3px 6px',
-                      background: '#1a1a1a',
-                      color: '#fff',
+                      background: 'rgba(244,238,227,0.08)',
+                      color: '#F4EEE3',
                     }}
                   >
                     {DAY_ABBR[d]}
@@ -109,17 +109,17 @@ export default async function InventoryPage() {
               </div>
 
               {/* Time range */}
-              <span style={{ fontSize: 13, color: '#fff', fontFamily: 'var(--font-geist-mono)', flexShrink: 0 }}>
+              <span style={{ fontSize: 13, color: '#F4EEE3', fontFamily: 'var(--font-geist-mono)', flexShrink: 0 }}>
                 {formatTime(block.startTime)} – {formatTime(block.endTime)}
               </span>
 
               {/* Slots per interval */}
-              <span style={{ fontSize: 11, color: '#555', flexShrink: 0 }}>
+              <span style={{ fontSize: 11, color: '#847C72', flexShrink: 0 }}>
                 {block.slotsPerInterval} slot{block.slotsPerInterval !== 1 ? 's' : ''}/10min
               </span>
 
               {/* Credit cost */}
-              <span style={{ fontSize: 11, color: '#555', flexShrink: 0 }}>
+              <span style={{ fontSize: 11, color: '#847C72', flexShrink: 0 }}>
                 {block.creditOverride != null
                   ? `${block.creditOverride} cr (override)`
                   : `${course.baseCreditCost} cr (base)`}
@@ -132,7 +132,7 @@ export default async function InventoryPage() {
                   fontWeight: 600,
                   letterSpacing: '1px',
                   textTransform: 'uppercase',
-                  color: block.isActive ? '#fff' : 'rgba(255,255,255,0.2)',
+                  color: block.isActive ? '#F4EEE3' : 'rgba(244,238,227,0.25)',
                   flexShrink: 0,
                 }}
               >
@@ -143,7 +143,7 @@ export default async function InventoryPage() {
               <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginLeft: 'auto' }}>
                 <Link
                   href={`/partner/inventory/${block.id}`}
-                  style={{ fontSize: 11, color: '#38bdf8', textDecoration: 'none', letterSpacing: '1px', textTransform: 'uppercase' }}
+                  style={{ fontSize: 11, color: '#BF7B2E', textDecoration: 'none', letterSpacing: '1px', textTransform: 'uppercase' }}
                 >
                   EDIT →
                 </Link>
@@ -153,7 +153,7 @@ export default async function InventoryPage() {
                     type="submit"
                     style={{
                       fontSize: 10,
-                      color: 'rgba(255,255,255,0.4)',
+                      color: 'rgba(244,238,227,0.4)',
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
@@ -171,7 +171,7 @@ export default async function InventoryPage() {
                     type="submit"
                     style={{
                       fontSize: 10,
-                      color: 'rgba(255,255,255,0.2)',
+                      color: 'rgba(244,238,227,0.25)',
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
@@ -190,27 +190,27 @@ export default async function InventoryPage() {
       </div>
 
       {/* ── Slots section ── */}
-      <div style={{ borderTop: '1px solid #1a1a1a' }}>
+      <div style={{ borderTop: '1px solid rgba(244,238,227,0.08)' }}>
         {/* Section label bar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid #1a1a1a' }}>
-          <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '3px', color: '#444', textTransform: 'uppercase' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid rgba(244,238,227,0.08)' }}>
+          <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '3px', color: 'rgba(244,238,227,0.35)', textTransform: 'uppercase' }}>
             UPCOMING SLOTS — NEXT 14 DAYS
           </span>
-          <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', color: '#444', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', color: 'rgba(244,238,227,0.35)', textTransform: 'uppercase' }}>
             {slots.length} SLOTS
           </span>
         </div>
 
         {slots.length === 0 ? (
-          <div style={{ padding: '32px 0', color: '#444', fontSize: 13 }}>
+          <div style={{ padding: '32px 0', color: 'rgba(244,238,227,0.35)', fontSize: 13 }}>
             No slots yet. Slots are generated nightly — check back tomorrow, or ensure your course status is active.
           </div>
         ) : (
           <>
             {/* Table header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 120px', gap: 8, padding: '10px 0', borderBottom: '1px solid #111' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 120px', gap: 8, padding: '10px 0', borderBottom: '1px solid rgba(244,238,227,0.05)' }}>
               {['DATE', 'TIME', 'CREDITS', 'STATUS'].map((col) => (
-                <span key={col} style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#333', textTransform: 'uppercase' }}>
+                <span key={col} style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(244,238,227,0.25)', textTransform: 'uppercase' }}>
                   {col}
                 </span>
               ))}
@@ -219,8 +219,8 @@ export default async function InventoryPage() {
             {/* Table rows */}
             {visibleSlots.map((slot) => {
               const statusColor =
-                slot.status === 'BOOKED' ? '#38bdf8' :
-                slot.status === 'AVAILABLE' ? 'rgba(255,255,255,0.8)' : '#333'
+                slot.status === 'BOOKED' ? '#BF7B2E' :
+                slot.status === 'AVAILABLE' ? 'rgba(244,238,227,0.8)' : 'rgba(244,238,227,0.25)'
 
               return (
                 <div
@@ -230,16 +230,16 @@ export default async function InventoryPage() {
                     gridTemplateColumns: '1fr 80px 80px 120px',
                     gap: 8,
                     padding: '8px 0',
-                    borderBottom: '1px solid #0d0d0d',
+                    borderBottom: '1px solid rgba(244,238,227,0.05)',
                   }}
                 >
-                  <span style={{ fontSize: 12, color: '#888', fontFamily: 'var(--font-geist-mono)' }}>
+                  <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.55)', fontFamily: 'var(--font-geist-mono)' }}>
                     {slot.date}
                   </span>
-                  <span style={{ fontSize: 12, color: '#888', fontFamily: 'var(--font-geist-mono)' }}>
+                  <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.55)', fontFamily: 'var(--font-geist-mono)' }}>
                     {formatTime(slot.startTime)}
                   </span>
-                  <span style={{ fontSize: 12, color: '#888', fontFamily: 'var(--font-geist-mono)' }}>
+                  <span style={{ fontSize: 12, color: 'rgba(244,238,227,0.55)', fontFamily: 'var(--font-geist-mono)' }}>
                     {slot.creditCost}
                   </span>
                   <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', color: statusColor, textTransform: 'uppercase' }}>
@@ -251,7 +251,7 @@ export default async function InventoryPage() {
 
             {/* Overflow note */}
             {slots.length > 100 && (
-              <div style={{ padding: '12px 0', fontSize: 11, color: '#444' }}>
+              <div style={{ padding: '12px 0', fontSize: 11, color: 'rgba(244,238,227,0.35)' }}>
                 Showing 100 of {slots.length} slots
               </div>
             )}
