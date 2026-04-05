@@ -52,6 +52,10 @@ export default function PublicNav() {
   // Auth pages render their own nav
   if (pathname === '/login' || pathname === '/signup') return null
 
+  // vs-* comparison landing pages ship their own self-contained nav so they can
+  // be deleted independently. See app/(public)/vs-teetimegolfpass/vs-nav.tsx.
+  if (pathname.startsWith('/vs-')) return null
+
   const isHomepage = pathname === '/'
 
   // Non-homepage pages get the light nav (unchanged behavior)

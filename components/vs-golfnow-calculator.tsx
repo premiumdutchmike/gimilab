@@ -1,37 +1,35 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
-// Real Gimmelab plans from CLAUDE.md
+// ── Math constants — duplicated from components/savings-calculator.tsx ──
+// Intentionally NOT imported so the two calculators can drift independently
+// if the vs-golfnow landing page ever needs its own assumptions.
 type PlanKey = 'casual' | 'core' | 'heavy'
 const PLANS: Record<PlanKey, { label: string; monthly: number; credits: number }> = {
-  casual: { label: 'Casual', monthly: 99,  credits: 100 },
-  core:   { label: 'Core',   monthly: 149, credits: 170 },
-  heavy:  { label: 'Heavy',  monthly: 199, credits: 250 },
+  casual: { label: 'Casual', monthly: 99, credits: 100 },
+  core: { label: 'Core', monthly: 149, credits: 170 },
+  heavy: { label: 'Heavy', monthly: 199, credits: 250 },
 }
-// Average round = 50 credits (reasonable for public/municipal courses)
-// and a $90 average rack rate — Philly metro benchmark (public + daily-fee)
 const AVG_CREDITS_PER_ROUND = 50
 const AVG_RACK_RATE = 90
 
 // GolfNow Premium comparison assumptions
-// - $99/yr membership fee
-// - Waives ~$6 booking fee per round (the real "savings" lever)
-// - Occasional Hot Deals: conservatively ~5% off rack rate averaged across bookings
 const GOLFNOW_YEARLY = 99
 const GOLFNOW_FEE_WAIVED = 6
 const GOLFNOW_HOT_DEAL_PCT = 0.05
 
 const INSTEAD_ITEMS: Array<{ price: number; name: string; suffix: string }> = [
-  { price: 55,  name: 'Dozen Pro V1s',      suffix: '$55 / dozen' },
-  { price: 8,   name: 'Beers at the turn',  suffix: '$8 each' },
-  { price: 5,   name: 'Hot dogs at the turn', suffix: '$5 each' },
-  { price: 400, name: 'Brand new drivers',  suffix: '$400 each' },
-  { price: 20,  name: 'Golf gloves',        suffix: '$20 each' },
-  { price: 35,  name: 'Golf hats',          suffix: '$35 each' },
-  { price: 12,  name: 'Range buckets',      suffix: '$12 each' },
-  { price: 800, name: 'New iron sets',      suffix: '$800 / set' },
+  { price: 55, name: 'Dozen Pro V1s', suffix: '$55 / dozen' },
+  { price: 8, name: 'Beers at the turn', suffix: '$8 each' },
+  { price: 5, name: 'Hot dogs at the turn', suffix: '$5 each' },
+  { price: 400, name: 'Brand new drivers', suffix: '$400 each' },
+  { price: 20, name: 'Golf gloves', suffix: '$20 each' },
+  { price: 35, name: 'Golf hats', suffix: '$35 each' },
+  { price: 12, name: 'Range buckets', suffix: '$12 each' },
+  { price: 800, name: 'New iron sets', suffix: '$800 / set' },
 ]
 
 function maxRoundsFor(plan: PlanKey) {
@@ -45,23 +43,50 @@ function formatUSD(n: number) {
 function savingsSubtext(savings: number) {
   if (savings >= 1500) return "That's a new driver. New irons. Both."
   if (savings >= 1000) return "That's a new driver plus lessons."
-  if (savings >= 500)  return "That's a set of new wedges."
-  if (savings >  0)    return 'Real money back in your pocket.'
+  if (savings >= 500) return "That's a set of new wedges."
+  if (savings > 0) return 'Real money back in your pocket.'
   return 'Break-even — but zero hassle and no booking fees.'
 }
 
-export default function SavingsCalculator() {
-  const [plan, setPlan] = useState<PlanKey>('core')
-  const [rounds, setRounds] = useState<number>(3)
+function isPlanKey(v: string | null): v is PlanKey {
+  return v === 'casual' || v === 'core' || v === 'heavy'
+}
+
+export default function VsGolfnowCalculator() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // Initialize from URL (with defaults + clamping)
+  const initialPlan: PlanKey = (() => {
+    const p = searchParams.get('plan')
+    return isPlanKey(p) ? p : 'core'
+  })()
+  const initialRounds: number = (() => {
+    const r = Number(searchParams.get('rounds'))
+    const max = maxRoundsFor(initialPlan)
+    if (!Number.isFinite(r) || r < 1) return 3 > max ? max : 3
+    return Math.max(1, Math.min(max, Math.floor(r)))
+  })()
+
+  const [plan, setPlan] = useState<PlanKey>(initialPlan)
+  const [rounds, setRounds] = useState<number>(initialRounds)
+  const [copied, setCopied] = useState(false)
 
   const maxForPlan = maxRoundsFor(plan)
 
-  // Clamp rounds when plan changes
-  function selectPlan(p: PlanKey) {
+  // Sync state → URL (replace, not push)
+  useEffect(() => {
+    const params = new URLSearchParams()
+    params.set('rounds', String(rounds))
+    params.set('plan', plan)
+    router.replace(`?${params.toString()}`, { scroll: false })
+  }, [plan, rounds, router])
+
+  const selectPlan = useCallback((p: PlanKey) => {
     setPlan(p)
     const max = maxRoundsFor(p)
-    if (rounds > max) setRounds(max)
-  }
+    setRounds((r) => (r > max ? max : r))
+  }, [])
 
   const {
     roundsPerYear,
@@ -74,7 +99,6 @@ export default function SavingsCalculator() {
     const rpy = rounds * 12
     const without = rpy * AVG_RACK_RATE
     const withG = PLANS[plan].monthly * 12
-    // GolfNow: rack rate minus fee waivers minus small hot-deal discount, plus membership fee
     const gnFeesWaived = rpy * GOLFNOW_FEE_WAIVED
     const gnHotDeals = without * GOLFNOW_HOT_DEAL_PCT
     const golfnow = without + GOLFNOW_YEARLY - gnFeesWaived - gnHotDeals
@@ -88,42 +112,59 @@ export default function SavingsCalculator() {
     }
   }, [plan, rounds])
 
-  return (
-    <section className="math-section" id="savings">
-      <div className="math-eyebrow">The Math</div>
-      <h2>Play more. <span className="gold">Spend less.</span></h2>
-      <p>See what you&apos;d actually save based on how much you play.</p>
+  const handleCopy = useCallback(() => {
+    if (typeof window === 'undefined') return
+    const url = window.location.href
+    const reset = () => {
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
+    }
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(url).then(reset).catch(reset)
+    } else {
+      reset()
+    }
+  }, [])
 
-      <div className="math-layout">
+  return (
+    <section className="vgn-math-section" id="calculator">
+      <div className="vgn-math-eyebrow">Your numbers</div>
+      <h2>
+        Drag the slider. <span className="gold">Watch the gap.</span>
+      </h2>
+      <p>Reads straight from public-rate golf. Share the link and the next golfer sees the same math.</p>
+
+      <div className="vgn-math-layout">
         {/* LEFT: controls + instead */}
-        <div className="math-left">
-          <div className="math-controls">
-            <div className="ctrl-group">
-              <div className="ctrl-label">Rounds per month</div>
-              <div className="ctrl-val-display">
-                {rounds}<em>rounds / mo</em>
+        <div className="vgn-math-left">
+          <div className="vgn-math-controls">
+            <div className="vgn-ctrl-group">
+              <div className="vgn-ctrl-label">Rounds per month</div>
+              <div className="vgn-ctrl-val-display">
+                {rounds}
+                <em>rounds / mo</em>
               </div>
               <input
                 type="range"
-                className="rounds-slider"
+                className="vgn-rounds-slider"
                 min={1}
                 max={maxForPlan}
                 value={rounds}
                 onChange={(e) => setRounds(Number(e.target.value))}
               />
-              <div className="ctrl-max-hint">
+              <div className="vgn-ctrl-max-hint">
                 Max {maxForPlan} {maxForPlan === 1 ? 'round' : 'rounds'} on {PLANS[plan].label}
                 {' '}({PLANS[plan].credits} credits ÷ ~{AVG_CREDITS_PER_ROUND} per round)
               </div>
             </div>
-            <div className="ctrl-group">
-              <div className="ctrl-label">Your plan</div>
-              <div className="plan-pills">
+            <div className="vgn-ctrl-group">
+              <div className="vgn-ctrl-label">Your plan</div>
+              <div className="vgn-plan-pills">
                 {(Object.keys(PLANS) as PlanKey[]).map((p) => (
                   <button
                     key={p}
                     type="button"
-                    className={`plan-pill-btn${plan === p ? ' active' : ''}`}
+                    className={`vgn-plan-pill-btn${plan === p ? ' active' : ''}`}
                     onClick={() => selectPlan(p)}
                   >
                     {PLANS[p].label} — ${PLANS[p].monthly}
@@ -133,20 +174,20 @@ export default function SavingsCalculator() {
             </div>
           </div>
 
-          <div className="instead-section">
-            <div className="instead-header">
-              <div className="instead-label">
+          <div className="vgn-instead-section">
+            <div className="vgn-instead-header">
+              <div className="vgn-instead-label">
                 Or you could spend it on <em>other things...</em>
               </div>
             </div>
-            <div className="instead-grid">
+            <div className="vgn-instead-grid">
               {INSTEAD_ITEMS.map((item) => {
                 const count = savingsYearly > 0 ? Math.floor(savingsYearly / item.price) : 0
                 return (
-                  <div key={item.name} className="instead-item">
-                    <div className="instead-count">{count}</div>
-                    <div className="instead-name">{item.name}</div>
-                    <div className="instead-price">{item.suffix}</div>
+                  <div key={item.name} className="vgn-instead-item">
+                    <div className="vgn-instead-count">{count}</div>
+                    <div className="vgn-instead-name">{item.name}</div>
+                    <div className="vgn-instead-price">{item.suffix}</div>
                   </div>
                 )
               })}
@@ -154,77 +195,93 @@ export default function SavingsCalculator() {
           </div>
         </div>
 
-        {/* RIGHT: table + save callout */}
-        <div className="math-right">
-          <div className="math-card">
-            <table className="math-table">
+        {/* RIGHT: table + save callout + share */}
+        <div className="vgn-math-right">
+          <div className="vgn-math-card">
+            <table className="vgn-math-table">
               <thead>
                 <tr>
                   <th style={{ width: '40%' }}>Line item</th>
                   <th>Rack rate</th>
                   <th>GolfNow Premium</th>
-                  <th className="th-gold">gimmelab</th>
+                  <th className="vgn-th-gold">gimmelab</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>Green fees <span className="td-muted" style={{ fontSize: 11 }}>(avg ${AVG_RACK_RATE}/round)</span></td>
-                  <td className="td-muted">{formatUSD(withoutYearly)}</td>
-                  <td className="td-muted">{formatUSD(withoutYearly * (1 - GOLFNOW_HOT_DEAL_PCT))}</td>
-                  <td className="td-gold">Included</td>
+                  <td>
+                    Green fees{' '}
+                    <span className="vgn-td-muted" style={{ fontSize: 11 }}>
+                      (avg ${AVG_RACK_RATE}/round)
+                    </span>
+                  </td>
+                  <td className="vgn-td-muted">{formatUSD(withoutYearly)}</td>
+                  <td className="vgn-td-muted">{formatUSD(withoutYearly * (1 - GOLFNOW_HOT_DEAL_PCT))}</td>
+                  <td className="vgn-td-gold">Included</td>
                 </tr>
                 <tr>
                   <td>Booking fees</td>
-                  <td className="td-muted">{formatUSD(roundsPerYear * GOLFNOW_FEE_WAIVED)}</td>
-                  <td className="td-muted">Waived</td>
-                  <td className="td-gold">$0</td>
+                  <td className="vgn-td-muted">{formatUSD(roundsPerYear * GOLFNOW_FEE_WAIVED)}</td>
+                  <td className="vgn-td-muted">Waived</td>
+                  <td className="vgn-td-gold">$0</td>
                 </tr>
                 <tr>
                   <td>Membership</td>
-                  <td className="td-muted">—</td>
-                  <td className="td-muted">{formatUSD(GOLFNOW_YEARLY)} / yr</td>
-                  <td className="td-gold">{formatUSD(withYearly)} / yr</td>
+                  <td className="vgn-td-muted">—</td>
+                  <td className="vgn-td-muted">{formatUSD(GOLFNOW_YEARLY)} / yr</td>
+                  <td className="vgn-td-gold">{formatUSD(withYearly)} / yr</td>
                 </tr>
                 <tr>
                   <td>Pro shop calls</td>
-                  <td className="td-muted">Endless</td>
-                  <td className="td-muted">Some</td>
-                  <td className="td-gold">Zero</td>
+                  <td className="vgn-td-muted">Endless</td>
+                  <td className="vgn-td-muted">Some</td>
+                  <td className="vgn-td-gold">Zero</td>
                 </tr>
-                <tr className="total-row">
+                <tr className="vgn-total-row">
                   <td>Total yearly spend</td>
                   <td>{formatUSD(withoutYearly + roundsPerYear * GOLFNOW_FEE_WAIVED)}</td>
                   <td>{formatUSD(golfnowYearly)}</td>
-                  <td className="td-gold">{formatUSD(withYearly)}</td>
+                  <td className="vgn-td-gold">{formatUSD(withYearly)}</td>
                 </tr>
               </tbody>
             </table>
-            <div className="math-save">
+            <div className="vgn-math-save">
               <div>
-                <div className="save-eyebrow">You save vs. rack rate</div>
-                <div className="save-amount">
+                <div className="vgn-save-eyebrow">You save vs. rack rate</div>
+                <div className="vgn-save-amount">
                   {savingsYearly > 0 ? `${formatUSD(savingsYearly)} / year` : '—'}
                 </div>
-                <div className="save-sub">
+                <div className="vgn-save-sub">
                   {savingsSubtext(savingsYearly)}
                   {' · '}
                   <strong>{formatUSD(savingsYearly - golfnowSavings)}</strong> more than GolfNow Premium
                 </div>
               </div>
-              <Link href="/signup" className="btn-gold-solid">Start saving today →</Link>
+              <Link href="/signup" className="vgn-btn-gold-solid">
+                Start saving today →
+              </Link>
+            </div>
+          </div>
+
+          <div className="vgn-share-row">
+            <button type="button" className="vgn-btn-share" onClick={handleCopy} aria-live="polite">
+              {copied ? 'Copied ✓' : 'Copy share link'}
+            </button>
+            <div className="vgn-share-hint">
+              Send your exact numbers to a buddy. They&apos;ll land on the same math.
             </div>
           </div>
         </div>
       </div>
 
       <style>{`
-        .math-section {
+        .vgn-math-section {
           background: #EDE8DF;
           padding: 96px 56px;
           border-top: 1px solid #DDD7CC;
           font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
         }
-        .math-eyebrow {
+        .vgn-math-eyebrow {
           font-family: var(--font-space-mono), 'Space Mono', monospace;
           font-size: 10px;
           letter-spacing: 0.22em;
@@ -232,7 +289,7 @@ export default function SavingsCalculator() {
           color: #C4893A;
           margin-bottom: 14px;
         }
-        .math-section h2 {
+        .vgn-math-section h2 {
           font-size: clamp(36px, 5vw, 60px);
           font-weight: 700;
           letter-spacing: -0.045em;
@@ -240,13 +297,13 @@ export default function SavingsCalculator() {
           line-height: 1;
           margin-bottom: 12px;
         }
-        .math-section h2 .gold { color: #C4893A; }
-        .math-section > p {
+        .vgn-math-section h2 .gold { color: #C4893A; }
+        .vgn-math-section > p {
           font-size: 15px;
           color: #8A847C;
           margin-bottom: 32px;
         }
-        .math-layout {
+        .vgn-math-layout {
           display: grid;
           grid-template-columns: 1.4fr 1fr;
           gap: 32px;
@@ -254,7 +311,7 @@ export default function SavingsCalculator() {
         }
 
         /* Controls */
-        .math-controls {
+        .vgn-math-controls {
           display: flex;
           align-items: center;
           gap: 24px;
@@ -265,30 +322,30 @@ export default function SavingsCalculator() {
           border: 1px solid #DDD7CC;
           border-radius: 12px;
         }
-        .ctrl-group { display: flex; flex-direction: column; gap: 10px; flex: 1; min-width: 200px; }
-        .ctrl-label {
+        .vgn-ctrl-group { display: flex; flex-direction: column; gap: 10px; flex: 1; min-width: 200px; }
+        .vgn-ctrl-label {
           font-family: var(--font-space-mono), 'Space Mono', monospace;
           font-size: 9px;
           letter-spacing: 0.18em;
           text-transform: uppercase;
           color: #8A847C;
         }
-        .ctrl-val-display {
+        .vgn-ctrl-val-display {
           font-size: 22px;
           font-weight: 700;
           color: #131110;
           letter-spacing: -0.03em;
           line-height: 1;
         }
-        .ctrl-val-display em { font-size: 13px; font-weight: 400; font-style: normal; color: #8A847C; margin-left: 6px; }
-        .ctrl-max-hint {
+        .vgn-ctrl-val-display em { font-size: 13px; font-weight: 400; font-style: normal; color: #8A847C; margin-left: 6px; }
+        .vgn-ctrl-max-hint {
           font-family: var(--font-space-mono), 'Space Mono', monospace;
           font-size: 9px;
           letter-spacing: 0.06em;
           color: #8A847C;
           margin-top: 2px;
         }
-        .rounds-slider {
+        .vgn-rounds-slider {
           -webkit-appearance: none;
           appearance: none;
           width: 100%;
@@ -298,7 +355,7 @@ export default function SavingsCalculator() {
           outline: none;
           cursor: pointer;
         }
-        .rounds-slider::-webkit-slider-thumb {
+        .vgn-rounds-slider::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
           width: 20px;
@@ -310,8 +367,8 @@ export default function SavingsCalculator() {
           box-shadow: 0 2px 8px rgba(0,0,0,0.2);
           transition: transform 0.15s;
         }
-        .rounds-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
-        .rounds-slider::-moz-range-thumb {
+        .vgn-rounds-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        .vgn-rounds-slider::-moz-range-thumb {
           width: 20px;
           height: 20px;
           border-radius: 50%;
@@ -321,12 +378,12 @@ export default function SavingsCalculator() {
           box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
-        .plan-pills {
+        .vgn-plan-pills {
           display: flex;
           gap: 6px;
           flex-wrap: nowrap;
         }
-        .plan-pill-btn {
+        .vgn-plan-pill-btn {
           font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
           font-size: 10px;
           letter-spacing: 0.06em;
@@ -342,50 +399,50 @@ export default function SavingsCalculator() {
           flex: 1;
           text-align: center;
         }
-        .plan-pill-btn.active {
+        .vgn-plan-pill-btn.active {
           background: #131110;
           color: #EDE8DF;
           border-color: #131110;
         }
-        .plan-pill-btn:hover:not(.active) {
+        .vgn-plan-pill-btn:hover:not(.active) {
           border-color: #4A4540;
           color: #131110;
         }
 
         /* Instead section */
-        .instead-section { margin-top: 8px; }
-        .instead-header {
+        .vgn-instead-section { margin-top: 8px; }
+        .vgn-instead-header {
           display: flex;
           align-items: center;
           gap: 16px;
           margin-bottom: 14px;
         }
-        .instead-label {
+        .vgn-instead-label {
           font-family: var(--font-space-mono), 'Space Mono', monospace;
           font-size: 10px;
           letter-spacing: 0.18em;
           text-transform: uppercase;
           color: #8A847C;
         }
-        .instead-label em { color: #C4893A; font-style: normal; }
-        .instead-grid {
+        .vgn-instead-label em { color: #C4893A; font-style: normal; }
+        .vgn-instead-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 12px;
         }
-        .instead-item {
+        .vgn-instead-item {
           background: #F4F0EA;
           border: 1px solid #DDD7CC;
           border-radius: 10px;
           padding: 16px 16px 14px;
           transition: all 0.18s;
         }
-        .instead-item:hover {
+        .vgn-instead-item:hover {
           border-color: #C4893A;
           box-shadow: 0 6px 20px rgba(196,137,58,0.12);
           transform: translateY(-2px);
         }
-        .instead-count {
+        .vgn-instead-count {
           font-size: 22px;
           font-weight: 700;
           color: #131110;
@@ -394,12 +451,12 @@ export default function SavingsCalculator() {
           margin-bottom: 4px;
           font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
         }
-        .instead-name {
+        .vgn-instead-name {
           font-size: 12px;
           color: #4A4540;
           line-height: 1.3;
         }
-        .instead-price {
+        .vgn-instead-price {
           font-family: var(--font-space-mono), 'Space Mono', monospace;
           font-size: 9px;
           letter-spacing: 0.1em;
@@ -409,17 +466,17 @@ export default function SavingsCalculator() {
         }
 
         /* Right side */
-        .math-card {
+        .vgn-math-card {
           border-radius: 12px;
           overflow: hidden;
           border: 1px solid #DDD7CC;
         }
-        .math-table {
+        .vgn-math-table {
           width: 100%;
           border-collapse: collapse;
         }
-        .math-table thead tr { background: #131110; }
-        .math-table thead th {
+        .vgn-math-table thead tr { background: #131110; }
+        .vgn-math-table thead th {
           font-family: var(--font-space-mono), 'Space Mono', monospace;
           font-size: 9px;
           letter-spacing: 0.14em;
@@ -430,25 +487,25 @@ export default function SavingsCalculator() {
           font-weight: 400;
           white-space: nowrap;
         }
-        .math-table thead th.th-gold { color: #C4893A; }
-        .math-table tbody tr {
+        .vgn-math-table thead th.vgn-th-gold { color: #C4893A; }
+        .vgn-math-table tbody tr {
           border-bottom: 1px solid #DDD7CC;
           background: #F4F0EA;
         }
-        .math-table tbody tr:last-child { border-bottom: none; }
-        .math-table tbody tr.total-row { background: #fff; }
-        .math-table tbody tr.total-row td { font-weight: 700; }
-        .math-table td {
+        .vgn-math-table tbody tr:last-child { border-bottom: none; }
+        .vgn-math-table tbody tr.vgn-total-row { background: #fff; }
+        .vgn-math-table tbody tr.vgn-total-row td { font-weight: 700; }
+        .vgn-math-table td {
           padding: 12px 14px;
           font-size: 12px;
           color: #131110;
         }
-        .math-table td:first-child { font-size: 13px; }
-        .math-table td.td-muted { color: #8A847C; }
-        .math-table td.td-gold { color: #C4893A; font-weight: 600; }
+        .vgn-math-table td:first-child { font-size: 13px; }
+        .vgn-math-table td.vgn-td-muted { color: #8A847C; }
+        .vgn-math-table td.vgn-td-gold { color: #C4893A; font-weight: 600; }
 
         /* Save callout */
-        .math-save {
+        .vgn-math-save {
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -457,7 +514,7 @@ export default function SavingsCalculator() {
           background: #131110;
           padding: 20px 24px;
         }
-        .save-eyebrow {
+        .vgn-save-eyebrow {
           font-family: var(--font-space-mono), 'Space Mono', monospace;
           font-size: 9px;
           letter-spacing: 0.2em;
@@ -465,7 +522,7 @@ export default function SavingsCalculator() {
           color: #C4893A;
           margin-bottom: 6px;
         }
-        .save-amount {
+        .vgn-save-amount {
           font-size: clamp(26px, 3vw, 40px);
           font-weight: 700;
           color: #fff;
@@ -474,11 +531,11 @@ export default function SavingsCalculator() {
           margin-bottom: 6px;
           font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
         }
-        .save-sub {
+        .vgn-save-sub {
           font-size: 13px;
           color: rgba(255,255,255,0.4);
         }
-        .btn-gold-solid {
+        .vgn-btn-gold-solid {
           background: #C4893A;
           color: #fff;
           text-decoration: none;
@@ -491,18 +548,50 @@ export default function SavingsCalculator() {
           white-space: nowrap;
           transition: background 0.18s, transform 0.12s;
         }
-        .btn-gold-solid:hover { background: #b87a2e; transform: translateY(-1px); }
+        .vgn-btn-gold-solid:hover { background: #b87a2e; transform: translateY(-1px); }
+
+        /* Share row */
+        .vgn-share-row {
+          margin-top: 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          text-align: center;
+        }
+        .vgn-btn-share {
+          background: #C4893A;
+          color: #fff;
+          border: none;
+          padding: 14px 28px;
+          border-radius: 7px;
+          font-weight: 700;
+          font-size: 13px;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          cursor: pointer;
+          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          transition: background 0.18s, transform 0.12s;
+          min-width: 200px;
+        }
+        .vgn-btn-share:hover { background: #b87a2e; transform: translateY(-1px); }
+        .vgn-share-hint {
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 10px;
+          letter-spacing: 0.1em;
+          color: #8A847C;
+        }
 
         @media (max-width: 1024px) {
-          .math-layout { grid-template-columns: 1fr; }
-          .math-section { padding: 72px 28px; }
-          .instead-grid { grid-template-columns: repeat(2, 1fr); }
+          .vgn-math-layout { grid-template-columns: 1fr; }
+          .vgn-math-section { padding: 72px 28px; }
+          .vgn-instead-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 640px) {
-          .math-section { padding: 56px 20px; }
-          .math-controls { flex-direction: column; align-items: stretch; }
-          .plan-pills { flex-wrap: wrap; }
-          .plan-pill-btn { min-width: 0; }
+          .vgn-math-section { padding: 56px 20px; }
+          .vgn-math-controls { flex-direction: column; align-items: stretch; }
+          .vgn-plan-pills { flex-wrap: wrap; }
+          .vgn-plan-pill-btn { min-width: 0; }
         }
       `}</style>
     </section>
