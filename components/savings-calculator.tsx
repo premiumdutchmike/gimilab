@@ -15,6 +15,14 @@ const PLANS: Record<PlanKey, { label: string; monthly: number; credits: number }
 const AVG_CREDITS_PER_ROUND = 50
 const AVG_RACK_RATE = 135
 
+// GolfNow Premium comparison assumptions
+// - $99/yr membership fee
+// - Waives ~$6 booking fee per round (the real "savings" lever)
+// - Occasional Hot Deals: conservatively ~5% off rack rate averaged across bookings
+const GOLFNOW_YEARLY = 99
+const GOLFNOW_FEE_WAIVED = 6
+const GOLFNOW_HOT_DEAL_PCT = 0.05
+
 const INSTEAD_ITEMS: Array<{ price: number; name: string; suffix: string }> = [
   { price: 55,  name: 'Dozen Pro V1s',      suffix: '$55 / dozen' },
   { price: 8,   name: 'Beers at the turn',  suffix: '$8 each' },
@@ -56,16 +64,27 @@ export default function SavingsCalculator() {
   }
 
   const {
+    roundsPerYear,
     withoutYearly,
+    golfnowYearly,
     withYearly,
     savingsYearly,
+    golfnowSavings,
   } = useMemo(() => {
-    const without = rounds * AVG_RACK_RATE * 12
+    const rpy = rounds * 12
+    const without = rpy * AVG_RACK_RATE
     const withG = PLANS[plan].monthly * 12
+    // GolfNow: rack rate minus fee waivers minus small hot-deal discount, plus membership fee
+    const gnFeesWaived = rpy * GOLFNOW_FEE_WAIVED
+    const gnHotDeals = without * GOLFNOW_HOT_DEAL_PCT
+    const golfnow = without + GOLFNOW_YEARLY - gnFeesWaived - gnHotDeals
     return {
+      roundsPerYear: rpy,
       withoutYearly: without,
+      golfnowYearly: golfnow,
       withYearly: withG,
       savingsYearly: without - withG,
+      golfnowSavings: without - golfnow,
     }
   }, [plan, rounds])
 
@@ -141,46 +160,56 @@ export default function SavingsCalculator() {
             <table className="math-table">
               <thead>
                 <tr>
-                  <th style={{ width: '44%' }}>Line item</th>
-                  <th>Without</th>
-                  <th className="th-gold">With gimmelab</th>
+                  <th style={{ width: '40%' }}>Line item</th>
+                  <th>Rack rate</th>
+                  <th>GolfNow Premium</th>
+                  <th className="th-gold">gimmelab</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>Green fees <span className="td-muted" style={{ fontSize: 11 }}>(avg ${AVG_RACK_RATE}/round)</span></td>
-                  <td className="td-muted">{formatUSD(withoutYearly)} / yr</td>
+                  <td className="td-muted">{formatUSD(withoutYearly)}</td>
+                  <td className="td-muted">{formatUSD(withoutYearly * (1 - GOLFNOW_HOT_DEAL_PCT))}</td>
                   <td className="td-gold">Included</td>
                 </tr>
                 <tr>
                   <td>Booking fees</td>
-                  <td className="td-muted">$4–8 / round</td>
+                  <td className="td-muted">{formatUSD(roundsPerYear * GOLFNOW_FEE_WAIVED)}</td>
+                  <td className="td-muted">Waived</td>
                   <td className="td-gold">$0</td>
+                </tr>
+                <tr>
+                  <td>Membership</td>
+                  <td className="td-muted">—</td>
+                  <td className="td-muted">{formatUSD(GOLFNOW_YEARLY)} / yr</td>
+                  <td className="td-gold">{formatUSD(withYearly)} / yr</td>
                 </tr>
                 <tr>
                   <td>Pro shop calls</td>
                   <td className="td-muted">Endless</td>
+                  <td className="td-muted">Some</td>
                   <td className="td-gold">Zero</td>
-                </tr>
-                <tr>
-                  <td>Membership cost</td>
-                  <td className="td-muted">—</td>
-                  <td className="td-gold">{formatUSD(withYearly)} / yr</td>
                 </tr>
                 <tr className="total-row">
                   <td>Total yearly spend</td>
-                  <td>{formatUSD(withoutYearly)}+</td>
+                  <td>{formatUSD(withoutYearly + roundsPerYear * GOLFNOW_FEE_WAIVED)}</td>
+                  <td>{formatUSD(golfnowYearly)}</td>
                   <td className="td-gold">{formatUSD(withYearly)}</td>
                 </tr>
               </tbody>
             </table>
             <div className="math-save">
               <div>
-                <div className="save-eyebrow">You save</div>
+                <div className="save-eyebrow">You save vs. rack rate</div>
                 <div className="save-amount">
                   {savingsYearly > 0 ? `${formatUSD(savingsYearly)} / year` : '—'}
                 </div>
-                <div className="save-sub">{savingsSubtext(savingsYearly)}</div>
+                <div className="save-sub">
+                  {savingsSubtext(savingsYearly)}
+                  {' · '}
+                  <strong>{formatUSD(savingsYearly - golfnowSavings)}</strong> more than GolfNow Premium
+                </div>
               </div>
               <Link href="/signup" className="btn-gold-solid">Start saving today →</Link>
             </div>
@@ -393,12 +422,13 @@ export default function SavingsCalculator() {
         .math-table thead th {
           font-family: var(--font-space-mono), 'Space Mono', monospace;
           font-size: 9px;
-          letter-spacing: 0.16em;
+          letter-spacing: 0.14em;
           text-transform: uppercase;
           color: rgba(255,255,255,0.5);
-          padding: 12px 20px;
+          padding: 12px 14px;
           text-align: left;
           font-weight: 400;
+          white-space: nowrap;
         }
         .math-table thead th.th-gold { color: #C4893A; }
         .math-table tbody tr {
@@ -409,10 +439,11 @@ export default function SavingsCalculator() {
         .math-table tbody tr.total-row { background: #fff; }
         .math-table tbody tr.total-row td { font-weight: 700; }
         .math-table td {
-          padding: 12px 20px;
-          font-size: 13px;
+          padding: 12px 14px;
+          font-size: 12px;
           color: #131110;
         }
+        .math-table td:first-child { font-size: 13px; }
         .math-table td.td-muted { color: #8A847C; }
         .math-table td.td-gold { color: #C4893A; font-weight: 600; }
 
