@@ -189,6 +189,9 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── SAVINGS CALCULATOR ── */}
+      <SavingsCalculator />
+
       {/* ── PRICING ── */}
       <section className="pricing-section" id="pricing">
         <div className="pricing-header">
@@ -284,34 +287,32 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── SAVINGS CALCULATOR ── */}
-      <SavingsCalculator />
-
-      {/* ── EDITORIAL PHOTO STRIP ── */}
-      <section className="editorial">
-        <div className="editorial-item">
-          <img src="/imagery/b124cb1f186169993c1b8198de403ae1.jpg" alt="The round" />
-          <div className="editorial-grad" />
-          <div className="editorial-body">
-            <h3 className="hl editorial-title">The round</h3>
-            <div className="editorial-sub">Morning light · On course</div>
-          </div>
-        </div>
-        <div className="editorial-item">
-          <img src="/imagery/a7ad9f79924f885fe8c6a8c3b35bded2.jpg" alt="The moment" />
-          <div className="editorial-grad" />
-          <span className="wm" style={{ position: 'absolute', top: 20, left: 20, fontSize: 15, color: '#F4EEE3', opacity: 0.8 }}>gimmelab</span>
-          <div className="editorial-body">
-            <h3 className="hl editorial-title">The moment</h3>
-            <div className="editorial-sub">Sundown · Golden hour</div>
-          </div>
-        </div>
-        <div className="editorial-item">
-          <img src="/imagery/e015d14dec4bf78a78dbc852e3e01984.jpg" alt="The course" />
-          <div className="editorial-grad" />
-          <div className="editorial-body">
-            <h3 className="hl editorial-title">The course</h3>
-            <div className="editorial-sub">Wide open · No fences</div>
+      {/* ── VIDEO HERO BANNER ── */}
+      <section className="video-banner">
+        <video
+          className="video-banner-media"
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/imagery/b124cb1f186169993c1b8198de403ae1.jpg"
+        >
+          <source src="/imagery/b124cb1f186169993c1b8198de403ae1.jpg" />
+        </video>
+        <img
+          className="video-banner-fallback"
+          src="/imagery/b124cb1f186169993c1b8198de403ae1.jpg"
+          alt="Golf course"
+        />
+        <div className="video-banner-overlay" />
+        <div className="video-banner-content">
+          <div className="video-banner-eyebrow">Play anywhere on the network</div>
+          <h2 className="video-banner-title">One membership.<br />Every course.</h2>
+          <p className="video-banner-sub">
+            50+ partner courses. Zero booking fees. Monthly credits that work wherever you want to tee it up.
+          </p>
+          <div className="video-banner-cta">
+            <AnimatedButton href="/signup" variant="primary">Join Gimmelab</AnimatedButton>
           </div>
         </div>
       </section>
@@ -1060,8 +1061,8 @@ export default async function HomePage() {
           color: var(--stone); margin-top: 6px; font-family: 'Inter', sans-serif;
         }
         .pricing-grid {
-          display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
-          max-width: 960px; margin: 0 auto;
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+          width: 100%;
         }
         .pricing-card {
           background: #fff; border: 1.5px solid var(--smoke);
@@ -1223,21 +1224,70 @@ export default async function HomePage() {
         .savings-stat-card-big .savings-stat-card-n { font-size: 56px; color: #fff; }
         .savings-stat-card-big .savings-stat-card-l { color: rgba(255,255,255,0.7); font-size: 14px; }
 
-        /* ── EDITORIAL STRIP ── */
-        .editorial { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-        .editorial-item { position: relative; height: 440px; overflow: hidden; }
-        .editorial-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; display: block; }
-        .editorial-item:hover img { transform: scale(1.04); }
-        .editorial-grad {
-          position: absolute; inset: 0;
-          background: linear-gradient(to top, rgba(12,12,11,0.88) 0%, rgba(12,12,11,0.1) 50%, transparent 100%);
+        /* ── VIDEO HERO BANNER ── */
+        .video-banner {
+          position: relative;
+          width: 100%;
+          height: clamp(480px, 72vh, 720px);
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
         }
-        .editorial-body { position: absolute; bottom: 0; left: 0; right: 0; padding: 28px 24px; }
-        .editorial-title { font-size: 22px; color: var(--linen); margin-bottom: 5px; }
-        .editorial-sub {
-          font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-          color: var(--stone); font-family: 'Inter', sans-serif;
+        .video-banner-media,
+        .video-banner-fallback {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          z-index: 0;
         }
+        .video-banner-fallback { z-index: -1; }
+        .video-banner-media::-webkit-media-controls { display: none !important; }
+        .video-banner-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            105deg,
+            rgba(12,10,8,0.78) 0%,
+            rgba(12,10,8,0.55) 45%,
+            rgba(12,10,8,0.25) 80%,
+            rgba(12,10,8,0.15) 100%
+          );
+          z-index: 1;
+        }
+        .video-banner-content {
+          position: relative;
+          z-index: 2;
+          padding: 0 64px;
+          max-width: 680px;
+        }
+        .video-banner-eyebrow {
+          font-family: var(--font-space-mono), 'Space Mono', monospace;
+          font-size: 10px;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: #C4893A;
+          margin-bottom: 20px;
+        }
+        .video-banner-title {
+          font-size: clamp(40px, 5.5vw, 78px);
+          font-weight: 700;
+          letter-spacing: -0.04em;
+          line-height: 0.95;
+          color: #fff;
+          margin-bottom: 24px;
+          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+        }
+        .video-banner-sub {
+          font-size: 16px;
+          line-height: 1.65;
+          color: rgba(255,255,255,0.78);
+          max-width: 520px;
+          margin-bottom: 36px;
+        }
+        .video-banner-cta { display: flex; gap: 14px; align-items: center; }
 
         /* ── VOICE ── */
         .voice-section {
@@ -1336,8 +1386,7 @@ export default async function HomePage() {
           .c-card { flex: 0 0 calc((100% - 20px) / 2); }
           .pricing-grid { grid-template-columns: 1fr; }
           .pricing-tier { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
-          .editorial { grid-template-columns: 1fr 1fr; }
-          .editorial-item:nth-child(3) { display: none; }
+          .video-banner-content { padding: 0 36px; }
           .voice-section { grid-template-columns: 1fr; gap: 40px; }
           .reviews-section { padding-left: 28px; padding-right: 28px; }
           .reviews-grid { grid-template-columns: 1fr; }
@@ -1355,8 +1404,7 @@ export default async function HomePage() {
           .comparison-table { grid-template-columns: 1fr; }
           .comp-col { border-right: none; border-bottom: 1px solid var(--smoke); }
           .c-card { flex: 0 0 calc(100% - 8px); min-width: 260px; }
-          .editorial { grid-template-columns: 1fr; }
-          .editorial-item:nth-child(3) { display: block; }
+          .video-banner-content { padding: 0 24px; }
           .footer-top { grid-template-columns: 1fr; }
           .stats-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
           .stat-block { padding-right: 0; }
