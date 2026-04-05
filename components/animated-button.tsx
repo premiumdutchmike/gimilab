@@ -83,6 +83,12 @@ export default function AnimatedButton({
           right: calc(100% - 44px);
           transform: rotate(45deg);
         }
+        @media (max-width: 480px) {
+          .ab {
+            width: 100%;
+            justify-content: flex-start;
+          }
+        }
       `}</style>
     </Link>
   )

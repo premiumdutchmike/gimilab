@@ -1399,6 +1399,21 @@ export default async function HomePage() {
           .stats-quote { flex-direction: column; align-items: flex-start; gap: 20px; }
           .stats-quote-attr { text-align: left; white-space: normal; }
         }
+        @media (min-width: 640px) and (max-width: 1024px) {
+          .booking-card { padding-bottom: 40px; }
+          .booking-card > .bc-toprow,
+          .booking-card > .bc-course,
+          .booking-card > .bc-meta,
+          .booking-card > .bc-divider,
+          .booking-card > .bc-bottom {
+            padding-left: 40px;
+            padding-right: 40px;
+          }
+          .bc-course { font-size: 32px; }
+          .bc-meta { font-size: 15px; }
+          .bc-credits { font-size: 48px; }
+          .bc-credits-unit { font-size: 16px; }
+        }
         @media (max-width: 640px) {
           .hero-left { padding: 120px 20px 24px; }
           .hero-right { padding: 0 20px 56px; }
@@ -1414,6 +1429,14 @@ export default async function HomePage() {
           .savings-new-right { grid-template-columns: 1fr 1fr; }
           .savings-stat-card-big { grid-column: span 2; }
           .savings-new-h2 { font-size: clamp(36px, 10vw, 60px); }
+        }
+        @media (max-width: 480px) {
+          .hero-actions {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+          }
+          .hero-actions > * { width: 100%; }
         }
       `}</style>
     </>

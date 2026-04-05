@@ -192,27 +192,30 @@ export default function CoursesBrowser({
 
       {/* Filters */}
       <section className="cb-filters">
-        <input
-          className="cb-search"
-          type="text"
-          placeholder="Search by course name or city…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <form className="cb-zip-form" onSubmit={handleZipSubmit}>
+        <div className="cb-filters-search">
           <input
-            className="cb-zip-input"
+            className="cb-search"
             type="text"
-            inputMode="numeric"
-            maxLength={5}
-            placeholder="Zip"
-            value={zipInput}
-            onChange={(e) => setZipInput(e.target.value.replace(/\D/g, '').slice(0, 5))}
+            placeholder="Search by course name or city…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
-          <button type="submit" className="cb-zip-btn" disabled={isResolving}>
-            {isResolving ? '…' : 'Find'}
-          </button>
-        </form>
+          <form className="cb-zip-form" onSubmit={handleZipSubmit}>
+            <input
+              className="cb-zip-input"
+              type="text"
+              inputMode="numeric"
+              maxLength={5}
+              placeholder="Zip"
+              value={zipInput}
+              onChange={(e) => setZipInput(e.target.value.replace(/\D/g, '').slice(0, 5))}
+            />
+            <button type="submit" className="cb-zip-btn" disabled={isResolving}>
+              {isResolving ? '…' : 'Find'}
+            </button>
+          </form>
+        </div>
+        <div className="cb-filters-secondary">
         <div className="cb-radius-group">
           {([['all', 'Any distance'], [10, '10 mi'], [25, '25 mi'], [50, '50 mi']] as const).map(([val, label]) => {
             const active = radius === val
@@ -253,6 +256,7 @@ export default function CoursesBrowser({
           <option value="credit-asc">Credits: low → high</option>
           <option value="name-asc">Name: A → Z</option>
         </select>
+        </div>
       </section>
 
       {zipError && (
@@ -494,20 +498,31 @@ export default function CoursesBrowser({
         }
         .cb-cta-btn:hover { background: #b03d21; }
 
-        /* Filters row */
+        /* Filters row — two explicit rows so nothing squishes */
         .cb-filters {
           max-width: 1280px;
           margin: 0 auto;
           padding: 24px 48px 8px;
           display: flex;
-          align-items: center;
+          flex-direction: column;
           gap: 12px;
-          flex-wrap: wrap;
           font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+        }
+        .cb-filters-search {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          width: 100%;
+        }
+        .cb-filters-secondary {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          flex-wrap: wrap;
         }
         .cb-search {
           flex: 1;
-          min-width: 240px;
+          min-width: 0;
           background: var(--cream-card);
           border: 1px solid var(--cream-mid);
           border-radius: 10px;
@@ -939,27 +954,41 @@ export default function CoursesBrowser({
         @media (max-width: 1080px) {
           .cb-grid { grid-template-columns: repeat(2, 1fr); }
         }
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
           .cb-hero {
             flex-direction: column;
             align-items: flex-start;
-            padding: 48px 24px 28px;
+            padding: 48px 32px 28px;
             gap: 24px;
           }
           .cb-hero-right { align-self: stretch; }
           .cb-balance-card, .cb-cta-card { text-align: left; }
-          .cb-filters { padding: 16px 24px 4px; gap: 8px; }
-          .cb-search { min-width: 0; width: 100%; }
-          .cb-results-bar { padding: 12px 24px 16px; }
-          .cb-grid-wrap { padding: 0 24px 48px; }
-          .cb-grid { grid-template-columns: 1fr; gap: 16px; }
+          .cb-filters { padding: 20px 32px 4px; }
+          .cb-results-bar { padding: 12px 32px 16px; }
+          .cb-grid-wrap { padding: 0 32px 48px; }
           .cb-join-banner {
-            margin: 0 24px 48px;
+            margin: 0 32px 48px;
             padding: 32px 28px;
             flex-direction: column;
             align-items: flex-start;
             gap: 24px;
           }
+        }
+        @media (max-width: 640px) {
+          .cb-hero { padding: 40px 20px 24px; }
+          .cb-filters { padding: 16px 20px 4px; gap: 10px; }
+          .cb-filters-secondary { gap: 8px; }
+          .cb-results-bar { padding: 8px 20px 14px; }
+          .cb-grid-wrap { padding: 0 20px 48px; }
+          .cb-grid { grid-template-columns: 1fr; gap: 16px; }
+          .cb-join-banner { margin: 0 20px 40px; padding: 28px 24px; }
+          /* Tighten filter controls on very narrow screens */
+          .cb-search { padding: 11px 14px; font-size: 13px; }
+          .cb-zip-input { width: 76px; padding: 11px 12px; }
+          .cb-zip-btn { padding: 11px 14px; }
+          .cb-radius-pill { padding: 10px 12px; font-size: 10px; letter-spacing: 0.04em; }
+          .cb-sort { padding: 11px 12px; font-size: 12px; }
+          .cb-favs-toggle { padding: 10px 12px; font-size: 10px; letter-spacing: 0.04em; }
         }
       `}</style>
     </>

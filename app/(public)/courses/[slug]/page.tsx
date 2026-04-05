@@ -114,7 +114,7 @@ export default async function CourseDetailPage({
         <div className="cd-hero-overlay" />
         <div className="cd-hero-content">
           <div>
-            <div className="cd-hero-eyebrow">{course.address} · Public Course</div>
+            <div className="cd-hero-eyebrow">Public course</div>
             <h1 className="cd-hero-title">{course.name}</h1>
             <div className="cd-hero-location">
               <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -451,16 +451,29 @@ export default async function CourseDetailPage({
 
         @media (max-width: 960px) { .cd-body-wrap { grid-template-columns: 1fr; } .cd-related-grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 768px) {
-          .cd-hero-content { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
-          .cd-hero-cta { text-align: left; }
+          .cd-hero { height: auto; min-height: 420px; }
+          .cd-hero-content { flex-direction: column; align-items: flex-start; padding: 32px 20px 28px; gap: 18px; position: relative; }
+          .cd-hero-eyebrow { margin-bottom: 10px; white-space: normal; word-break: break-word; }
+          .cd-hero-title { font-size: clamp(26px, 7.5vw, 34px); margin-bottom: 12px; word-break: break-word; }
+          .cd-hero-location { font-size: 12px; word-break: break-word; }
+          .cd-hero-cta { text-align: left; width: 100%; }
           .cd-body-wrap { padding: 24px 20px 40px; }
-          .cd-stats-row { grid-template-columns: repeat(2, 1fr); }
+          .cd-stats-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+          .cd-stat-value { font-size: clamp(20px, 6vw, 22px); word-break: break-word; }
           .cd-photo-strip { grid-template-columns: 1fr 1fr; }
           .cd-host-grid { grid-template-columns: 1fr; }
           .cd-related { padding: 0 20px 40px; }
           .cd-footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
         }
         @media (max-width: 500px) { .cd-related-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) {
+          .cd-hero-content { padding: 28px 16px 24px; }
+          .cd-hero-title { font-size: clamp(24px, 8vw, 30px); line-height: 1.15; }
+          .cd-stat-box { padding: 14px 12px; }
+          .cd-stat-label { font-size: 9px; }
+          .cd-stat-value { font-size: clamp(18px, 6.2vw, 22px); }
+          .cd-stat-sub { font-size: 10px; }
+        }
       `}</style>
     </>
   )
