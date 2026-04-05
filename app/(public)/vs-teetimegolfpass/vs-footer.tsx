@@ -52,13 +52,13 @@ export default function VsFooter() {
                 <Link href="/about">About</Link>
               </li>
               <li>
-                <Link href="/about">Blog</Link>
+                <Link href="/blog">Blog</Link>
               </li>
               <li>
-                <Link href="/about">Press</Link>
+                <Link href="/press">Press</Link>
               </li>
               <li>
-                <Link href="/about">Careers</Link>
+                <Link href="/careers">Careers</Link>
               </li>
             </ul>
           </div>
@@ -66,13 +66,13 @@ export default function VsFooter() {
             <div className="vs-footer-col-h">Support</div>
             <ul className="vs-footer-links">
               <li>
-                <Link href="/about">Help center</Link>
+                <Link href="/help">Help center</Link>
               </li>
               <li>
-                <Link href="/about">Contact us</Link>
+                <Link href="/contact">Contact us</Link>
               </li>
               <li>
-                <Link href="/partner/apply">Partner courses</Link>
+                <Link href="/partners">Partner courses</Link>
               </li>
             </ul>
           </div>

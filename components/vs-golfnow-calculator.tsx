@@ -13,8 +13,9 @@ const PLANS: Record<PlanKey, { label: string; monthly: number; credits: number }
   core: { label: 'Core', monthly: 149, credits: 170 },
   heavy: { label: 'Heavy', monthly: 199, credits: 250 },
 }
+// Philly metro public/daily-fee benchmark — matches homepage SavingsCalculator
 const AVG_CREDITS_PER_ROUND = 50
-const AVG_RACK_RATE = 90
+const AVG_RACK_RATE = 100
 
 // GolfNow Premium comparison assumptions
 const GOLFNOW_YEARLY = 99

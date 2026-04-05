@@ -10,9 +10,9 @@ const PLANS: Record<PlanKey, { label: string; monthly: number; credits: number }
   core:   { label: 'Core',   monthly: 149, credits: 170 },
   heavy:  { label: 'Heavy',  monthly: 199, credits: 250 },
 }
-// Average round = 45 credits (reasonable for public/municipal courses)
+// Average round = 50 credits (reasonable for public/municipal courses)
 // and a $100 average rack rate — Philly metro benchmark (public + daily-fee)
-const AVG_CREDITS_PER_ROUND = 45
+const AVG_CREDITS_PER_ROUND = 50
 const AVG_RACK_RATE = 100
 
 // GolfNow Premium comparison assumptions

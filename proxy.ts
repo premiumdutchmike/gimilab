@@ -34,7 +34,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // ── Public routes — no auth needed ──────────────────────────────────────
-  const publicPaths = ['/', '/pricing', '/about', '/partner', '/partners', '/partner/apply', '/signup', '/login', '/welcome', '/vs-golfnow', '/vs-teetimegolfpass']
+  const publicPaths = ['/', '/pricing', '/about', '/blog', '/press', '/careers', '/help', '/contact', '/partner', '/partners', '/partner/apply', '/signup', '/login', '/welcome', '/vs-golfnow', '/vs-teetimegolfpass']
   const isPublicPath = publicPaths.some(p => pathname === p)
     || pathname.startsWith('/auth')
     || pathname.startsWith('/welcome')

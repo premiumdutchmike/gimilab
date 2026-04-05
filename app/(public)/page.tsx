@@ -447,17 +447,17 @@ export default async function HomePage() {
             <div className="footer-col-h">Company</div>
             <ul className="footer-links">
               <li><Link href="/about">About</Link></li>
-              <li><Link href="/about">Blog</Link></li>
-              <li><Link href="/about">Press</Link></li>
-              <li><Link href="/about">Careers</Link></li>
+              <li><Link href="/blog">Blog</Link></li>
+              <li><Link href="/press">Press</Link></li>
+              <li><Link href="/careers">Careers</Link></li>
             </ul>
           </div>
           <div>
             <div className="footer-col-h">Support</div>
             <ul className="footer-links">
-              <li><Link href="/about">Help center</Link></li>
-              <li><Link href="/about">Contact us</Link></li>
-              <li><Link href="/partner/apply">Partner courses</Link></li>
+              <li><Link href="/help">Help center</Link></li>
+              <li><Link href="/contact">Contact us</Link></li>
+              <li><Link href="/partners">Partner courses</Link></li>
             </ul>
           </div>
         </div>
