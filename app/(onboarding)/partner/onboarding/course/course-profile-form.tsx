@@ -154,7 +154,7 @@ export function CourseProfileForm({
   )
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <form onSubmit={handleSubmit} autoComplete="off" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {serverError && (
         <div style={{
           background: 'rgba(191,123,46,0.1)', border: '1px solid rgba(191,123,46,0.3)',
@@ -174,6 +174,7 @@ export function CourseProfileForm({
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="Torresdale Golf Course"
+            autoComplete="off"
             style={inputStyle(!!fieldErrors.name)}
           />
           {fieldErrors.name && <span style={errStyle}>{fieldErrors.name}</span>}
@@ -227,6 +228,7 @@ export function CourseProfileForm({
           value={address}
           onChange={e => setAddress(e.target.value)}
           placeholder="8001 Torresdale Ave"
+          autoComplete="off"
           style={inputStyle(!!fieldErrors.address)}
         />
         {fieldErrors.address && <span style={errStyle}>{fieldErrors.address}</span>}
@@ -241,6 +243,7 @@ export function CourseProfileForm({
             value={city}
             onChange={e => setCity(e.target.value)}
             placeholder="Philadelphia"
+            autoComplete="off"
             style={inputStyle(!!fieldErrors.city)}
           />
           {fieldErrors.city && <span style={errStyle}>{fieldErrors.city}</span>}
@@ -264,6 +267,7 @@ export function CourseProfileForm({
             value={zip}
             onChange={e => setZip(e.target.value)}
             placeholder="19136"
+            autoComplete="off"
             style={inputStyle(!!fieldErrors.zip)}
           />
           {fieldErrors.zip && <span style={errStyle}>{fieldErrors.zip}</span>}
@@ -279,6 +283,7 @@ export function CourseProfileForm({
             value={phone}
             onChange={e => setPhone(e.target.value)}
             placeholder="(215) 685-0787"
+            autoComplete="off"
             style={inputStyle()}
           />
         </>)}

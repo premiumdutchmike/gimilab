@@ -23,7 +23,8 @@ export default async function PayoutPage({
   if (!course) redirect('/partner/onboarding/course')
   if (!course.gimmelabRateCents) redirect('/partner/onboarding/pricing')
 
-  const connected = params.status === 'connected' || !!partner.stripeConnectAccountId
+  const connected = params.status === 'connected' || !!partner.stripeConnectId
+  const refreshExpired = params.status === 'refresh'
 
   return (
     <>
@@ -88,6 +89,15 @@ export default async function PayoutPage({
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
+              {refreshExpired && (
+                <div style={{
+                  background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.25)',
+                  borderRadius: 2, padding: '12px 16px', marginBottom: 24, width: '100%', maxWidth: 380,
+                  fontSize: 13, color: '#f87171', textAlign: 'center',
+                }}>
+                  The Stripe link expired. Please try again.
+                </div>
+              )}
               {/* Stripe "S" stand-in logo */}
               <div style={{
                 width: 56, height: 56, borderRadius: '50%',

@@ -274,7 +274,7 @@ export default async function HomePage() {
           </div>
           <div className="stat-block">
             <div className="stat-label">You save per year</div>
-            <div className="stat-number">$1,452</div>
+            <div className="stat-number">$1,812</div>
             <div className="stat-desc">On Core vs. paying rack rate every round</div>
           </div>
           <div className="stat-block">
@@ -408,12 +408,12 @@ export default async function HomePage() {
         <div className="savings-new-left">
           <div className="label" style={{ color: '#E8402A', marginBottom: 20 }}>The math</div>
           <h2 className="hl savings-new-h2">Stop paying<br /><span>rack rate.</span></h2>
-          <p className="savings-new-p">A typical Philly golfer playing three times a month at $90/round saves over $1,400 a year switching to Gimmelab Core. That&apos;s a new set of irons.</p>
+          <p className="savings-new-p">A typical Philly golfer playing three times a month at $100/round saves over $1,800 a year switching to Gimmelab Core. That&apos;s a new set of irons and a new driver.</p>
           <Link href="/signup" className="btn-savings-new">Start saving today →</Link>
         </div>
         <div className="savings-new-right">
           <div className="savings-stat-card">
-            <div className="savings-stat-card-n">$3,240<span>+</span></div>
+            <div className="savings-stat-card-n">$3,600<span>+</span></div>
             <div className="savings-stat-card-l">What you&apos;re paying now per year at rack rate</div>
           </div>
           <div className="savings-stat-card">
@@ -421,7 +421,7 @@ export default async function HomePage() {
             <div className="savings-stat-card-l">Gimmelab Core — all-in, no hidden fees</div>
           </div>
           <div className="savings-stat-card savings-stat-card-big">
-            <div className="savings-stat-card-n">$1,452</div>
+            <div className="savings-stat-card-n">$1,812</div>
             <div className="savings-stat-card-l">Average yearly savings with Core</div>
           </div>
         </div>
