@@ -42,7 +42,6 @@ export default function TeeTimes({
   isLoggedIn: boolean
 }) {
   const returnUrl = `/courses/${slug}`
-  const loginHref = `/login?redirectTo=${encodeURIComponent(returnUrl)}`
   const signupHref = `/signup?redirectTo=${encodeURIComponent(returnUrl)}`
   const days = useMemo(() => buildDays(14), [])
   const [activeDay, setActiveDay] = useState(0)
