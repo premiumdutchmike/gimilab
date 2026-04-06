@@ -9,7 +9,7 @@ interface Entry {
   referredBy: string | null
   referredByName: string | null
   referralCount: number
-  createdAt: Date
+  createdAt: string
 }
 
 export default function WaitlistExport({ entries }: { entries: Entry[] }) {
@@ -24,7 +24,7 @@ export default function WaitlistExport({ entries }: { entries: Entry[] }) {
       e.referredBy ?? '',
       e.referredByName ?? '',
       String(e.referralCount),
-      new Date(e.createdAt).toISOString().split('T')[0],
+      e.createdAt.split('T')[0],
     ])
 
     const csv = [headers, ...rows]

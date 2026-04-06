@@ -25,7 +25,7 @@ export default async function AdminWaitlistPage() {
           <h1 className="awl-title">Waitlist</h1>
           <p className="awl-sub">{stats.total} total signups · {stats.today} today</p>
         </div>
-        <WaitlistExport entries={entries} />
+        <WaitlistExport entries={entries.map(e => ({ ...e, createdAt: e.createdAt.toISOString() }))} />
       </div>
 
       {/* Stats row */}
