@@ -81,7 +81,7 @@ export default function VsNav() {
                 <Link href="/login" className="vs-light-nav-login">
                   Log In
                 </Link>
-                <Link href="/signup" className="vs-light-nav-join">
+                <Link href="/waitlist" className="vs-light-nav-join">
                   Join Now →
                 </Link>
               </>
@@ -144,7 +144,7 @@ export default function VsNav() {
           ) : (
             <>
               <Link
-                href="/signup"
+                href="/waitlist"
                 className="vs-light-menu-footer-cta"
                 onClick={closeMenu}
               >

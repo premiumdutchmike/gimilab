@@ -311,7 +311,7 @@ export default function VsTeeTimeGolfPassPage() {
             </p>
             <div className="vs-cta-actions">
               <Link
-                href="/signup?plan=core"
+                href="/waitlist"
                 className="vs-btn vs-btn-primary"
                 data-vs-cta="signup"
               >

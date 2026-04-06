@@ -172,7 +172,7 @@ export default function AboutPage() {
               </div>
               <div className="ab-contact-item">
                 <div className="ab-contact-label">Members</div>
-                <Link href="/signup" className="ab-contact-link">
+                <Link href="/waitlist" className="ab-contact-link">
                   gimmelab.com/signup
                 </Link>
               </div>
@@ -191,7 +191,7 @@ export default function AboutPage() {
               <em>Start playing more.</em>
             </h2>
             <div className="ab-cta-actions">
-              <Link href="/signup" className="ab-btn ab-btn-primary">
+              <Link href="/waitlist" className="ab-btn ab-btn-primary">
                 Join Gimmelab →
               </Link>
               <Link href="/pricing" className="ab-btn ab-btn-ghost">

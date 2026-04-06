@@ -393,3 +393,18 @@ export type OutreachProspect = typeof outreachProspects.$inferSelect
 export type NewOutreachProspect = typeof outreachProspects.$inferInsert
 export type OutreachEmail = typeof outreachEmails.$inferSelect
 export type NewOutreachEmail = typeof outreachEmails.$inferInsert
+
+// ─── Waitlist ──────────────────────────────────────────────────────────────
+export const waitlist = pgTable('waitlist', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  email: text('email').unique().notNull(),
+  name: text('name').notNull(),
+  roundsPerMonth: text('rounds_per_month'), // '1-2' | '3-4' | '5+' | null
+  city: text('city'),
+  referralCode: text('referral_code').unique().notNull(),
+  referredBy: text('referred_by'), // referral code of referrer
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+})
+
+export type WaitlistEntry = typeof waitlist.$inferSelect
+export type NewWaitlistEntry = typeof waitlist.$inferInsert

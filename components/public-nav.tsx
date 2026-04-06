@@ -127,7 +127,7 @@ export default function PublicNav() {
         className={`gl-nav-float${scrolled ? ' visible' : ''}`}
         aria-hidden={!scrolled}
       >
-        <Link href="/signup" className="gl-float-cta">Join Now</Link>
+        <Link href="/waitlist" className="gl-float-cta">Join Now</Link>
         <Link href="/" className="gl-float-wm">gimmelab</Link>
         <button
           className="gl-float-menu-btn"
@@ -166,7 +166,7 @@ export default function PublicNav() {
           </Link>
         </div>
         <div className="gl-menu-footer">
-          <Link href="/signup" className="gl-menu-footer-cta" onClick={closeMenu}>Join Gimmelab →</Link>
+          <Link href="/waitlist" className="gl-menu-footer-cta" onClick={closeMenu}>Join Gimmelab →</Link>
           {user ? (
             <Link href="/dashboard" className="gl-menu-footer-login" onClick={closeMenu}>Hi, {user.firstName} →</Link>
           ) : (

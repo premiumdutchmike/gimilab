@@ -95,7 +95,7 @@ export default async function HomePage() {
           </h1>
           <p className="hero-body">Book any course with monthly credits. No phone calls, no rate anxiety, no blackout dates.</p>
           <div className="hero-actions">
-            <AnimatedButton href="/signup" variant="primary">Join the Waitlist</AnimatedButton>
+            <AnimatedButton href="/waitlist" variant="primary">Join the Waitlist</AnimatedButton>
             <AnimatedButton href="/courses" variant="ghost">See Courses</AnimatedButton>
           </div>
         </div>
@@ -119,7 +119,7 @@ export default async function HomePage() {
                 <div className="bc-credits">85<span className="bc-credits-unit">credits</span></div>
                 <CreditDollarHint credits={85} />
               </div>
-              <Link href="/signup" className="bc-book-btn">Book tee time →</Link>
+              <Link href="/waitlist" className="bc-book-btn">Book tee time →</Link>
             </div>
           </div>
           <div className="hero-pills">
@@ -226,7 +226,7 @@ export default async function HomePage() {
               <li>Credits refresh monthly</li>
               <li>QR code booking</li>
             </ul>
-            <Link href="/signup?plan=casual" className="pc-cta pc-cta-default">Join Casual →</Link>
+            <Link href="/waitlist" className="pc-cta pc-cta-default">Join Waitlist →</Link>
           </div>
           <div className="pricing-card pc-featured">
             <div className="pc-badge">Most popular</div>
@@ -239,7 +239,7 @@ export default async function HomePage() {
               <li>Guest passes (2/mo)</li>
               <li>Best value per credit</li>
             </ul>
-            <Link href="/signup?plan=core" className="pc-cta pc-cta-featured">Join Core →</Link>
+            <Link href="/waitlist" className="pc-cta pc-cta-featured">Join Waitlist →</Link>
           </div>
           <div className="pricing-card">
             <div className="pc-badge">Heavy</div>
@@ -252,7 +252,7 @@ export default async function HomePage() {
               <li>Early access to new courses</li>
               <li>Credits never expire</li>
             </ul>
-            <Link href="/signup?plan=heavy" className="pc-cta pc-cta-default">Join Heavy →</Link>
+            <Link href="/waitlist" className="pc-cta pc-cta-default">Join Waitlist →</Link>
           </div>
         </div>
         <div className="pricing-footer">
@@ -325,7 +325,7 @@ export default async function HomePage() {
             50+ partner courses. Zero booking fees. Monthly credits that work wherever you want to tee it up.
           </p>
           <div className="video-banner-cta">
-            <AnimatedButton href="/signup" variant="primary">Join Gimmelab</AnimatedButton>
+            <AnimatedButton href="/waitlist" variant="primary">Join Gimmelab</AnimatedButton>
           </div>
         </div>
       </section>
@@ -340,7 +340,7 @@ export default async function HomePage() {
           <h2 className="hl waitlist-h2">Join the<br /><em>waitlist.</em></h2>
           <p className="waitlist-p">We&apos;re onboarding courses and members in the Philadelphia area. Get on the list — we&apos;ll let you know the moment your first round is ready to book.</p>
           <div className="waitlist-actions">
-            <Link href="/signup" className="btn-waitlist">Request Early Access →</Link>
+            <Link href="/waitlist" className="btn-waitlist">Request Early Access →</Link>
           </div>
           <div className="waitlist-footnote">
             <span>No commitment</span>

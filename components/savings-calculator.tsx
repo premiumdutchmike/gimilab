@@ -211,7 +211,7 @@ export default function SavingsCalculator() {
                   <strong>{formatUSD(savingsYearly - golfnowSavings)}</strong> more than GolfNow Premium
                 </div>
               </div>
-              <Link href="/signup" className="btn-gold-solid">Start saving today →</Link>
+              <Link href="/waitlist" className="btn-gold-solid">Start saving today →</Link>
             </div>
           </div>
         </div>
