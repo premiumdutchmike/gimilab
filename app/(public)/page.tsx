@@ -84,8 +84,8 @@ export default async function HomePage() {
           </h1>
           <p className="hero-body">Book any course with monthly credits. No phone calls, no rate anxiety, no blackout dates.</p>
           <div className="hero-actions">
-            <AnimatedButton href="/signup" variant="primary">Get started</AnimatedButton>
-            <AnimatedButton href="/pricing" variant="ghost">See plans</AnimatedButton>
+            <AnimatedButton href="/signup" variant="primary">Join the Waitlist</AnimatedButton>
+            <AnimatedButton href="/courses" variant="ghost">See Courses</AnimatedButton>
           </div>
         </div>
 
@@ -320,88 +320,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── VOICE ── */}
-      <section className="voice-section">
-        <div>
-          <div className="label" style={{ color: 'var(--amber)', marginBottom: 16 }}>What we&apos;re about</div>
-          <h2 className="hl voice-headline">Serious.<br />Not stuffy.<br />Bold.<br />Not loud.</h2>
-        </div>
-        <div>
-          <p className="voice-copy">Golf has a gatekeeping problem. Gimmelab doesn&apos;t. Built for the player who loves the game without needing to perform it — all ages, all handicaps, all welcome.</p>
-          <ul className="voice-list">
-            <li>No country club membership required</li>
-            <li>No hidden fees, no upsells</li>
-            <li>Book in under two minutes</li>
-            <li>Credits that work for your schedule</li>
-          </ul>
-        </div>
-      </section>
-
-      {/* ── REVIEWS ── */}
-      <section className="reviews-section">
-        <div className="reviews-header">
-          <div>
-            <div className="label" style={{ color: 'var(--amber)', marginBottom: 8 }}>What players say</div>
-            <h2 className="hl">Real golfers.<br />Real rounds.</h2>
-          </div>
-        </div>
-        <div className="reviews-grid">
-          <div className="review-card">
-            <div className="review-stars">★★★★★</div>
-            <p className="review-body">&ldquo;Booked a tee time in literally 90 seconds on a Saturday morning. Used to spend 20 minutes on hold with the pro shop. Never going back.&rdquo;</p>
-            <div className="review-author">
-              <div className="review-avatar">M</div>
-              <div>
-                <div className="review-name">Marcus T.</div>
-                <div className="review-meta">14 hcp · Core member</div>
-              </div>
-            </div>
-          </div>
-          <div className="review-card">
-            <div className="review-stars">★★★★★</div>
-            <p className="review-body">&ldquo;I play 3–4 times a week. The Heavy plan basically pays for itself in the first two rounds. Booking without calling the pro shop alone is worth it.&rdquo;</p>
-            <div className="review-author">
-              <div className="review-avatar">D</div>
-              <div>
-                <div className="review-name">Diane K.</div>
-                <div className="review-meta">6.2 hcp · Heavy member</div>
-              </div>
-            </div>
-          </div>
-          <div className="review-card">
-            <div className="review-stars">★★★★★</div>
-            <p className="review-body">&ldquo;Finally. A golf app that doesn&apos;t feel like it was built for retirees at a private club. Clean, fast, does what it says. The QR code at the course just works.&rdquo;</p>
-            <div className="review-author">
-              <div className="review-avatar">J</div>
-              <div>
-                <div className="review-name">Jordan S.</div>
-                <div className="review-meta">22 hcp · Casual member</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="reviews-aggregate">
-          <div>
-            <div className="agg-stars">★★★★★</div>
-            <div className="agg-score">4.9</div>
-            <div className="agg-label">Average rating</div>
-          </div>
-          <div style={{ width: 1, height: 48, background: '#847C72', opacity: 0.2, flexShrink: 0 }} />
-          <div className="agg-stat">
-            <div className="agg-stat-value">1,200+</div>
-            <div className="agg-stat-label">Rounds booked</div>
-          </div>
-          <div style={{ width: 1, height: 48, background: '#847C72', opacity: 0.2, flexShrink: 0 }} />
-          <div className="agg-stat">
-            <div className="agg-stat-value">98%</div>
-            <div className="agg-stat-label">Would recommend</div>
-          </div>
-          <div style={{ width: 1, height: 48, background: '#847C72', opacity: 0.2, flexShrink: 0 }} />
-          <div className="agg-stat">
-            <div className="agg-stat-value">Zero</div>
-            <div className="agg-stat-label">Booking fees charged</div>
-          </div>
-        </div>
-      </section>
+      {/* Voice + Reviews sections removed during waitlist phase */}
 
       {/* ── WAITLIST CTA ── */}
       <section className="waitlist-section">

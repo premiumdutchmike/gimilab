@@ -258,7 +258,7 @@ export default async function CourseDetailPage({
         </div>
 
         {/* Sidebar */}
-        <div>
+        <div className="cd-sidebar-col">
           <div className="cd-sidebar">
             <div className="cd-sb-head">
               <div className="cd-sb-eyebrow">Member Booking</div>
@@ -442,7 +442,8 @@ export default async function CourseDetailPage({
         .cd-photo-img { object-fit: cover; transition: transform 0.3s; }
         .cd-photo-item:hover .cd-photo-img { transform: scale(1.04); }
 
-        .cd-sidebar { background: #FFFFFF; border: 1px solid rgba(12,12,11,0.09); border-radius: 2px; overflow: hidden; position: sticky; top: 82px; }
+        .cd-sidebar-col { position: sticky; top: 82px; display: flex; flex-direction: column; gap: 16px; }
+        .cd-sidebar { background: #FFFFFF; border: 1px solid rgba(12,12,11,0.09); border-radius: 2px; overflow: hidden; }
         .cd-sb-head { background: #0C0C0B; padding: 20px 24px; }
         .cd-sb-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; color: #BF7B2E; text-transform: uppercase; margin-bottom: 6px; font-family: 'Inter', sans-serif; }
         .cd-sb-title { font-size: 16px; font-weight: 700; color: #F4EEE3; margin-bottom: 4px; letter-spacing: -0.01em; font-family: 'Inter', sans-serif; }
@@ -462,7 +463,7 @@ export default async function CourseDetailPage({
         .cd-sb-trust-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #847C72; font-family: 'Inter', sans-serif; }
         .cd-sb-trust-item svg { flex-shrink: 0; color: #BF7B2E; }
 
-        .cd-map-card { margin-top: 16px; background: #FFFFFF; border: 1px solid rgba(12,12,11,0.09); border-radius: 2px; overflow: hidden; }
+        .cd-map-card { background: #FFFFFF; border: 1px solid rgba(12,12,11,0.09); border-radius: 2px; overflow: hidden; }
         .cd-map-embed { background: #E5DDD3; }
         .cd-map-embed iframe { display: block; }
         .cd-map-info { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
