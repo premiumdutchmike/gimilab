@@ -597,7 +597,7 @@ export default function CoursesBrowser({
           display: flex;
           flex-direction: column;
           gap: 12px;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .cb-filters-search {
           display: flex;
@@ -753,7 +753,7 @@ export default function CoursesBrowser({
           transition: box-shadow 0.22s, transform 0.22s, opacity 0.22s;
           position: relative;
           color: var(--ink);
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .c-card-link {
           display: flex;
@@ -933,7 +933,7 @@ export default function CoursesBrowser({
           border-radius: 8px;
           background: #fff;
           border: 1px solid var(--cream-mid);
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           text-decoration: none;
           color: var(--ink);
           transition: border-color 0.15s, transform 0.12s, background 0.15s;
@@ -967,7 +967,7 @@ export default function CoursesBrowser({
           color: var(--ink-mid);
           border-radius: 10px;
           padding: 11px 14px;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-size: 11px;
           font-weight: 600;
           letter-spacing: 0.06em;
@@ -997,7 +997,7 @@ export default function CoursesBrowser({
           align-items: center;
           justify-content: space-between;
           gap: 32px;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .cb-jb-eyebrow {
           font-family: var(--font-space-mono), 'Space Mono', monospace;

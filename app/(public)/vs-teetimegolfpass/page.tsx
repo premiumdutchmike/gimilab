@@ -346,11 +346,11 @@ export default function VsTeeTimeGolfPassPage() {
         .vs-root {
           background: var(--vs-off-white);
           color: var(--vs-midnight);
-          font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           overflow-x: hidden;
         }
         .vs-hl {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           line-height: 1.05;
           letter-spacing: -0.03em;
@@ -459,7 +459,7 @@ export default function VsTeeTimeGolfPassPage() {
           margin-bottom: 10px;
         }
         .vs-hero-stat-num {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           font-size: clamp(40px, 5vw, 64px);
           letter-spacing: -0.03em;
@@ -541,7 +541,7 @@ export default function VsTeeTimeGolfPassPage() {
           padding: 40px 32px;
         }
         .vs-ceiling-num {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           font-size: 14px;
           color: var(--vs-amber);
@@ -549,7 +549,7 @@ export default function VsTeeTimeGolfPassPage() {
           letter-spacing: 0.04em;
         }
         .vs-ceiling-hl {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           font-size: 24px;
           letter-spacing: -0.02em;
@@ -646,7 +646,7 @@ export default function VsTeeTimeGolfPassPage() {
           accent-color: var(--vs-amber);
         }
         .vs-math-value {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           font-size: 28px;
           color: var(--vs-midnight);
@@ -671,7 +671,7 @@ export default function VsTeeTimeGolfPassPage() {
           color: var(--vs-linen);
         }
         .vs-math-col-head {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           font-size: 18px;
           color: var(--vs-midnight);
@@ -690,7 +690,7 @@ export default function VsTeeTimeGolfPassPage() {
           color: rgba(244,238,227,0.55);
         }
         .vs-math-col-num {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           font-size: clamp(32px, 4vw, 48px);
           letter-spacing: -0.03em;
@@ -714,7 +714,7 @@ export default function VsTeeTimeGolfPassPage() {
           font-weight: 600;
         }
         .vs-math-verdict {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-size: clamp(18px, 2vw, 24px);
           line-height: 1.4;
           color: var(--vs-midnight);
@@ -797,7 +797,7 @@ export default function VsTeeTimeGolfPassPage() {
           justify-content: space-between;
           padding: 28px 0;
           cursor: pointer;
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           font-size: clamp(18px, 2vw, 22px);
           color: var(--vs-midnight);
@@ -893,7 +893,7 @@ export default function VsTeeTimeGolfPassPage() {
           margin-bottom: 24px;
         }
         .vs-break-quote {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-size: clamp(26px, 3.6vw, 46px);
           font-weight: 700;
           line-height: 1.2;

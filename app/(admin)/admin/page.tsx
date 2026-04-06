@@ -193,7 +193,7 @@ export default async function AdminDashboardPage() {
           font-family: 'Inter', sans-serif;
         }
         .adm-greeting {
-          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 800;
           font-size: 28px;
           letter-spacing: -0.03em;
@@ -223,7 +223,7 @@ export default async function AdminDashboardPage() {
           margin-bottom: 12px;
         }
         .adm-stat-value {
-          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 900;
           font-size: 48px;
           letter-spacing: -0.04em;
@@ -298,7 +298,7 @@ export default async function AdminDashboardPage() {
         /* Right column */
         .adm-right { display: flex; flex-direction: column; }
         .adm-pending-num {
-          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 900;
           font-size: 48px;
           letter-spacing: -0.04em;
@@ -348,7 +348,7 @@ export default async function AdminDashboardPage() {
         }
         .adm-tier-row:last-child { border-bottom: none; }
         .adm-tier-num {
-          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 900;
           font-size: 36px;
           letter-spacing: -0.04em;
@@ -366,7 +366,7 @@ export default async function AdminDashboardPage() {
         }
         .adm-health-row:last-child { border-bottom: none; }
         .adm-health-val {
-          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 900;
           font-size: 28px;
           letter-spacing: -0.04em;
@@ -384,7 +384,7 @@ export default async function AdminDashboardPage() {
         }
         .adm-course-row:last-child { border-bottom: none; }
         .adm-course-num {
-          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 900;
           font-size: 20px;
           letter-spacing: -0.03em;

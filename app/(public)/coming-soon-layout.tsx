@@ -123,11 +123,11 @@ export function ComingSoonLayout({
         .cs-root {
           background: var(--cs-off-white);
           color: var(--cs-midnight);
-          font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           overflow-x: hidden;
         }
         .cs-hl {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           line-height: 1.05;
           letter-spacing: -0.03em;
@@ -217,7 +217,7 @@ export function ComingSoonLayout({
           margin-bottom: 10px;
         }
         .cs-contact-link {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           font-size: clamp(22px, 2.6vw, 32px);
           color: var(--cs-amber);
@@ -341,7 +341,7 @@ export function ComingSoonLayout({
           bottom: -28px;
           left: 50%;
           transform: translateX(-50%);
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-size: clamp(100px, 18vw, 260px);
           font-weight: 700;
           letter-spacing: -0.06em;

@@ -103,7 +103,7 @@ export default function VsFooter() {
         .vs-footer-legal-links { display: flex; gap: 20px; }
         .vs-footer-legal-links a { font-size: 12px; color: rgba(255,255,255,0.2); transition: color 0.2s; font-family: 'Inter', sans-serif; text-decoration: none; }
         .vs-footer-legal-links a:hover { color: rgba(255,255,255,0.6); }
-        .vs-footer-big-word { font-size: clamp(64px, 12vw, 160px); font-weight: 700; letter-spacing: -0.06em; color: rgba(255,255,255,0.05); display: block; text-align: center; line-height: 1; margin-top: 48px; user-select: none; font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif; }
+        .vs-footer-big-word { font-size: clamp(64px, 12vw, 160px); font-weight: 700; letter-spacing: -0.06em; color: rgba(255,255,255,0.05); display: block; text-align: center; line-height: 1; margin-top: 48px; user-select: none; font-family: var(--font-inter), 'Inter', sans-serif; }
 
         @media (max-width: 1024px) {
           .vs-footer { padding-left: 28px; padding-right: 28px; }

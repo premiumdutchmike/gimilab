@@ -280,7 +280,7 @@ export default function VsGolfnowCalculator() {
           background: #EDE8DF;
           padding: 96px 56px;
           border-top: 1px solid #DDD7CC;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .vgn-math-eyebrow {
           font-family: var(--font-space-mono), 'Space Mono', monospace;
@@ -385,7 +385,7 @@ export default function VsGolfnowCalculator() {
           flex-wrap: nowrap;
         }
         .vgn-plan-pill-btn {
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-size: 10px;
           letter-spacing: 0.06em;
           text-transform: uppercase;
@@ -450,7 +450,7 @@ export default function VsGolfnowCalculator() {
           letter-spacing: -0.04em;
           line-height: 1;
           margin-bottom: 4px;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .vgn-instead-name {
           font-size: 12px;
@@ -530,7 +530,7 @@ export default function VsGolfnowCalculator() {
           letter-spacing: -0.05em;
           line-height: 1;
           margin-bottom: 6px;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .vgn-save-sub {
           font-size: 13px;
@@ -571,7 +571,7 @@ export default function VsGolfnowCalculator() {
           letter-spacing: 0.04em;
           text-transform: uppercase;
           cursor: pointer;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           transition: background 0.18s, transform 0.12s;
           min-width: 200px;
         }

@@ -28,7 +28,7 @@ export default function PartnersPage() {
         .pp-root {
           background: var(--off-white);
           color: var(--midnight);
-          font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           overflow-x: hidden;
         }
 
@@ -49,7 +49,7 @@ export default function PartnersPage() {
           margin-bottom: 20px;
         }
         .pp-hl {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           line-height: 1.05;
           letter-spacing: -0.03em;
@@ -381,7 +381,7 @@ export default function PartnersPage() {
           margin-bottom: 20px;
         }
         .pp-step-hl {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-size: 22px;
           font-weight: 700;
           color: var(--midnight);
@@ -509,7 +509,7 @@ export default function PartnersPage() {
           margin-bottom: 8px;
         }
         .pp-savings-hl {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-size: clamp(20px, 3vw, 28px);
           font-weight: 700;
           color: var(--linen);
@@ -770,7 +770,7 @@ export default function PartnersPage() {
           margin: 0 auto 24px;
         }
         .pf-success-hl {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-size: 24px;
           font-weight: 700;
           color: var(--midnight);

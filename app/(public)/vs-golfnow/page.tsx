@@ -220,7 +220,7 @@ export default function VsGolfnowPage() {
 
       <style>{`
         .vgn-page {
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           background: #EDE8DF;
           color: #131110;
         }

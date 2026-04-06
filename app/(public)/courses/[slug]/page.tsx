@@ -433,7 +433,7 @@ export default async function CourseDetailPage({
         .cd-host-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 32px; }
         .cd-host-card { background: #F4F0EA; border: 1px solid #DDD7CC; border-radius: 14px; padding: 28px 28px; display: flex; flex-direction: column; }
         .cd-host-icon { color: #C4893A; opacity: 0.85; margin-bottom: 14px; }
-        .cd-host-num { font-family: var(--font-space-grotesk), 'Inter', sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -0.03em; color: #C4893A; line-height: 1; }
+        .cd-host-num { font-family: var(--font-inter), 'Inter', sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -0.03em; color: #C4893A; line-height: 1; }
         .cd-host-title { font-size: 18px; font-weight: 700; color: #0C0C0B; letter-spacing: -0.02em; margin-top: 12px; margin-bottom: 8px; font-family: 'Inter', sans-serif; }
         .cd-host-body { font-size: 13px; line-height: 1.6; color: #847C72; font-family: 'Inter', sans-serif; }
 

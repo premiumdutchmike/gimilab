@@ -66,6 +66,17 @@ export default async function HomePage() {
     <>
       {/* ── HERO ── */}
       <section className="hero" id="hero-section">
+        <video
+          className="hero-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster="/imagery/hero.png"
+        >
+          <source src="/imagery/hero_bunker.mp4" type="video/mp4" />
+        </video>
         <div className="hero-overlay" />
         <svg className="putt-canvas" viewBox="0 0 1440 760" preserveAspectRatio="xMidYMid slice">
           <path className="putt-path" id="pl1" d="M 80,740 C 160,640 280,560 420,480 C 560,400 680,360 820,300 C 940,248 1060,200 1180,160" />
@@ -398,7 +409,7 @@ export default async function HomePage() {
           --graphite:  #1E1D1B;
         }
         .hl {
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           letter-spacing: -0.03em;
           line-height: 1.05;
@@ -427,13 +438,14 @@ export default async function HomePage() {
           align-items: center;
           gap: 0;
           overflow: hidden;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
-        .hero::before {
-          content: '';
+        .hero-video {
           position: absolute;
           inset: 0;
-          background: url('/imagery/hero.png') center/cover no-repeat;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
           z-index: 0;
         }
         .hero-overlay {
@@ -473,7 +485,7 @@ export default async function HomePage() {
           z-index: 2;
           pointer-events: none;
           user-select: none;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .hero-left {
           position: relative;
@@ -509,7 +521,7 @@ export default async function HomePage() {
           letter-spacing: -0.045em;
           margin-bottom: 36px;
           color: #fff;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           transform: scale(var(--hero-scale, 1));
           filter: blur(var(--hero-blur, 0px));
           opacity: var(--hero-opacity, 1);
@@ -734,7 +746,7 @@ export default async function HomePage() {
           letter-spacing: -0.04em;
           line-height: 0.95;
           color: #131110;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .courses-head-right { display: flex; align-items: center; gap: 20px; }
         .see-all {
@@ -843,7 +855,7 @@ export default async function HomePage() {
           color: #131110;
           margin-bottom: 6px;
           line-height: 1.1;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .c-meta {
           font-family: var(--font-space-mono), 'Space Mono', monospace;
@@ -878,7 +890,7 @@ export default async function HomePage() {
           letter-spacing: -0.05em;
           color: #131110;
           line-height: 1;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .c-credits-num.featured-num { color: #C4893A; }
         .c-right-col {
@@ -953,7 +965,7 @@ export default async function HomePage() {
         .savings-left .label { color: var(--amber); margin-bottom: 6px; display: block; }
         .savings-amount {
           font-size: 40px; font-weight: 700; letter-spacing: -0.03em; color: var(--linen);
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .savings-note { font-size: 12px; color: var(--stone); margin-top: 4px; font-family: 'Inter', sans-serif; }
         .btn-savings {
@@ -1003,14 +1015,14 @@ export default async function HomePage() {
         .pc-name {
           font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
           color: var(--midnight);
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .pc-featured .pc-name { color: var(--linen); }
         .pc-price { display: flex; align-items: baseline; gap: 4px; }
         .pc-price-n {
           font-size: 52px; font-weight: 700; letter-spacing: -0.035em; line-height: 1;
           color: var(--midnight);
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .pc-featured .pc-price-n { color: var(--linen); }
         .pc-price-mo { font-size: 15px; color: var(--stone); }
@@ -1036,7 +1048,7 @@ export default async function HomePage() {
           display: block; text-align: center;
           font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
           padding: 14px; border-radius: 8px; transition: all 0.15s;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .pc-cta-default { background: var(--off-white); color: var(--midnight); border: 1.5px solid var(--smoke); }
         .pc-cta-default:hover { border-color: var(--midnight); }
@@ -1074,7 +1086,7 @@ export default async function HomePage() {
         .stat-number {
           font-size: clamp(40px, 5vw, 64px); font-weight: 700;
           letter-spacing: -0.04em; color: #fff; line-height: 1; margin-bottom: 8px;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .stat-desc { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.5; font-family: 'Inter', sans-serif; }
         .stats-quote {
@@ -1086,7 +1098,7 @@ export default async function HomePage() {
           font-size: clamp(20px, 2.5vw, 32px); font-weight: 400;
           letter-spacing: -0.02em; color: rgba(255,255,255,0.85);
           line-height: 1.4; max-width: 700px;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-style: italic;
         }
         .stats-quote-text strong { font-weight: 700; font-style: normal; }
@@ -1225,7 +1237,7 @@ export default async function HomePage() {
           line-height: 0.95;
           color: #fff;
           margin-bottom: 24px;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .video-banner-sub {
           font-size: 16px;
@@ -1272,7 +1284,7 @@ export default async function HomePage() {
           background: #F9F4EA; border: 2px solid var(--amber);
           display: flex; align-items: center; justify-content: center;
           font-size: 16px; font-weight: 700; color: var(--amber);
-          flex-shrink: 0; font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          flex-shrink: 0; font-family: var(--font-inter), 'Inter', sans-serif;
         }
         .review-name { font-size: 14px; font-weight: 700; color: var(--midnight); font-family: 'Inter', sans-serif; }
         .review-meta { font-size: 11px; color: var(--stone); letter-spacing: 0.04em; margin-top: 2px; font-family: 'Inter', sans-serif; }
@@ -1317,7 +1329,7 @@ export default async function HomePage() {
           letter-spacing: -0.06em; color: rgba(255,255,255,0.05);
           display: block; text-align: center; line-height: 1;
           margin-top: 48px; user-select: none;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
         }
 
         /* ── RESPONSIVE ── */

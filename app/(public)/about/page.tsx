@@ -216,11 +216,11 @@ export default function AboutPage() {
         .ab-root {
           background: var(--ab-off-white);
           color: var(--ab-midnight);
-          font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           overflow-x: hidden;
         }
         .ab-hl {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           line-height: 1.05;
           letter-spacing: -0.03em;
@@ -347,7 +347,7 @@ export default function AboutPage() {
           padding: 48px 40px;
         }
         .ab-belief-num {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           font-size: 14px;
           color: var(--ab-amber);
@@ -355,7 +355,7 @@ export default function AboutPage() {
           letter-spacing: 0.04em;
         }
         .ab-belief-hl {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           font-size: 26px;
           letter-spacing: -0.02em;
@@ -389,7 +389,7 @@ export default function AboutPage() {
           margin-bottom: 16px;
         }
         .ab-fact-value {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 700;
           font-size: clamp(28px, 3.5vw, 40px);
           letter-spacing: -0.03em;
@@ -438,7 +438,7 @@ export default function AboutPage() {
           margin-bottom: 10px;
         }
         .ab-contact-link {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 600;
           font-size: 18px;
           color: var(--ab-amber);

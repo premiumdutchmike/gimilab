@@ -148,7 +148,7 @@ export default function MemberSidebar({ fullName, email, tier, credits, creditRe
     flex-shrink: 0;
   }
   .sidebar-wordmark {
-    font-family: var(--font-geist-sans), 'Geist', sans-serif;
+    font-family: var(--font-inter), 'Inter', sans-serif;
     font-weight: 900;
     font-size: 24px;
     letter-spacing: -0.05em;

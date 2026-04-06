@@ -243,7 +243,7 @@ export default async function DashboardPage() {
           font-family: 'Inter', sans-serif;
         }
         .lab-greeting {
-          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 900;
           font-size: 44px;
           letter-spacing: -0.035em;
@@ -268,7 +268,7 @@ export default async function DashboardPage() {
           font-family: 'Inter', sans-serif;
         }
         .lab-stat-value {
-          font-family: var(--font-geist-sans), 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-weight: 900;
           font-size: 96px;
           letter-spacing: -0.055em;

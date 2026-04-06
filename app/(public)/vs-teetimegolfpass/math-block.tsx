@@ -274,7 +274,7 @@ export default function MathBlock() {
           background: #fff;
         }
         .vs-math-billing-btn {
-          font-family: var(--font-space-grotesk), sans-serif;
+          font-family: var(--font-inter), 'Inter', sans-serif;
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 0.1em;
