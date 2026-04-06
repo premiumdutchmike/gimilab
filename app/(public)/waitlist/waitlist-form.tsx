@@ -4,9 +4,9 @@ import { useActionState, useState } from 'react'
 import { joinWaitlist, completeWaitlistProfile } from '@/actions/waitlist'
 
 const ROUNDS_OPTIONS = [
-  { value: '1-2', label: '1–2 rounds', desc: 'Casual weekender' },
-  { value: '3-4', label: '3–4 rounds', desc: 'Regular player' },
-  { value: '5+', label: '5+ rounds', desc: 'Committed golfer' },
+  { value: '1-2', label: '1–2 rounds/mo', desc: 'Casual weekender' },
+  { value: '3-4', label: '3–4 rounds/mo', desc: 'Regular player' },
+  { value: '5+', label: '5+ rounds/mo', desc: 'Committed golfer' },
 ]
 
 export default function WaitlistForm({ referral }: { referral?: string }) {
@@ -79,7 +79,7 @@ export default function WaitlistForm({ referral }: { referral?: string }) {
           <input type="hidden" name="email" value={email} />
           <div className="wl-step-label">One more thing — helps us prioritize your access.</div>
 
-          <div className="wl-q-label">How often do you play?</div>
+          <div className="wl-q-label">How often do you play per month?</div>
           <div className="wl-options">
             {ROUNDS_OPTIONS.map((opt) => (
               <label
