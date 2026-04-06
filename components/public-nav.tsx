@@ -56,215 +56,11 @@ export default function PublicNav() {
   // be deleted independently. See app/(public)/vs-teetimegolfpass/vs-nav.tsx.
   if (pathname.startsWith('/vs-')) return null
 
+  // ── All pages: dark nav (ticker + centered wordmark + hamburger/user icon) ──
+  // Homepage: transparent over the hero image (fixed position)
+  // Other pages: solid midnight background (static, pushes content down)
   const isHomepage = pathname === '/'
 
-  // Non-homepage pages get the light nav (unchanged behavior)
-  if (!isHomepage) {
-    const isLight = pathname.startsWith('/courses') || pathname.startsWith('/pricing') || pathname.startsWith('/partners')
-    const showTicker = pathname === '/courses'
-    const isMinimal = pathname.startsWith('/pricing')
-
-    if (isLight) {
-      return (
-        <>
-          {showTicker && (
-            <div style={{ background: '#0C0C0B', overflow: 'hidden', height: 32, display: 'flex', alignItems: 'center' }}>
-              <div className="ticker-track">
-                {['Monthly credits', '+ Any course', 'Zero booking fees', '+ Cancel anytime', 'From $99/mo', '+ 03 tiers',
-                  'Monthly credits', '+ Any course', 'Zero booking fees', '+ Cancel anytime', 'From $99/mo', '+ 03 tiers',
-                  'Monthly credits', '+ Any course', 'Zero booking fees', '+ Cancel anytime', 'From $99/mo', '+ 03 tiers',
-                  'Monthly credits', '+ Any course', 'Zero booking fees', '+ Cancel anytime', 'From $99/mo', '+ 03 tiers',
-                ].map((item, i) => (
-                  <span key={i} className={item.startsWith('+') ? 'ticker-item accent' : 'ticker-item'}>{item}</span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <nav className="light-nav">
-            {isMinimal ? (
-              <div className="light-nav-inner">
-                <Link href="/" className="light-wm">gimmelab</Link>
-                {user ? (
-                  <Link href="/dashboard" className="light-nav-login">Hi, {user.firstName} →</Link>
-                ) : (
-                  <Link href="/login" className="light-nav-login">Already a member? Log in →</Link>
-                )}
-              </div>
-            ) : (
-              <div className="light-nav-inner">
-                <Link href="/" className="light-wm">gimmelab</Link>
-                <ul className="light-nav-links">
-                  <li><Link href="/#how-it-works">How It Works</Link></li>
-                  <li><Link href="/courses" className={pathname.startsWith('/courses') ? 'active' : ''}>Courses</Link></li>
-                  <li><Link href="/pricing" className={pathname === '/pricing' ? 'active' : ''}>Pricing</Link></li>
-                  <li><Link href="/partners" className={pathname === '/partners' ? 'active' : ''}>For Courses</Link></li>
-                </ul>
-                <div className="light-nav-right">
-                  {user ? (
-                    <Link href="/dashboard" className="light-nav-join">Hi, {user.firstName} →</Link>
-                  ) : (
-                    <>
-                      <Link href="/login" className="light-nav-login">Log In</Link>
-                      <Link href="/signup" className="light-nav-join">Join Now →</Link>
-                    </>
-                  )}
-                </div>
-                <button
-                  className="light-nav-hamburger"
-                  onClick={() => setMenuOpen(true)}
-                  aria-label="Open menu"
-                >
-                  <span /><span /><span />
-                </button>
-              </div>
-            )}
-          </nav>
-
-          {/* Full-screen menu overlay (light) */}
-          <div
-            className={`light-menu-overlay${menuOpen ? ' open' : ''}`}
-            onClick={(e) => { if (e.target === e.currentTarget) closeMenu() }}
-          >
-            <div className="light-menu-header">
-              <Link href="/" className="light-menu-wm" onClick={closeMenu}>gimmelab</Link>
-              <button className="light-menu-close" onClick={closeMenu} aria-label="Close menu">
-                Close
-                <span className="light-menu-close-x">&times;</span>
-              </button>
-            </div>
-            <div className="light-menu-body">
-              <Link href="/#how-it-works" className="light-menu-link" onClick={closeMenu}>
-                How it works <span>03 steps</span>
-              </Link>
-              <Link href="/courses" className="light-menu-link" onClick={closeMenu}>
-                Courses <span>50+ partner</span>
-              </Link>
-              <Link href="/pricing" className="light-menu-link" onClick={closeMenu}>
-                Pricing <span>3 plans</span>
-              </Link>
-              <Link href="/partners" className="light-menu-link" onClick={closeMenu}>
-                For Courses <span>Partner portal</span>
-              </Link>
-            </div>
-            <div className="light-menu-footer">
-              {user ? (
-                <Link href="/dashboard" className="light-menu-footer-cta" onClick={closeMenu}>Hi, {user.firstName} →</Link>
-              ) : (
-                <>
-                  <Link href="/signup" className="light-menu-footer-cta" onClick={closeMenu}>Join Gimmelab →</Link>
-                  <Link href="/login" className="light-menu-footer-login" onClick={closeMenu}>Already a member? Log in</Link>
-                </>
-              )}
-            </div>
-          </div>
-
-          <style>{`
-            .ticker-track { display: flex; white-space: nowrap; animation: ticker 28s linear infinite; }
-            .ticker-item { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(244,238,227,0.5); padding: 0 28px; flex-shrink: 0; font-family: 'Inter', sans-serif; }
-            .ticker-item.accent { color: #BF7B2E; }
-            @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-            .light-nav { background: #FDFAF6; border-bottom: 1px solid rgba(12,12,11,0.09); position: sticky; top: 0; z-index: 100; }
-            .light-nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-            .light-wm { font-family: var(--font-nunito), 'Nunito', sans-serif; font-weight: 900; font-size: 24px; letter-spacing: -0.02em; color: #0C0C0B; text-decoration: none; line-height: 1; flex-shrink: 0; }
-            .light-nav-links { display: flex; align-items: center; gap: 32px; list-style: none; margin: 0; padding: 0; }
-            .light-nav-links a { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #847C72; text-decoration: none; text-transform: uppercase; transition: color 0.15s; font-family: 'Inter', sans-serif; }
-            .light-nav-links a:hover, .light-nav-links a.active { color: #0C0C0B; }
-            .light-nav-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
-            .light-nav-login { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #847C72; text-decoration: none; text-transform: uppercase; transition: color 0.15s; font-family: 'Inter', sans-serif; }
-            .light-nav-login:hover { color: #0C0C0B; }
-            .light-nav-join { background: #0C0C0B; color: #F4EEE3; border-radius: 2px; padding: 10px 20px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; transition: background 0.15s; }
-            .light-nav-join:hover { background: #1E1D1B; }
-            .light-nav-hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 8px; margin-left: 4px; flex-shrink: 0; }
-            .light-nav-hamburger span { display: block; width: 22px; height: 1.5px; background: #0C0C0B; border-radius: 1px; }
-            .light-nav-hamburger:hover { opacity: 0.7; }
-
-            /* Light menu overlay */
-            .light-menu-overlay {
-              position: fixed; inset: 0; z-index: 500;
-              display: flex; flex-direction: column;
-              background: rgba(253,250,246,0.98);
-              backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-              opacity: 0; pointer-events: none;
-              transition: opacity 0.35s ease;
-            }
-            .light-menu-overlay.open { opacity: 1; pointer-events: all; }
-            .light-menu-header {
-              display: flex; align-items: center; justify-content: space-between;
-              padding: 20px 24px;
-              border-bottom: 1px solid rgba(12,12,11,0.09);
-            }
-            .light-menu-wm {
-              font-family: var(--font-nunito), 'Nunito', sans-serif;
-              font-weight: 900; font-size: 22px;
-              letter-spacing: -0.03em;
-              color: #0C0C0B; text-decoration: none;
-            }
-            .light-menu-close {
-              background: none; border: none; cursor: pointer;
-              font-family: 'Inter', sans-serif;
-              font-size: 11px; font-weight: 500;
-              letter-spacing: 0.18em; text-transform: uppercase;
-              color: #847C72;
-              display: flex; align-items: center; gap: 12px;
-              transition: color 0.3s ease;
-            }
-            .light-menu-close:hover { color: #0C0C0B; }
-            .light-menu-close-x { font-size: 24px; font-weight: 300; line-height: 1; color: #0C0C0B; }
-            .light-menu-body {
-              flex: 1; display: flex; flex-direction: column;
-              justify-content: center; padding: 0 24px;
-            }
-            .light-menu-link {
-              display: block;
-              font-size: clamp(28px, 7vw, 48px);
-              font-weight: 700; color: #0C0C0B;
-              text-decoration: none; padding: 14px 0;
-              border-bottom: 1px solid rgba(12,12,11,0.09);
-              transition: color 0.3s ease, padding-left 0.3s ease;
-              letter-spacing: -0.02em;
-              font-family: 'Inter', sans-serif;
-            }
-            .light-menu-link:first-child { border-top: 1px solid rgba(12,12,11,0.09); }
-            .light-menu-link:hover { color: #BF7B2E; padding-left: 12px; }
-            .light-menu-link span {
-              font-size: 10px; font-weight: 600;
-              letter-spacing: 0.15em; text-transform: uppercase;
-              color: #847C72; margin-left: 12px; vertical-align: middle;
-            }
-            .light-menu-footer {
-              padding: 24px; border-top: 1px solid rgba(12,12,11,0.09);
-              display: flex; align-items: center; justify-content: space-between; gap: 16px;
-            }
-            .light-menu-footer-cta {
-              font-family: 'Inter', sans-serif;
-              font-size: 13px; font-weight: 700;
-              letter-spacing: 0.1em; text-transform: uppercase;
-              color: #BF7B2E; text-decoration: none;
-            }
-            .light-menu-footer-cta:hover { opacity: 0.7; }
-            .light-menu-footer-login {
-              font-family: 'Inter', sans-serif;
-              font-size: 12px; font-weight: 500;
-              letter-spacing: 0.08em;
-              color: #847C72; text-decoration: none;
-            }
-            .light-menu-footer-login:hover { color: #0C0C0B; }
-
-            @media (max-width: 768px) {
-              .light-nav-inner { padding: 0 20px; }
-              .light-nav-links { display: none; }
-              .light-nav-right { display: none; }
-              .light-nav-hamburger { display: flex; }
-            }
-          `}</style>
-        </>
-      )
-    }
-  }
-
-  // ── Homepage: transparent centered nav + floating pill on scroll ──
   return (
     <>
       {/* Ticker bar */}
@@ -286,9 +82,9 @@ export default function PublicNav() {
         </div>
       </div>
 
-      {/* Transparent main nav */}
+      {/* Main nav */}
       <nav
-        className="gl-nav-main"
+        className={`gl-nav-main${isHomepage ? '' : ' gl-nav-solid'}`}
         style={{
           opacity: scrolled ? 0 : 1,
           pointerEvents: scrolled ? 'none' : 'all',
@@ -398,12 +194,16 @@ export default function PublicNav() {
         .ticker-item.accent { color: #BF7B2E; }
         @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-        /* ── TRANSPARENT MAIN NAV ── */
+        /* ── MAIN NAV ── */
         .gl-nav-main {
           position: fixed;
           top: 32px; left: 0; right: 0;
           z-index: 200;
           transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        /* Non-homepage: solid background behind transparent nav */
+        .gl-nav-solid {
+          background: #0C0C0B;
         }
         .gl-nav-top {
           display: grid;

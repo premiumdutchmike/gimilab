@@ -157,37 +157,60 @@ export default function CoursesBrowser({
     [filtered, balance],
   )
 
+  // Featured course: first course with a photo
+  const featured = courses.find((c) => c.photos.length > 0) ?? courses[0] ?? null
+
   return (
     <>
-      {/* Page Hero */}
-      <section className="cb-hero">
-        <div className="cb-hero-left">
-          <div className="cb-eyebrow">Member Network</div>
-          <h1 className="cb-title">Play anywhere.<br /><span className="cb-title-gold">Pay nothing extra.</span></h1>
-          <p className="cb-sub">
-            One membership. Every course in our network. Book with monthly credits —
-            no green fees, no booking fees, ever.
-          </p>
-        </div>
-        <div className="cb-hero-right">
-          {isLoggedIn && balance !== undefined ? (
-            <div className="cb-balance-card">
-              <div className="cb-balance-label">Your credits</div>
-              <div className="cb-balance-num">{balance}</div>
-              <div className="cb-balance-sub">
-                {affordableCount != null
-                  ? `${affordableCount} course${affordableCount === 1 ? '' : 's'} in reach`
-                  : 'ready to book'}
+      {/* Full-width featured hero */}
+      <section className="cb-hero-full">
+        {featured && featured.photos[0] && (
+          <Image
+            src={featured.photos[0]}
+            alt={featured.name}
+            fill
+            className="cb-hero-img"
+            priority
+          />
+        )}
+        <div className="cb-hero-overlay" />
+        <div className="cb-hero-content">
+          <div className="cb-hero-left">
+            <div className="cb-eyebrow">Member Network</div>
+            <h1 className="cb-title">Play anywhere.<br /><span className="cb-title-gold">Pay nothing extra.</span></h1>
+            <p className="cb-sub">
+              One membership. Every course in our network. Book with monthly credits —
+              no green fees, no booking fees, ever.
+            </p>
+          </div>
+          <div className="cb-hero-right">
+            {isLoggedIn && balance !== undefined ? (
+              <div className="cb-balance-card">
+                <div className="cb-balance-label">Your credits</div>
+                <div className="cb-balance-num">{balance}</div>
+                <div className="cb-balance-sub">
+                  {affordableCount != null
+                    ? `${affordableCount} course${affordableCount === 1 ? '' : 's'} in reach`
+                    : 'ready to book'}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="cb-cta-card">
-              <div className="cb-cta-note">Membership from</div>
-              <div className="cb-cta-price">$99<span>/mo</span></div>
-              <Link href="/pricing" className="cb-cta-btn">See plans →</Link>
-            </div>
-          )}
+            ) : (
+              <div className="cb-cta-card">
+                <div className="cb-cta-note">Membership from</div>
+                <div className="cb-cta-price">$99<span>/mo</span></div>
+                <Link href="/pricing" className="cb-cta-btn">See plans →</Link>
+              </div>
+            )}
+          </div>
         </div>
+        {featured && (
+          <div className="cb-hero-featured">
+            <span className="cb-hero-featured-label">Featured Course</span>
+            <Link href={`/courses/${featured.slug}`} className="cb-hero-featured-name">
+              {featured.name} →
+            </Link>
+          </div>
+        )}
       </section>
 
       {/* Filters */}
@@ -408,58 +431,117 @@ export default function CoursesBrowser({
 
         main { background: var(--cream); }
 
-        .cb-hero {
+        /* ── FULL-WIDTH HERO ── */
+        .cb-hero-full {
+          position: relative;
+          min-height: 520px;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          overflow: hidden;
+        }
+        .cb-hero-img {
+          object-fit: cover;
+          object-position: center 40%;
+        }
+        .cb-hero-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            180deg,
+            rgba(12,12,11,0.25) 0%,
+            rgba(12,12,11,0.65) 60%,
+            rgba(12,12,11,0.88) 100%
+          );
+          z-index: 1;
+        }
+        .cb-hero-content {
+          position: relative;
+          z-index: 2;
           max-width: 1280px;
           margin: 0 auto;
-          padding: 72px 48px 40px;
+          width: 100%;
+          padding: 0 48px 48px;
           display: flex;
           align-items: flex-end;
           justify-content: space-between;
           gap: 48px;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
         }
         .cb-hero-left { max-width: 640px; }
         .cb-eyebrow {
-          font-family: var(--font-space-mono), 'Space Mono', monospace;
           font-size: 10px;
           letter-spacing: 0.22em;
           text-transform: uppercase;
           color: var(--gold);
           margin-bottom: 14px;
+          font-family: 'Inter', sans-serif;
+          font-weight: 700;
         }
         .cb-title {
           font-size: clamp(38px, 5vw, 60px);
           font-weight: 700;
-          letter-spacing: -0.04em;
           line-height: 0.95;
-          color: var(--ink);
+          color: #F4EEE3;
           margin: 0 0 16px;
         }
         .cb-title-gold { color: var(--gold); }
         .cb-sub {
           font-size: 15px;
-          color: var(--ink-soft);
+          color: rgba(244,238,227,0.65);
           line-height: 1.65;
           max-width: 520px;
         }
 
-        .cb-hero-right { flex-shrink: 0; }
+        .cb-hero-right { flex-shrink: 0; position: relative; z-index: 2; }
         .cb-balance-card,
         .cb-cta-card {
-          background: var(--cream-card);
-          border: 1px solid var(--cream-mid);
+          background: rgba(12,12,11,0.6);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(244,238,227,0.12);
           border-radius: 14px;
           padding: 24px 28px;
           min-width: 220px;
           text-align: right;
         }
-        .cb-balance-label,
-        .cb-cta-note {
-          font-family: var(--font-space-mono), 'Space Mono', monospace;
-          font-size: 10px;
+
+        .cb-hero-featured {
+          position: relative;
+          z-index: 2;
+          padding: 16px 48px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          border-top: 1px solid rgba(244,238,227,0.1);
+          background: rgba(12,12,11,0.5);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        }
+        .cb-hero-featured-label {
+          font-size: 9px;
+          font-weight: 700;
           letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: var(--ink-soft);
+          color: var(--gold);
+          font-family: 'Inter', sans-serif;
+        }
+        .cb-hero-featured-name {
+          font-size: 14px;
+          font-weight: 600;
+          color: #F4EEE3;
+          text-decoration: none;
+          transition: color 0.15s;
+          font-family: 'Inter', sans-serif;
+        }
+        .cb-hero-featured-name:hover { color: var(--gold); }
+        .cb-balance-label,
+        .cb-cta-note {
+          font-family: 'Inter', sans-serif;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: rgba(244,238,227,0.5);
           margin-bottom: 10px;
         }
         .cb-balance-num {
@@ -472,17 +554,17 @@ export default function CoursesBrowser({
         }
         .cb-balance-sub {
           font-size: 12px;
-          color: var(--ink-soft);
+          color: rgba(244,238,227,0.5);
         }
         .cb-cta-price {
           font-size: 40px;
           font-weight: 700;
-          color: var(--ink);
+          color: #F4EEE3;
           letter-spacing: -0.04em;
           line-height: 1;
           margin-bottom: 14px;
         }
-        .cb-cta-price span { font-size: 16px; color: var(--ink-soft); font-weight: 400; }
+        .cb-cta-price span { font-size: 16px; color: rgba(244,238,227,0.5); font-weight: 400; }
         .cb-cta-btn {
           display: inline-block;
           background: var(--accent);
@@ -955,12 +1037,13 @@ export default function CoursesBrowser({
           .cb-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 900px) {
-          .cb-hero {
+          .cb-hero-content {
             flex-direction: column;
             align-items: flex-start;
-            padding: 48px 32px 28px;
+            padding: 0 32px 32px;
             gap: 24px;
           }
+          .cb-hero-featured { padding: 16px 32px; }
           .cb-hero-right { align-self: stretch; }
           .cb-balance-card, .cb-cta-card { text-align: left; }
           .cb-filters { padding: 20px 32px 4px; }
@@ -975,7 +1058,8 @@ export default function CoursesBrowser({
           }
         }
         @media (max-width: 640px) {
-          .cb-hero { padding: 40px 20px 24px; }
+          .cb-hero-content { padding: 0 20px 24px; }
+          .cb-hero-featured { padding: 12px 20px; }
           .cb-filters { padding: 16px 20px 4px; gap: 10px; }
           .cb-filters-secondary { gap: 8px; }
           .cb-results-bar { padding: 8px 20px 14px; }
