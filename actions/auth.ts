@@ -98,15 +98,21 @@ export async function signInWithEmail(formData: FormData) {
 
   const supabase = await createClient()
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
     return { error: 'Invalid email or password.' }
   }
 
+  // Determine default landing page based on user role
+  const role = data.user?.user_metadata?.role as string | undefined
+  const defaultRedirect = role === 'admin' ? '/admin'
+    : role === 'partner' ? '/partner/dashboard'
+    : '/dashboard'
+
   // Send the user back to whatever page they tried to visit before login,
-  // falling back to /dashboard. `safeRedirect` prevents open-redirect attacks.
-  redirect(safeRedirect(redirectToRaw) ?? '/dashboard')
+  // falling back to their role's default page. `safeRedirect` prevents open-redirect attacks.
+  redirect(safeRedirect(redirectToRaw) ?? defaultRedirect)
 }
 
 export async function signInWithGoogle(plan: string, redirectTo?: string) {
