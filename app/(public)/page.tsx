@@ -519,7 +519,7 @@ export default async function HomePage() {
           content: '';
           position: absolute;
           inset: 0;
-          background: url('/imagery/hero.jpeg') center/cover no-repeat;
+          background: url('/imagery/hero.png') center/cover no-repeat;
           z-index: 0;
         }
         .hero-overlay {
