@@ -5,6 +5,7 @@ import {
   getRecentBookingsActivity,
   getCreditHealthStats,
   getTopCourses,
+  getWaitlistStats,
 } from '@/lib/admin/queries'
 
 export const dynamic = 'force-dynamic'
@@ -14,12 +15,13 @@ export default async function AdminDashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const [dashStats, recentMembers, recentBookings, creditHealth, topCourses] = await Promise.all([
+  const [dashStats, recentMembers, recentBookings, creditHealth, topCourses, waitlistStats] = await Promise.all([
     getAdminDashboardStats(),
     getRecentMembersWithStats(),
     getRecentBookingsActivity(),
     getCreditHealthStats(),
     getTopCourses(),
+    getWaitlistStats(),
   ])
 
   // Derived values
@@ -71,6 +73,53 @@ export default async function AdminDashboardPage() {
             {stat.delta && <div className="adm-stat-delta">{stat.delta}</div>}
           </div>
         ))}
+      </div>
+
+      {/* Waitlist */}
+      <div className="adm-wl-section">
+        <div className="adm-wl-header">
+          <div className="adm-card-hd">Waitlist</div>
+          <div className="adm-wl-counts">
+            <div className="adm-wl-big">{waitlistStats.total}</div>
+            <div className="adm-wl-sub">total signups</div>
+          </div>
+          <div className="adm-wl-counts">
+            <div className="adm-wl-big adm-amber">{waitlistStats.today}</div>
+            <div className="adm-wl-sub">today</div>
+          </div>
+          {waitlistStats.topCities.length > 0 && (
+            <div className="adm-wl-cities">
+              {waitlistStats.topCities.map(c => (
+                <span key={c.city} className="adm-wl-city">{c.city} ({c.count})</span>
+              ))}
+            </div>
+          )}
+        </div>
+        {waitlistStats.recentEntries.length > 0 && (
+          <div className="adm-card" style={{ marginTop: 12 }}>
+            <div className="adm-table-head">
+              <span style={{ flex: 1 }}>Name</span>
+              <span style={{ flex: 1 }}>Email</span>
+              <span style={{ width: 80 }}>Plays</span>
+              <span style={{ width: 120 }}>City</span>
+              <span style={{ width: 90 }}>Referral</span>
+              <span style={{ width: 70, textAlign: 'right' }}>Joined</span>
+            </div>
+            {waitlistStats.recentEntries.map(w => {
+              const joined = new Date(w.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+              return (
+                <div key={w.id} className="adm-table-row">
+                  <span style={{ flex: 1, fontWeight: 600, color: '#111' }}>{w.name}</span>
+                  <span style={{ flex: 1, color: 'rgba(0,0,0,0.5)', fontSize: 12 }}>{w.email}</span>
+                  <span style={{ width: 80 }}>{w.roundsPerMonth ?? '\u2014'}</span>
+                  <span style={{ width: 120 }}>{w.city ?? '\u2014'}</span>
+                  <span style={{ width: 90, fontSize: 11, fontFamily: 'monospace', color: 'rgba(0,0,0,0.4)' }}>{w.referralCode}</span>
+                  <span style={{ width: 70, textAlign: 'right', color: 'rgba(0,0,0,0.4)' }}>{joined}</span>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* Content Grid */}
@@ -235,6 +284,47 @@ export default async function AdminDashboardPage() {
         .adm-stat-delta {
           font-size: 11px;
           color: rgba(0,0,0,0.35);
+        }
+
+        /* Waitlist */
+        .adm-wl-section { margin-bottom: 32px; }
+        .adm-wl-header {
+          display: flex;
+          align-items: center;
+          gap: 32px;
+          margin-bottom: 4px;
+        }
+        .adm-wl-header .adm-card-hd { margin-bottom: 0; }
+        .adm-wl-counts { text-align: center; }
+        .adm-wl-big {
+          font-family: var(--font-inter), 'Inter', sans-serif;
+          font-weight: 900;
+          font-size: 36px;
+          letter-spacing: -0.04em;
+          color: #111;
+          line-height: 1;
+        }
+        .adm-wl-sub {
+          font-size: 10px;
+          color: rgba(0,0,0,0.4);
+          margin-top: 4px;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          font-weight: 600;
+        }
+        .adm-wl-cities {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-left: auto;
+        }
+        .adm-wl-city {
+          font-size: 11px;
+          font-weight: 600;
+          color: #111;
+          background: #f5f5f5;
+          padding: 4px 10px;
+          border-radius: 2px;
         }
 
         /* Cards */

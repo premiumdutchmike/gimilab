@@ -1,7 +1,7 @@
 import { cache } from 'react'
 import { db } from '@/lib/db'
-import { users, partners, courses, bookings, creditLedger, payoutTransfers, teeTimeSlots, ratings } from '@/lib/db/schema'
-import { eq, desc, sql, and, isNull, or, gt, inArray } from 'drizzle-orm'
+import { users, partners, courses, bookings, creditLedger, payoutTransfers, teeTimeSlots, ratings, waitlist } from '@/lib/db/schema'
+import { eq, desc, sql, and, isNull, or, gt, inArray, isNotNull } from 'drizzle-orm'
 
 export const getAdminStats = cache(async function getAdminStats() {
   const [memberCount, pendingCourseCount, activeSubCount, totalRevenueCents] = await Promise.all([
@@ -562,4 +562,49 @@ export const getTopCourses = cache(async function getTopCourses(limit = 5) {
     .groupBy(courses.id, courses.name)
     .orderBy(sql`COUNT(${bookings.id}) DESC`)
     .limit(limit)
+})
+
+// ─── Waitlist ──────────────────────────────────────────────────────────────
+
+export const getWaitlistStats = cache(async function getWaitlistStats() {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const [totalResult, todayResult, withCityResult, topCities, recentEntries] = await Promise.all([
+    db.select({ count: sql<number>`COUNT(*)` }).from(waitlist),
+    db.select({ count: sql<number>`COUNT(*)` }).from(waitlist)
+      .where(gt(waitlist.createdAt, today)),
+    db.select({ count: sql<number>`COUNT(*)` }).from(waitlist)
+      .where(isNotNull(waitlist.city)),
+    db.select({
+      city: waitlist.city,
+      count: sql<number>`COUNT(*)`,
+    })
+      .from(waitlist)
+      .where(isNotNull(waitlist.city))
+      .groupBy(waitlist.city)
+      .orderBy(sql`COUNT(*) DESC`)
+      .limit(5),
+    db.select({
+      id: waitlist.id,
+      name: waitlist.name,
+      email: waitlist.email,
+      roundsPerMonth: waitlist.roundsPerMonth,
+      city: waitlist.city,
+      referralCode: waitlist.referralCode,
+      referredBy: waitlist.referredBy,
+      createdAt: waitlist.createdAt,
+    })
+      .from(waitlist)
+      .orderBy(desc(waitlist.createdAt))
+      .limit(20),
+  ])
+
+  return {
+    total: Number(totalResult[0]?.count ?? 0),
+    today: Number(todayResult[0]?.count ?? 0),
+    withCity: Number(withCityResult[0]?.count ?? 0),
+    topCities: topCities.map(c => ({ city: c.city!, count: Number(c.count) })),
+    recentEntries,
+  }
 })
