@@ -403,26 +403,21 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── SAVINGS CTA ── */}
-      <section className="savings-section-new">
-        <div className="savings-new-left">
-          <div className="label" style={{ color: '#E8402A', marginBottom: 20 }}>The math</div>
-          <h2 className="hl savings-new-h2">Stop paying<br /><span>rack rate.</span></h2>
-          <p className="savings-new-p">A typical Philly golfer playing three times a month at $100/round saves over $1,800 a year switching to Gimmelab Core. That&apos;s a new set of irons and a new driver.</p>
-          <Link href="/signup" className="btn-savings-new">Start saving today →</Link>
-        </div>
-        <div className="savings-new-right">
-          <div className="savings-stat-card">
-            <div className="savings-stat-card-n">$3,600<span>+</span></div>
-            <div className="savings-stat-card-l">What you&apos;re paying now per year at rack rate</div>
+      {/* ── WAITLIST CTA ── */}
+      <section className="waitlist-section">
+        <div className="waitlist-inner">
+          <div className="waitlist-eyebrow">Early access</div>
+          <h2 className="hl waitlist-h2">Join the<br /><em>waitlist.</em></h2>
+          <p className="waitlist-p">We&apos;re onboarding courses and members in the Philadelphia area. Get on the list — we&apos;ll let you know the moment your first round is ready to book.</p>
+          <div className="waitlist-actions">
+            <Link href="/signup" className="btn-waitlist">Request Early Access →</Link>
           </div>
-          <div className="savings-stat-card">
-            <div className="savings-stat-card-n">$1,788</div>
-            <div className="savings-stat-card-l">Gimmelab Core — all-in, no hidden fees</div>
-          </div>
-          <div className="savings-stat-card savings-stat-card-big">
-            <div className="savings-stat-card-n">$1,812</div>
-            <div className="savings-stat-card-l">Average yearly savings with Core</div>
+          <div className="waitlist-footnote">
+            <span>No commitment</span>
+            <span className="waitlist-dot" />
+            <span>No credit card</span>
+            <span className="waitlist-dot" />
+            <span>Philadelphia first</span>
           </div>
         </div>
       </section>
@@ -1181,50 +1176,81 @@ export default async function HomePage() {
           white-space: nowrap; font-family: 'Inter', sans-serif;
         }
 
-        /* ── SAVINGS SECTION (NEW) ── */
-        .savings-section-new {
-          padding: 120px 56px; background: var(--midnight);
-          display: grid; grid-template-columns: 1fr 1fr;
-          gap: 80px; align-items: center;
+        /* ── WAITLIST CTA ── */
+        .waitlist-section {
+          padding: clamp(80px, 12vw, 160px) clamp(24px, 8vw, 120px);
+          background: var(--midnight);
+          text-align: center;
         }
-        .savings-new-h2 {
-          font-size: clamp(40px, 6vw, 80px);
-          letter-spacing: -0.04em; line-height: 0.97; color: #fff; margin-bottom: 28px;
+        .waitlist-inner {
+          max-width: 680px;
+          margin: 0 auto;
         }
-        .savings-new-h2 span { color: #E8402A; }
-        .savings-new-p {
-          font-size: 16px; color: rgba(255,255,255,0.45); line-height: 1.7;
-          max-width: 400px; margin-bottom: 40px; font-family: 'Inter', sans-serif;
+        .waitlist-eyebrow {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: var(--amber);
+          margin-bottom: 28px;
+          font-family: 'Inter', sans-serif;
         }
-        .btn-savings-new {
+        .waitlist-h2 {
+          font-size: clamp(48px, 8vw, 92px);
+          letter-spacing: -0.04em;
+          line-height: 0.95;
+          color: #fff;
+          margin-bottom: 28px;
+        }
+        .waitlist-h2 em {
+          font-style: italic;
+          color: var(--amber);
+        }
+        .waitlist-p {
+          font-size: clamp(16px, 1.4vw, 19px);
+          color: rgba(255,255,255,0.45);
+          line-height: 1.7;
+          max-width: 520px;
+          margin: 0 auto 40px;
+          font-family: 'Inter', sans-serif;
+        }
+        .waitlist-actions {
+          margin-bottom: 32px;
+        }
+        .btn-waitlist {
           display: inline-block;
-          font-size: 15px; font-weight: 700; color: var(--midnight);
-          background: #fff; border-radius: 999px;
-          padding: 16px 40px; transition: background 0.2s;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+          font-size: 13px;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--midnight);
+          background: #fff;
+          border: 1px solid #fff;
+          padding: 18px 44px;
+          transition: background 0.2s, color 0.2s;
+          font-family: 'Inter', sans-serif;
+          text-decoration: none;
         }
-        .btn-savings-new:hover { background: var(--linen); }
-        .savings-new-right {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+        .btn-waitlist:hover {
+          background: transparent;
+          color: #fff;
         }
-        .savings-stat-card {
-          background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 12px; padding: 28px 24px;
+        .waitlist-footnote {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 16px;
+          font-size: 11px;
+          color: rgba(255,255,255,0.3);
+          font-family: 'Inter', sans-serif;
+          letter-spacing: 0.04em;
         }
-        .savings-stat-card-n {
-          font-size: 40px; font-weight: 700; letter-spacing: -0.04em;
-          color: #fff; line-height: 1; margin-bottom: 8px;
-          font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+        .waitlist-dot {
+          width: 3px;
+          height: 3px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.2);
         }
-        .savings-stat-card-n span { color: #E8402A; }
-        .savings-stat-card-l { font-size: 13px; color: rgba(255,255,255,0.35); line-height: 1.5; font-family: 'Inter', sans-serif; }
-        .savings-stat-card-big {
-          grid-column: span 2;
-          background: #E8402A; border: none; text-align: center;
-          padding: 32px; border-radius: 12px;
-        }
-        .savings-stat-card-big .savings-stat-card-n { font-size: 56px; color: #fff; }
-        .savings-stat-card-big .savings-stat-card-l { color: rgba(255,255,255,0.7); font-size: 14px; }
 
         /* ── VIDEO HERO BANNER ── */
         .video-banner {
@@ -1393,7 +1419,7 @@ export default async function HomePage() {
           .reviews-section { padding-left: 28px; padding-right: 28px; }
           .reviews-grid { grid-template-columns: 1fr; }
           .footer-top { grid-template-columns: 1fr 1fr; }
-          .savings-section-new { grid-template-columns: 1fr; gap: 48px; padding: 72px 28px; }
+          .waitlist-footnote { flex-wrap: wrap; }
           .stats-section { padding: 56px 28px 40px; }
           .stats-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
           .stats-quote { flex-direction: column; align-items: flex-start; gap: 20px; }
@@ -1425,10 +1451,7 @@ export default async function HomePage() {
           .footer-top { grid-template-columns: 1fr; }
           .stats-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
           .stat-block { padding-right: 0; }
-          .savings-section-new { padding: 56px 24px; }
-          .savings-new-right { grid-template-columns: 1fr 1fr; }
-          .savings-stat-card-big { grid-column: span 2; }
-          .savings-new-h2 { font-size: clamp(36px, 10vw, 60px); }
+          .waitlist-footnote { gap: 10px; }
         }
         @media (max-width: 480px) {
           .hero-actions {

@@ -52,6 +52,8 @@ export default async function CourseDetailPage({
     par?: number
     rating?: number
     slope?: number
+    lat?: number | null
+    lng?: number | null
   } | undefined
 
   if (dbCourses.length > 0) {
@@ -66,6 +68,8 @@ export default async function CourseDetailPage({
       slug: c.slug,
       type: 'Public',
       tags: [`${c.holes ?? 18} Holes`],
+      lat: c.lat != null ? parseFloat(c.lat as unknown as string) : null,
+      lng: c.lng != null ? parseFloat(c.lng as unknown as string) : null,
     }
   } else {
     course = FALLBACK_COURSES.find(c => c.slug === slug)
@@ -314,6 +318,38 @@ export default async function CourseDetailPage({
               </div>
             </div>
           </div>
+
+          {/* Map */}
+          <div className="cd-map-card">
+            <div className="cd-map-embed">
+              <iframe
+                width="100%"
+                height="200"
+                style={{ border: 0 }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(course.name + ', ' + course.address)}&zoom=14`}
+                title={`Map of ${course.name}`}
+              />
+            </div>
+            <div className="cd-map-info">
+              <div className="cd-map-address">
+                <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M10 2C7.24 2 5 4.24 5 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5Z"/>
+                  <circle cx="10" cy="7" r="1.8"/>
+                </svg>
+                {course.address}
+              </div>
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(course.name + ', ' + course.address)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cd-map-directions"
+              >
+                Get Directions →
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -381,7 +417,7 @@ export default async function CourseDetailPage({
         .cd-hero-join-btn { display: inline-flex; align-items: center; gap: 10px; background: #BF7B2E; color: #0C0C0B; border: none; border-radius: 2px; padding: 15px 28px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; transition: background 0.15s; }
         .cd-hero-join-btn:hover { background: #d48c37; }
 
-        .cd-body-wrap { max-width: 1280px; margin: 0 auto; padding: 40px 40px 60px; display: grid; grid-template-columns: 1fr 340px; gap: 32px; align-items: start; }
+        .cd-body-wrap { max-width: 1280px; margin: 0 auto; padding: 40px 40px 60px; display: grid; grid-template-columns: 1fr 360px; gap: 48px; align-items: start; }
 
         .cd-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-bottom: 32px; }
         .cd-stat-box { background: #FFFFFF; border: 1px solid rgba(12,12,11,0.09); padding: 18px 20px; }
@@ -425,6 +461,14 @@ export default async function CourseDetailPage({
         .cd-sb-trust { margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(12,12,11,0.09); display: flex; flex-direction: column; gap: 8px; }
         .cd-sb-trust-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #847C72; font-family: 'Inter', sans-serif; }
         .cd-sb-trust-item svg { flex-shrink: 0; color: #BF7B2E; }
+
+        .cd-map-card { margin-top: 16px; background: #FFFFFF; border: 1px solid rgba(12,12,11,0.09); border-radius: 2px; overflow: hidden; }
+        .cd-map-embed { background: #E5DDD3; }
+        .cd-map-embed iframe { display: block; }
+        .cd-map-info { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .cd-map-address { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #847C72; font-family: 'Inter', sans-serif; }
+        .cd-map-directions { font-size: 12px; font-weight: 700; color: #BF7B2E; text-decoration: none; white-space: nowrap; font-family: 'Inter', sans-serif; transition: opacity 0.15s; }
+        .cd-map-directions:hover { opacity: 0.75; }
 
         .cd-related { max-width: 1280px; margin: 0 auto; padding: 0 40px 60px; }
         .cd-related-title { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #847C72; text-transform: uppercase; margin-bottom: 16px; font-family: 'Inter', sans-serif; }

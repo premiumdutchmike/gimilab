@@ -93,13 +93,13 @@ export function BookingClient({
 
   // Picked slot
   const [picked, setPicked] = useState<{
-    slotId: string; courseName: string; startTime: string; creditCost: number
+    slotId: string; courseName: string; courseAddress: string; startTime: string; creditCost: number
   } | null>(null)
 
   // Booking
   const [isBooking, startBooking] = useTransition()
   const [bookingError, setBookingError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<{ courseName: string; time: string; date: string } | null>(null)
+  const [success, setSuccess] = useState<{ courseName: string; courseAddress: string; time: string; date: string } | null>(null)
 
   const fetchSlots = useCallback((
     newDate: string, newCourse: string, newTime: string,
@@ -150,6 +150,7 @@ export function BookingClient({
         setPicked({
           slotId: match.id,
           courseName: course.courseName,
+          courseAddress: course.courseAddress,
           startTime: match.startTime,
           creditCost: match.creditCost,
         })
@@ -160,7 +161,7 @@ export function BookingClient({
   }, [results])
 
   function pickSlot(course: CourseWithSlots, slot: { id: string; startTime: string; creditCost: number }) {
-    setPicked({ slotId: slot.id, courseName: course.courseName, startTime: slot.startTime, creditCost: slot.creditCost })
+    setPicked({ slotId: slot.id, courseName: course.courseName, courseAddress: course.courseAddress, startTime: slot.startTime, creditCost: slot.creditCost })
     setBookingError(null)
   }
 
@@ -184,6 +185,7 @@ export function BookingClient({
       } else {
         setSuccess({
           courseName: picked.courseName,
+          courseAddress: picked.courseAddress,
           time: formatTime(picked.startTime),
           date: date ? formatDateLabel(date) : '',
         })
@@ -632,10 +634,21 @@ export function BookingClient({
             <div style={{ fontSize: 20, fontWeight: 700, color: '#0C0C0B', letterSpacing: '-0.02em', marginBottom: 8 }}>
               {"You're on the tee!"}
             </div>
-            <div style={{ fontSize: 13, color: '#847C72', lineHeight: 1.6, marginBottom: 24 }}>
+            <div style={{ fontSize: 13, color: '#847C72', lineHeight: 1.6, marginBottom: 8 }}>
               {success.courseName} — {success.date} at {success.time}.{' '}
               Confirmation sent to your email.
             </div>
+            <div style={{ fontSize: 12, color: '#847C72', marginBottom: 8 }}>
+              {success.courseAddress}
+            </div>
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(success.courseName + ', ' + success.courseAddress)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'inline-block', fontSize: 12, fontWeight: 700, color: '#BF7B2E', textDecoration: 'none', marginBottom: 24 }}
+            >
+              Get Directions →
+            </a>
             <button
               onClick={() => router.push('/rounds')}
               style={{

@@ -76,6 +76,7 @@ export default async function DashboardPage() {
         date: teeTimeSlots.date,
         startTime: teeTimeSlots.startTime,
         courseName: courses.name,
+        courseAddress: courses.address,
       })
       .from(bookings)
       .innerJoin(teeTimeSlots, eq(bookings.slotId, teeTimeSlots.id))
@@ -125,6 +126,8 @@ export default async function DashboardPage() {
   let nextTeeCountdown = '—'
   let nextTeeDetails = 'No rounds booked'
   let nextTeeCourse = ''
+  let nextTeeAddress = ''
+  let nextTeeDirectionsUrl = ''
   if (nextTeeTimeResult) {
     const slotDate = new Date(`${nextTeeTimeResult.date}T${nextTeeTimeResult.startTime}`)
     const diffMs = slotDate.getTime() - Date.now()
@@ -134,6 +137,8 @@ export default async function DashboardPage() {
       nextTeeCountdown = diffDays > 0 ? `${diffDays}d ${diffHours}h` : `${diffHours}h`
       nextTeeDetails = slotDate.toLocaleDateString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' })
       nextTeeCourse = nextTeeTimeResult.courseName
+      nextTeeAddress = nextTeeTimeResult.courseAddress
+      nextTeeDirectionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(nextTeeTimeResult.courseName + ', ' + nextTeeTimeResult.courseAddress)}`
     }
   }
 
@@ -153,7 +158,7 @@ export default async function DashboardPage() {
           { label: 'Credits', value: String(balance), amber: true, sub: [`/ ${tierMax}`, creditResetLabel] },
           { label: 'Rounds', value: String(roundsThisMonth), amber: false, sub: ['this month'] },
           { label: 'Courses', value: String(coursesVisited), amber: false, sub: ['visited'] },
-          { label: 'Next Tee Time', value: nextTeeCountdown, amber: true, sub: [nextTeeDetails, nextTeeCourse].filter(Boolean) },
+          { label: 'Next Tee Time', value: nextTeeCountdown, amber: true, sub: [nextTeeDetails, nextTeeCourse, nextTeeAddress].filter(Boolean), directionsUrl: nextTeeDirectionsUrl },
         ].map((stat, i) => (
           <FadeIn key={stat.label} delay={0.1 + i * 0.1}>
             <div className="lab-stat">
@@ -164,6 +169,11 @@ export default async function DashboardPage() {
               {stat.sub.map((s, j) => (
                 <div key={j} className="lab-stat-sub">{s}</div>
               ))}
+              {'directionsUrl' in stat && stat.directionsUrl && (
+                <a href={stat.directionsUrl} target="_blank" rel="noopener noreferrer" className="lab-stat-directions">
+                  Get Directions →
+                </a>
+              )}
             </div>
           </FadeIn>
         ))}
@@ -273,6 +283,17 @@ export default async function DashboardPage() {
           font-family: 'Inter', sans-serif;
           line-height: 1.6;
         }
+        .lab-stat-directions {
+          display: inline-block;
+          font-size: 11px;
+          font-weight: 700;
+          color: #BF7B2E;
+          text-decoration: none;
+          margin-top: 6px;
+          font-family: 'Inter', sans-serif;
+          transition: opacity 0.15s;
+        }
+        .lab-stat-directions:hover { opacity: 0.75; }
 
         /* ── Lower section ── */
         .lab-lower {

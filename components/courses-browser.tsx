@@ -214,6 +214,7 @@ export default function CoursesBrowser({
       </section>
 
       {/* Filters */}
+      <div className="cb-filters-sticky">
       <section className="cb-filters">
         <div className="cb-filters-search">
           <input
@@ -281,6 +282,7 @@ export default function CoursesBrowser({
         </select>
         </div>
       </section>
+      </div>
 
       {zipError && (
         <div className="cb-zip-error">{zipError}</div>
@@ -580,11 +582,18 @@ export default function CoursesBrowser({
         }
         .cb-cta-btn:hover { background: #b03d21; }
 
-        /* Filters row — two explicit rows so nothing squishes */
+        /* Filters row — sticky below floating pill nav (pill is ~54px + 18px top) */
+        .cb-filters-sticky {
+          position: sticky;
+          top: 80px;
+          z-index: 80;
+          background: var(--cream);
+          border-bottom: 1px solid var(--cream-mid);
+        }
         .cb-filters {
           max-width: 1280px;
           margin: 0 auto;
-          padding: 24px 48px 8px;
+          padding: 16px 48px 12px;
           display: flex;
           flex-direction: column;
           gap: 12px;
