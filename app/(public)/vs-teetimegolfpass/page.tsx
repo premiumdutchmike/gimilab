@@ -23,7 +23,7 @@ const faqs = [
   },
   {
     q: 'Which is cheaper, Tee Time Golf Pass or Gimmelab?',
-    a: 'At 10–15 rounds per year, TTGP is cheaper on a total-cost basis. Once you pass roughly 25 rounds per year, Gimmelab Core ($149/mo) comes out ahead — and the gap widens with every additional round.',
+    a: 'It depends which Gimmelab tier you pick. At 10–15 rounds per year, Gimmelab Casual ($99/mo, or $990 billed annually) already beats TTGP at typical Philly green fees. At 25+ rounds Core ($149/mo) wins, and at 40+ rounds Heavy ($199/mo) wins. TTGP\'s $500 annual savings ceiling caps its value the more you play, while Gimmelab keeps scaling.',
   },
   {
     q: 'Can I use both?',
@@ -31,7 +31,7 @@ const faqs = [
   },
   {
     q: 'What is the best golf discount pass?',
-    a: 'There isn\'t one "best" pass — it depends entirely on how much you play. Light players (under 15 rounds/yr) are best served by a flat-discount pass like TTGP. Regular players (25+ rounds/yr) save more with a subscription model like Gimmelab Core. The honest answer is: do the math for your own play volume.',
+    a: 'There isn\'t one "best" pass — it depends on how much you play. Gimmelab offers three tiers so the right one always fits: Casual ($99/mo, up to 2 rounds/mo) for light play, Core ($149/mo, up to 3 rounds/mo) for regulars, and Heavy ($199/mo, up to 5 rounds/mo) for avid golfers. Annual billing drops each of those by 2 months. The honest answer is: use the calculator above and it\'ll pick the tier that fits your actual play volume.',
   },
 ]
 
