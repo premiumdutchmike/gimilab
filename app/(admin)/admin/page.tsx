@@ -102,7 +102,7 @@ export default async function AdminDashboardPage() {
               <span style={{ flex: 1 }}>Email</span>
               <span style={{ width: 80 }}>Plays</span>
               <span style={{ width: 120 }}>City</span>
-              <span style={{ width: 90 }}>Referral</span>
+              <span style={{ width: 120 }}>Referred by</span>
               <span style={{ width: 70, textAlign: 'right' }}>Joined</span>
             </div>
             {waitlistStats.recentEntries.map(w => {
@@ -113,7 +113,7 @@ export default async function AdminDashboardPage() {
                   <span style={{ flex: 1, color: 'rgba(0,0,0,0.5)', fontSize: 12 }}>{w.email}</span>
                   <span style={{ width: 80 }}>{w.roundsPerMonth ?? '\u2014'}</span>
                   <span style={{ width: 120 }}>{w.city ?? '\u2014'}</span>
-                  <span style={{ width: 90, fontSize: 11, fontFamily: 'monospace', color: 'rgba(0,0,0,0.4)' }}>{w.referralCode}</span>
+                  <span style={{ width: 120, fontSize: 12, color: w.referredByName ? '#BF7B2E' : 'rgba(0,0,0,0.2)' }}>{w.referredByName ?? '\u2014'}</span>
                   <span style={{ width: 70, textAlign: 'right', color: 'rgba(0,0,0,0.4)' }}>{joined}</span>
                 </div>
               )

@@ -600,11 +600,64 @@ export const getWaitlistStats = cache(async function getWaitlistStats() {
       .limit(20),
   ])
 
+  // Resolve referredBy codes to names
+  const referralCodes = recentEntries
+    .map(e => e.referredBy)
+    .filter((code): code is string => !!code)
+
+  let referrerMap: Record<string, string> = {}
+  if (referralCodes.length > 0) {
+    const referrers = await db
+      .select({ referralCode: waitlist.referralCode, name: waitlist.name })
+      .from(waitlist)
+      .where(inArray(waitlist.referralCode, referralCodes))
+    referrerMap = Object.fromEntries(referrers.map(r => [r.referralCode, r.name]))
+  }
+
   return {
     total: Number(totalResult[0]?.count ?? 0),
     today: Number(todayResult[0]?.count ?? 0),
     withCity: Number(withCityResult[0]?.count ?? 0),
     topCities: topCities.map(c => ({ city: c.city!, count: Number(c.count) })),
-    recentEntries,
+    recentEntries: recentEntries.map(e => ({
+      ...e,
+      referredByName: e.referredBy ? referrerMap[e.referredBy] ?? null : null,
+    })),
   }
+})
+
+export const getFullWaitlist = cache(async function getFullWaitlist() {
+  const allEntries = await db
+    .select({
+      id: waitlist.id,
+      name: waitlist.name,
+      email: waitlist.email,
+      roundsPerMonth: waitlist.roundsPerMonth,
+      city: waitlist.city,
+      referralCode: waitlist.referralCode,
+      referredBy: waitlist.referredBy,
+      createdAt: waitlist.createdAt,
+    })
+    .from(waitlist)
+    .orderBy(desc(waitlist.createdAt))
+
+  // Build referral code → name map
+  const codeToName: Record<string, string> = {}
+  for (const e of allEntries) {
+    codeToName[e.referralCode] = e.name
+  }
+
+  // Count referrals per code
+  const referralCounts: Record<string, number> = {}
+  for (const e of allEntries) {
+    if (e.referredBy) {
+      referralCounts[e.referredBy] = (referralCounts[e.referredBy] ?? 0) + 1
+    }
+  }
+
+  return allEntries.map(e => ({
+    ...e,
+    referredByName: e.referredBy ? codeToName[e.referredBy] ?? null : null,
+    referralCount: referralCounts[e.referralCode] ?? 0,
+  }))
 })
