@@ -31,11 +31,7 @@ export default async function PartnerLayout({
     if (nextStep) redirect(nextStep)
   }
 
-  // Check if Stripe Connect is pending (skipped during onboarding). The new
-  // Stripe Connect flow writes to partner.stripeConnectId (the onboarding
-  // wizard and the settings page both use this column); the legacy
-  // stripeConnectAccountId column is kept for backwards compat.
-  const stripeConnectPending = !partner.stripeConnectId && !partner.stripeConnectAccountId
+  const stripeConnectPending = !partner.stripeConnectId
 
   return (
     <div

@@ -11,11 +11,18 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
     const host = process.env.NEXT_PUBLIC_POSTHOG_HOST
     if (!key) return
     if (posthog.__loaded) return
-    posthog.init(key, {
-      api_host: host || 'https://us.i.posthog.com',
-      capture_pageview: false, // we capture manually on route change
-      capture_pageleave: true,
-      person_profiles: 'identified_only',
+    // Defer PostHog init to after first paint for faster LCP
+    requestIdleCallback(() => {
+      posthog.init(key, {
+        api_host: host || 'https://us.i.posthog.com',
+        capture_pageview: false,
+        capture_pageleave: true,
+        person_profiles: 'identified_only',
+        loaded: (ph) => {
+          // Capture the initial pageview after lazy init
+          ph.capture('$pageview', { $current_url: window.location.href })
+        },
+      })
     })
   }, [])
 

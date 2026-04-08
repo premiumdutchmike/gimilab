@@ -13,7 +13,10 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'www.steelecanyon.com' },
       { protocol: 'https', hostname: 'lavallecoastalclub.com' },
     ],
+    formats: ['image/avif', 'image/webp'],
   },
+  compress: true,
+  poweredByHeader: false,
 };
 
 export default nextConfig;

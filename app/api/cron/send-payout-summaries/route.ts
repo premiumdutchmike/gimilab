@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
         partnerId: partners.id,
         userId: partners.userId,
         businessName: partners.businessName,
-        stripeConnectAccountId: partners.stripeConnectAccountId,
+        stripeConnectId: partners.stripeConnectId,
       })
       .from(partners)
       .where(eq(partners.onboardingComplete, true))
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
           commissionAmount: `$${(commissionCents / 100).toFixed(2)}`,
           payoutAmount: `$${(earningsCents / 100).toFixed(2)}`,
           payoutDate,
-          stripeConnected: !!partner.stripeConnectAccountId,
+          stripeConnected: !!partner.stripeConnectId,
         }),
       })
       sent++

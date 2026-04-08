@@ -1,5 +1,5 @@
 import {
-  Body, Container, Head, Hr, Html, Preview,
+  Body, Container, Head, Hr, Html, Img, Preview,
   Section, Text, Row, Column,
 } from '@react-email/components'
 
@@ -91,11 +91,18 @@ export default function BookingConfirmation({
 
           <Hr style={divider} />
 
-          {/* QR code info */}
-          <Section style={{ padding: '0 24px 8px' }}>
+          {/* QR code */}
+          <Section style={{ padding: '16px 24px', textAlign: 'center' }}>
             <Text style={detailLabel}>Check-in code</Text>
-            <Text style={qrCodeText}>{qrCode}</Text>
-            <Text style={helpText}>Show this code at the pro shop when you arrive.</Text>
+            <Img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`gimmelab://checkin/${qrCode}`)}`}
+              alt="Check-in QR code"
+              width="180"
+              height="180"
+              style={{ margin: '8px auto 8px', display: 'block' }}
+            />
+            <Text style={qrCodeText}>{qrCode.split('-')[0].toUpperCase()}</Text>
+            <Text style={helpText}>Show this QR code at the pro shop when you arrive.</Text>
           </Section>
 
           <Hr style={divider} />

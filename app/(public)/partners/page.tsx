@@ -743,6 +743,11 @@ export default function PartnersPage() {
         }
         .pf-submit:hover:not(:disabled) { background: #d03520; transform: translateY(-1px); }
         .pf-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+        .pf-error {
+          font-size: 13px; color: #dc2626; text-align: center;
+          margin: 0 0 8px; padding: 8px 12px;
+          background: rgba(220,38,38,0.06); border-radius: 4px;
+        }
         .pf-fine {
           font-size: 12px;
           color: var(--stone);

@@ -102,9 +102,16 @@ Top-up credits expire in 90 days. Bonus credits expire in 60 days.
 ### Cron Routes
 - All `/api/cron/*` routes must verify `Authorization: Bearer [CRON_SECRET]` header.
 - Cron schedule (vercel.json):
-  - `/api/cron/release-slots` — `0 * * * *` (hourly, releases slots 48hr before tee time)
-  - `/api/cron/expire-credits` — `0 0 * * *` (midnight UTC, processes credit expiry)
+  - `/api/cron/release-slots` — `0 0 * * *` (midnight UTC, releases slots 48hr before tee time)
+  - `/api/cron/expire-credits` — `0 0 * * *` (midnight UTC, processes credit expiry + rollover)
   - `/api/cron/generate-slots` — `0 2 * * *` (2am UTC, materializes next 14 days of slots from blocks)
+  - `/api/cron/send-reminders` — `0 12 * * *` (noon UTC, emails members with tee times tomorrow)
+  - `/api/cron/send-reviews` — `0 10 * * *` (10am UTC, review request after completed round)
+  - `/api/cron/send-expiry-warnings` — `0 14 25-28 * *` (near end of month, warns about expiring credits)
+  - `/api/cron/send-payout-summaries` — `0 8 1 * *` (1st of month, partner earning reports)
+  - `/api/cron/send-credit-summaries` — `0 14 1,15 * *` (bi-weekly, member credit usage)
+  - `/api/cron/outreach-sequence` — `0 7 * * *` (daily, notifies of queued outreach emails)
+  - `/api/cron/process-payouts` — `0 6 * * 1` (weekly Monday, auto-processes partner payouts via Stripe Connect)
 
 ### Forms & Validation
 - Define Zod schemas for ALL API inputs, form data, and AI structured outputs.
@@ -134,6 +141,12 @@ One role per user for MVP. Role stored in Supabase Auth user metadata and checke
 - `partners` — course operator accounts
 - `subscription_tiers` — static config (casual/core/heavy)
 - `ratings` — post-round member ratings
+- `partner_inquiries` — inbound partner interest from /partners form
+- `payout_transfers` — batched Stripe Connect transfers to partners
+- `booking_guests` — additional players on a booking (players 2–4)
+- `outreach_prospects` — outbound sales pipeline for course acquisition
+- `outreach_emails` — email drafts/sends for outreach sequences
+- `waitlist` — member waitlist signups
 
 ## File Order for New Features
 
@@ -168,6 +181,7 @@ NEXT_PUBLIC_POSTHOG_KEY
 NEXT_PUBLIC_POSTHOG_HOST
 NEXT_PUBLIC_APP_URL
 CRON_SECRET
+TEAM_NOTIFICATION_EMAIL
 ```
 
 ## Design System

@@ -7,18 +7,23 @@ import CarouselArrows from '@/components/carousel-arrows'
 import PuttAnimations from '@/components/putt-animations'
 import HeroScrollEffect from '@/components/hero-scroll-effect'
 import AnimatedButton from '@/components/animated-button'
-import SavingsCalculator from '@/components/savings-calculator'
+import dynamic from 'next/dynamic'
 import CreditDollarHint from '@/components/credit-dollar-hint'
+import HeroWidget from '@/components/hero-widget'
+
+const SavingsCalculator = dynamic(() => import('@/components/savings-calculator'), {
+  loading: () => <div style={{ minHeight: 400 }} />,
+})
 
 export const metadata = {
   title: 'gimmelab — One membership. Every course.',
   description: 'Book tee times at any partner course using monthly credits. No booking fees, no phone calls.',
 }
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300 // revalidate every 5 minutes
 
 export default async function HomePage() {
-  let topCourses: { id: string; slug: string; name: string; address: string; holes: number | null; baseCreditCost: number; photos: string[] | null }[] = []
+  let topCourses: { id: string; slug: string; name: string; address: string; holes: number | null; baseCreditCost: number; rackRateCents: number | null; photos: string[] | null }[] = []
   try {
     topCourses = await db
       .select({
@@ -28,6 +33,7 @@ export default async function HomePage() {
         address: courses.address,
         holes: courses.holes,
         baseCreditCost: courses.baseCreditCost,
+        rackRateCents: courses.rackRateCents,
         photos: courses.photos,
       })
       .from(courses)
@@ -39,14 +45,14 @@ export default async function HomePage() {
 
   // Fallback when DB is unavailable
   const fallbackCourses: Array<{
-    id: string; slug: string; name: string; address: string; holes: number; credits: number; img: string; featured: boolean;
+    id: string; slug: string; name: string; address: string; holes: number; credits: number; rack: number; img: string; featured: boolean;
   }> = [
-    { id: '1', slug: 'walnut-lane-golf-club', name: 'Walnut Lane Golf Club', address: 'Philadelphia, PA', holes: 18, credits: 36, img: '/imagery/course-1.jpeg', featured: false },
-    { id: '2', slug: 'cobbs-creek-golf-course', name: 'Cobbs Creek Golf Course', address: 'W. Philadelphia, PA', holes: 18, credits: 45, img: '/imagery/course-2.png', featured: true },
-    { id: '3', slug: 'torresdale-frankford-cc', name: 'Torresdale-Frankford CC', address: 'NE Philadelphia, PA', holes: 18, credits: 55, img: '/imagery/course-3.jpeg', featured: false },
-    { id: '4', slug: 'westchase-golf-club', name: 'Westchase Golf Club', address: 'Tampa Bay, FL', holes: 18, credits: 90, img: '/imagery/course-4.png', featured: false },
-    { id: '5', slug: 'bayou-oaks', name: 'Bayou Oaks at City Park', address: 'New Orleans, LA', holes: 18, credits: 75, img: '/imagery/course-5.png', featured: false },
-    { id: '6', slug: 'palm-harbor-golf-club', name: 'Palm Harbor Golf Club', address: 'Palm Harbor, FL', holes: 18, credits: 110, img: '/imagery/course-6.jpeg', featured: false },
+    { id: '1', slug: 'walnut-lane-golf-club', name: 'Walnut Lane Golf Club', address: 'Philadelphia, PA', holes: 18, credits: 36, rack: 52, img: '/imagery/course-1.jpeg', featured: false },
+    { id: '2', slug: 'cobbs-creek-golf-course', name: 'Cobbs Creek Golf Course', address: 'W. Philadelphia, PA', holes: 18, credits: 45, rack: 68, img: '/imagery/course-2.png', featured: true },
+    { id: '3', slug: 'torresdale-frankford-cc', name: 'Torresdale-Frankford CC', address: 'NE Philadelphia, PA', holes: 18, credits: 55, rack: 85, img: '/imagery/course-3.jpeg', featured: false },
+    { id: '4', slug: 'westchase-golf-club', name: 'Westchase Golf Club', address: 'Tampa Bay, FL', holes: 18, credits: 90, rack: 125, img: '/imagery/course-4.png', featured: false },
+    { id: '5', slug: 'bayou-oaks', name: 'Bayou Oaks at City Park', address: 'New Orleans, LA', holes: 18, credits: 75, rack: 95, img: '/imagery/course-5.png', featured: false },
+    { id: '6', slug: 'palm-harbor-golf-club', name: 'Palm Harbor Golf Club', address: 'Palm Harbor, FL', holes: 18, credits: 110, rack: 145, img: '/imagery/course-6.jpeg', featured: false },
   ]
 
   const displayCourses = topCourses.length > 0
@@ -57,6 +63,7 @@ export default async function HomePage() {
         address: c.address,
         holes: c.holes ?? 18,
         credits: c.baseCreditCost,
+        rack: c.rackRateCents ? Math.round(c.rackRateCents / 100) : fallbackCourses[i % fallbackCourses.length].rack,
         img: (c.photos as string[])?.[0] ?? fallbackCourses[i % fallbackCourses.length].img,
         featured: i === 1,
       }))
@@ -72,7 +79,7 @@ export default async function HomePage() {
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
           poster="/imagery/hero.png"
         >
           <source src="/imagery/hero_bunker.mp4" type="video/mp4" />
@@ -100,33 +107,14 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="hero-right">
-          <div className="booking-card">
-            <div
-              className="bc-thumb"
-              style={{ backgroundImage: "url('/imagery/course-4.png')" }}
-            />
-            <div className="bc-toprow">
-              <div className="bc-now">Now available</div>
-              <div className="bc-badge">Open today</div>
-            </div>
-            <div className="bc-course">Westchase Golf Club</div>
-            <div className="bc-meta">Tampa Bay · Sat 8:30am · 4 spots</div>
-            <div className="bc-divider" />
-            <div className="bc-bottom">
-              <div>
-                <div className="bc-cost-label">Cost</div>
-                <div className="bc-credits">85<span className="bc-credits-unit">credits</span></div>
-                <CreditDollarHint credits={85} />
-              </div>
-              <Link href="/waitlist" className="bc-book-btn">Book tee time →</Link>
-            </div>
-          </div>
-          <div className="hero-pills">
-            <div className="hero-pill">50+ courses</div>
-            <div className="hero-pill">QR checkout</div>
-            <div className="hero-pill">Live availability</div>
-          </div>
+        <div className="hero-right" style={{ minWidth: 0, overflow: 'hidden' }}>
+          <HeroWidget courses={displayCourses.slice(0, 6).map(c => ({
+            name: c.name,
+            loc: c.address,
+            credits: c.credits,
+            rack: c.rack,
+            img: c.img,
+          }))} />
         </div>
         <PuttAnimations />
         <HeroScrollEffect />
@@ -176,7 +164,7 @@ export default async function HomePage() {
                 data-card
               >
                 <div className="c-thumb-wrap">
-                  <img className="c-thumb" src={course.img} alt={course.name} />
+                  <Image className="c-thumb" src={course.img} alt={course.name} width={400} height={260} loading="lazy" />
                   <div className={`c-tag${course.featured ? ' featured-tag' : ''}`}>
                     {course.featured ? 'Featured' : 'Open today'}
                   </div>
@@ -312,10 +300,13 @@ export default async function HomePage() {
         >
           <source src="/imagery/b124cb1f186169993c1b8198de403ae1.jpg" />
         </video>
-        <img
+        <Image
           className="video-banner-fallback"
           src="/imagery/b124cb1f186169993c1b8198de403ae1.jpg"
           alt="Golf course"
+          fill
+          sizes="100vw"
+          loading="lazy"
         />
         <div className="video-banner-overlay" />
         <div className="video-banner-content">
@@ -564,154 +555,8 @@ export default async function HomePage() {
         }
         .btn-outline:hover { color: #fff; border-color: #fff; }
 
-        /* hero right — booking card (light/cream) */
-        .hero-right {
-          position: relative;
-          z-index: 3;
-          padding: 160px 72px 100px 0;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 20px;
-        }
-        .booking-card {
-          background: rgba(244,240,234,0.97);
-          border-radius: 14px;
-          padding: 0 0 24px;
-          width: 340px;
-          box-shadow: 0 24px 64px rgba(0,0,0,0.4);
-          overflow: hidden;
-        }
-        .bc-thumb {
-          width: 100%;
-          height: 160px;
-          background-size: cover;
-          background-position: center;
-          border-radius: 14px 14px 0 0;
-          position: relative;
-        }
-        .bc-thumb::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(244,240,234,0.4) 100%);
-        }
-        .booking-card > .bc-toprow,
-        .booking-card > .bc-course,
-        .booking-card > .bc-meta,
-        .booking-card > .bc-divider,
-        .booking-card > .bc-bottom {
-          padding-left: 28px;
-          padding-right: 28px;
-        }
-        .booking-card > .bc-toprow { margin-top: 20px; }
-        .bc-toprow {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 18px;
-        }
-        .bc-now {
-          font-family: var(--font-space-mono), 'Space Mono', monospace;
-          font-size: 9px;
-          letter-spacing: 0.18em;
-          text-transform: uppercase;
-          color: #C4893A;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-        .bc-now::before {
-          content: '';
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #1FC76A;
-          animation: bc-pulse 2s infinite;
-        }
-        @keyframes bc-pulse {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.3; }
-        }
-        .bc-badge {
-          font-family: var(--font-space-mono), 'Space Mono', monospace;
-          font-size: 9px;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          background: #DDD7CC;
-          color: #4A4540;
-          padding: 4px 10px;
-          border-radius: 4px;
-        }
-        .bc-course {
-          font-size: 18px;
-          font-weight: 700;
-          color: #131110;
-          letter-spacing: -0.02em;
-          margin-bottom: 4px;
-        }
-        .bc-meta {
-          font-family: var(--font-space-mono), 'Space Mono', monospace;
-          font-size: 10px;
-          color: #8A847C;
-          letter-spacing: 0.05em;
-          margin-bottom: 20px;
-        }
-        .bc-divider { height: 1px; background: #DDD7CC; margin-bottom: 20px; }
-        .bc-bottom { display: flex; align-items: flex-end; justify-content: space-between; }
-        .bc-cost-label {
-          font-family: var(--font-space-mono), 'Space Mono', monospace;
-          font-size: 9px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: #8A847C;
-          margin-bottom: 4px;
-        }
-        .bc-credits {
-          font-size: 32px;
-          font-weight: 700;
-          color: #131110;
-          letter-spacing: -0.04em;
-          line-height: 1;
-        }
-        .bc-credits-unit {
-          font-size: 12px;
-          font-weight: 400;
-          color: #8A847C;
-          margin-left: 4px;
-          font-family: var(--font-space-mono), 'Space Mono', monospace;
-          letter-spacing: 0.05em;
-        }
-        .bc-book-btn {
-          background: #131110;
-          color: #EDE8DF;
-          text-decoration: none;
-          font-size: 11px;
-          font-weight: 600;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          padding: 12px 18px;
-          border-radius: 7px;
-          transition: background 0.18s;
-        }
-        .bc-book-btn:hover { background: #2e2b27; }
-        .hero-pills {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-          justify-content: flex-end;
-        }
-        .hero-pill {
-          font-family: var(--font-space-mono), 'Space Mono', monospace;
-          font-size: 9px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.65);
-          background: rgba(255,255,255,0.1);
-          border: 1px solid rgba(255,255,255,0.2);
-          padding: 6px 14px;
-          border-radius: 20px;
-        }
+        /* hero-right styles in globals.css */
+        /* Lab widget styles in globals.css */
 
         /* ── HOW IT WORKS ── */
         .how-section { background: var(--midnight); }
@@ -908,6 +753,10 @@ export default async function HomePage() {
           display: flex;
           align-items: center;
           gap: 5px;
+        }
+        @keyframes bc-pulse {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.3; }
         }
         .c-status-dot {
           width: 6px;
@@ -1336,9 +1185,8 @@ export default async function HomePage() {
         @media (max-width: 1024px) {
           .hero { grid-template-columns: 1fr; }
           .hero-left { padding: 140px 32px 32px; }
-          .hero-right { padding: 0 32px 80px; align-items: flex-start; }
-          .booking-card { width: 100%; max-width: 100%; }
-          .hero-pills { justify-content: flex-start; }
+          /* hero-right responsive in globals.css */
+
           .how-grid { grid-template-columns: 1fr; }
           .how-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
           .courses, .comparison-section, .pricing-section, .voice-section, footer { padding-left: 28px; padding-right: 28px; }
@@ -1357,24 +1205,10 @@ export default async function HomePage() {
           .stats-quote-attr { text-align: left; white-space: normal; }
         }
         @media (min-width: 640px) and (max-width: 1024px) {
-          .booking-card { padding-bottom: 40px; }
-          .booking-card > .bc-toprow,
-          .booking-card > .bc-course,
-          .booking-card > .bc-meta,
-          .booking-card > .bc-divider,
-          .booking-card > .bc-bottom {
-            padding-left: 40px;
-            padding-right: 40px;
-          }
-          .bc-course { font-size: 32px; }
-          .bc-meta { font-size: 15px; }
-          .bc-credits { font-size: 48px; }
-          .bc-credits-unit { font-size: 16px; }
         }
         @media (max-width: 640px) {
           .hero-left { padding: 120px 20px 24px; }
-          .hero-right { padding: 0 20px 56px; }
-          .booking-card { padding: 24px; }
+          /* hero-right responsive in globals.css */
           .comparison-table { grid-template-columns: 1fr; }
           .comp-col { border-right: none; border-bottom: 1px solid var(--smoke); }
           .c-card { flex: 0 0 calc(100% - 8px); min-width: 260px; }

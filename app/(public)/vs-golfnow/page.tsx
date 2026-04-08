@@ -2,7 +2,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
-import VsGolfnowCalculator from '@/components/vs-golfnow-calculator'
+import dynamic from 'next/dynamic'
+
+const VsGolfnowCalculator = dynamic(() => import('@/components/vs-golfnow-calculator'), {
+  loading: () => <div style={{ minHeight: 500 }} />,
+})
 
 export const metadata: Metadata = {
   title: 'Gimmelab vs GolfNow Premium — See what you would save',

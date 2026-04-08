@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { stripe, TIER_CREDITS } from '@/lib/stripe/client'
 import { db } from '@/lib/db'
-import { users, creditLedger, partners } from '@/lib/db/schema'
+import { users, creditLedger, partners, payoutTransfers } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { sendEmail } from '@/lib/email'
 import Welcome from '@/emails/welcome'
@@ -56,7 +56,7 @@ async function handleInvoicePaidForUser(
     .limit(1)
 
   if (existing.length > 0) {
-    console.log(`invoice.paid ${invoice.id} already processed for user ${user.id} — skipping`)
+    console.info(`invoice.paid ${invoice.id} already processed for user ${user.id} — skipping`)
     return
   }
 
@@ -267,6 +267,27 @@ export async function POST(request: NextRequest) {
       case 'account.updated':
         await handleAccountUpdated(event.data.object as Stripe.Account)
         break
+      case 'transfer.created': {
+        const transfer = event.data.object as Stripe.Transfer
+        // Confirm the transfer in our records
+        if (transfer.id) {
+          await db
+            .update(payoutTransfers)
+            .set({ status: 'PAID', completedAt: new Date() })
+            .where(eq(payoutTransfers.stripeTransferId, transfer.id))
+        }
+        break
+      }
+      case 'transfer.reversed': {
+        const reversedTransfer = event.data.object as Stripe.Transfer
+        if (reversedTransfer.id) {
+          await db
+            .update(payoutTransfers)
+            .set({ status: 'FAILED', failedReason: 'Transfer reversed by Stripe' })
+            .where(eq(payoutTransfers.stripeTransferId, reversedTransfer.id))
+        }
+        break
+      }
       default:
         // Unhandled event type — not an error
         break

@@ -56,7 +56,7 @@ export const partners = pgTable('partners', {
   approvedAt: timestamp('approved_at', { withTimezone: true }),
   approvedBy: uuid('approved_by'), // admin user id
   onboardingComplete:     boolean('onboarding_complete').default(false).notNull(),
-  stripeConnectAccountId: text('stripe_connect_account_id'),
+  stripeConnectAccountId: text('stripe_connect_account_id'), // legacy — use stripeConnectId instead
   tierVerifiedAt:         timestamp('tier_verified_at', { withTimezone: true }),
   verificationStatus:     text('verification_status').default('pending'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
@@ -408,3 +408,19 @@ export const waitlist = pgTable('waitlist', {
 
 export type WaitlistEntry = typeof waitlist.$inferSelect
 export type NewWaitlistEntry = typeof waitlist.$inferInsert
+
+// ─── Partner Inquiries (inbound from /partners form) ────────────────────────
+export const partnerInquiries = pgTable('partner_inquiries', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  name: text('name').notNull(),
+  title: text('title'),
+  courseName: text('course_name').notNull(),
+  email: text('email').notNull(),
+  phone: text('phone'),
+  message: text('message'),
+  status: text('status').default('new').notNull(), // 'new' | 'contacted' | 'converted' | 'declined'
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+})
+
+export type PartnerInquiry = typeof partnerInquiries.$inferSelect
+export type NewPartnerInquiry = typeof partnerInquiries.$inferInsert

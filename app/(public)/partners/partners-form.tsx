@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import { submitPartnerInquiry } from '@/actions/partner-inquiry'
 
 export default function PartnerForm() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const [form, setForm] = useState({
     name: '',
     title: '',
@@ -21,10 +23,16 @@ export default function PartnerForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    // TODO: wire to Server Action / Resend email
-    await new Promise(r => setTimeout(r, 900))
+    setError('')
+
+    const result = await submitPartnerInquiry(form)
+
     setLoading(false)
-    setSubmitted(true)
+    if (result.success) {
+      setSubmitted(true)
+    } else {
+      setError(result.error ?? 'Something went wrong. Please try again.')
+    }
   }
 
   if (submitted) {
@@ -67,6 +75,7 @@ export default function PartnerForm() {
         <label className="pf-label">Anything else? <span className="pf-optional">(optional)</span></label>
         <textarea className="pf-input pf-textarea" name="message" value={form.message} onChange={handleChange} placeholder="Tell us about your course, current booking setup, or any questions." rows={3} />
       </div>
+      {error && <p className="pf-error">{error}</p>}
       <button className="pf-submit" type="submit" disabled={loading}>
         {loading ? 'Sending…' : 'Request a conversation →'}
       </button>

@@ -1,6 +1,10 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
-import MathBlock from './math-block'
+import dynamic from 'next/dynamic'
+
+const MathBlock = dynamic(() => import('./math-block'), {
+  loading: () => <div style={{ minHeight: 400 }} />,
+})
 import VsAnalytics from './analytics'
 import VsNav from './vs-nav'
 import VsFooter from './vs-footer'

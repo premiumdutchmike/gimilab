@@ -3,6 +3,13 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { submitRating } from '@/actions/rating'
+import QRCode from 'react-qr-code'
+
+interface Guest {
+  firstName: string
+  lastName: string
+  email: string
+}
 
 interface UpcomingBooking {
   id: string
@@ -14,6 +21,7 @@ interface UpcomingBooking {
   creditCost: number
   status: string
   qrCode: string | null
+  guests: Guest[]
 }
 
 interface PastBooking {
@@ -65,6 +73,15 @@ function CheckInCode({ code }: { code: string | null }) {
       </button>
       {expanded && (
         <div className="checkin-card">
+          <div style={{ background: '#fff', padding: 12, borderRadius: 4, display: 'inline-block', marginBottom: 10 }}>
+            <QRCode
+              value={`gimmelab://checkin/${code}`}
+              size={160}
+              level="M"
+              bgColor="#ffffff"
+              fgColor="#0C0C0B"
+            />
+          </div>
           <div className="checkin-label">Show at the pro shop</div>
           <div className="checkin-code">{displayCode}</div>
         </div>
@@ -215,17 +232,25 @@ export function RoundsClient({ upcoming, past, balance }: Props) {
                             </svg>
                             {' '}{formatTime(b.startTime)}
                           </span>
-                          {b.playerCount && (
+                          {b.playerCount && b.playerCount > 0 && (
                             <span>
                               <svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8">
                                 <circle cx="10" cy="7" r="3.5" />
                                 <path d="M3 17c0-3.31 3.13-6 7-6s7 2.69 7 6" />
                               </svg>
-                              {' '}{b.playerCount} Players
+                              {' '}{b.playerCount} {b.playerCount === 1 ? 'Player' : 'Players'}
                             </span>
                           )}
                           {b.courseAddress && <span>{b.courseAddress}</span>}
                         </div>
+                        {b.guests.length > 0 && (
+                          <div className="upcoming-guests">
+                            <span className="guests-label">Your group:</span>
+                            {b.guests.map((g, i) => (
+                              <span key={i} className="guest-name">{g.firstName} {g.lastName}</span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div className="upcoming-right">
                         <span className="status-badge">Confirmed</span>
@@ -349,6 +374,12 @@ export function RoundsClient({ upcoming, past, balance }: Props) {
         .upcoming-info { flex: 1; }
         .upcoming-course { font-size: 14px; font-weight: 700; color: #0C0C0B; margin-bottom: 4px; }
         .upcoming-meta { font-size: 12px; color: #847C72; display: flex; gap: 14px; flex-wrap: wrap; }
+        .upcoming-guests {
+          margin-top: 6px; font-size: 11px; color: #847C72;
+          display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        }
+        .guests-label { font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; font-size: 9px; color: rgba(132,124,114,0.7); }
+        .guest-name { background: rgba(191,123,46,0.08); border: 1px solid rgba(191,123,46,0.15); padding: 2px 8px; border-radius: 2px; font-size: 11px; }
         .upcoming-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
         .status-badge {
           font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;

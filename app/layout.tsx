@@ -6,17 +6,20 @@ import { PostHogProvider } from "@/components/posthog-provider";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
+  display: "swap",
 });
 
 const nunito = Nunito({
   weight: "900",
   subsets: ["latin"],
   variable: "--font-nunito",
+  display: "swap",
 });
 
 export const metadata: Metadata = {

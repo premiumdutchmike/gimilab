@@ -44,7 +44,7 @@ export default async function LivePage() {
       location={course.address ?? ''}
       gimmelabRate={course.gimmelabRateCents ? Math.round(course.gimmelabRateCents / 100) : 0}
       slotCount={slotCount}
-      stripeConnected={!!partner.stripeConnectAccountId}
+      stripeConnected={!!partner.stripeConnectId}
       slug={course.slug}
     />
   )

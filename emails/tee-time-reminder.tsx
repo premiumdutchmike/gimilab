@@ -1,5 +1,5 @@
 import {
-  Body, Container, Head, Hr, Html, Preview,
+  Body, Container, Head, Hr, Html, Img, Preview,
   Section, Text,
 } from '@react-email/components'
 
@@ -12,10 +12,11 @@ interface TeeTimeReminderProps {
   players: number
   creditCost: number
   qrCode?: string
+  guests?: Array<{ firstName: string; lastName: string }>
 }
 
 export default function TeeTimeReminder({
-  memberName, courseName, courseAddress, date, time, players, creditCost,
+  memberName, courseName, courseAddress, date, time, players, creditCost, qrCode, guests = [],
 }: TeeTimeReminderProps) {
   const firstName = memberName?.split(' ')[0] || 'there'
 
@@ -73,12 +74,38 @@ export default function TeeTimeReminder({
             </Section>
           </Section>
 
+          {guests.length > 0 && (
+            <>
+              <Hr style={divider} />
+              <Section style={{ padding: '20px 24px' }}>
+                <Text style={sectionTitle}>Your group</Text>
+                <Text style={{ fontSize: 14, fontWeight: 700, color: '#111', margin: '0 0 4px' }}>
+                  {memberName} <span style={{ color: 'rgba(0,0,0,0.35)', fontWeight: 400, fontSize: 12 }}>(you)</span>
+                </Text>
+                {guests.map((g, i) => (
+                  <Text key={i} style={{ fontSize: 14, fontWeight: 700, color: '#111', margin: '0 0 4px' }}>
+                    {g.firstName} {g.lastName}
+                  </Text>
+                ))}
+              </Section>
+            </>
+          )}
+
           <Hr style={divider} />
 
-          <Section style={{ padding: '20px 24px' }}>
-            <Text style={sectionTitle}>Check-in</Text>
+          <Section style={{ padding: '20px 24px', textAlign: 'center' as const }}>
+            <Text style={{ ...sectionTitle, textAlign: 'left' as const }}>Check-in</Text>
+            {qrCode && (
+              <Img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`gimmelab://checkin/${qrCode}`)}`}
+                alt="Check-in QR code"
+                width="180"
+                height="180"
+                style={{ margin: '8px auto 12px', display: 'block' }}
+              />
+            )}
             <Text style={stepText}>
-              Show your <strong>QR code</strong> at the pro shop when you arrive. Open it from your bookings page.
+              Show this <strong>QR code</strong> at the pro shop when you arrive.
             </Text>
           </Section>
 
